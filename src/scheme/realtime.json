@@ -1,22 +1,22 @@
 {
-  "users": [
-    {
-      "id": "g4w56hb",
-      "name": "Melody",
-      "selected": "",
-      "time": "",
-      "score": 0,
-      "addScore": 0
-    },
-    {
+  "answer": { "0": 1, "1": 0 },
+  "state": "lobby",
+  "users": {
+    "flkgmjrlt54": {
+      "addScore": 0,
       "id": "flkgmjrlt54",
       "name": "Ken",
-      "selected": "",
-      "time": "",
       "score": 0,
-      "addScore": 0
+      "selected": "",
+      "time": ""
+    },
+    "g4w56hb": {
+      "addScore": 0,
+      "id": "g4w56hb",
+      "name": "Melody",
+      "score": 0,
+      "selected": "",
+      "time": ""
     }
-  ],
-  "state": "lobby",
-  "answer": ["A", "B", "C"]
+  }
 }

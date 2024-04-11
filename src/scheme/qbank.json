@@ -1,24 +1,26 @@
 {
-  "qbanks": [
+  "qbank": [
     {
-      "id": "f45352",
+      "id": "uRjHQ7uQS06iBADYJSSH",
       "name": "test",
       "questions": [
         {
-          "question": "我們最大的魅力",
-          "type": "MC",
+          "id": "JJRTdG5rVTPX3b8HtSks",
+          "question": "早餐吃甚麼?",
+          "type": "mc",
           "media": "",
-          "answer": "B",
-          "option": ["一", "二", "三", "四"],
-          "timeLimit": 5
+          "answer": 1,
+          "options": ["一", "二", "三", "四"],
+          "timeLimit": 10
         },
         {
-          "question": "我們最大的魅力",
-          "type": "MC",
+          "id": "nfRedlWq5woFyqHwvIL6",
+          "question": "哈樓你好嗎?",
+          "type": "tf",
           "media": "",
-          "answer": "B",
-          "option": ["一", "二", "三", "四"],
-          "timeLimit": 10
+          "answer": 0,
+          "options": ["T", "F"],
+          "timeLimit": 15
         }
       ]
     }

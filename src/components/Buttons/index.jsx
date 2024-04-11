@@ -2,7 +2,7 @@ import React from "react";
 import { Button, ConfigProvider } from "antd";
 import theme from "../globals/theme";
 
-// <Buttons type={1}>主持</Buttons>
+// <Buttons type="light">主持</Buttons>
 
 const Buttons = ({ children, type }) => {
   // type secondary :#996484
