@@ -5,25 +5,25 @@ import theme from "../globals/theme";
 // <Buttons type={1}>主持</Buttons>
 
 const Buttons = ({ children, type }) => {
-  // type 1 :#996484
-  // type 2 :#F5F2F0
-  // type 3 :#78B159
-  // type 4 :#D65749
+  // type secondary :#996484
+  // type light :#F5F2F0
+  // type success :#78B159
+  // type danger :#D65749
   let bg = "";
   let color = "";
   let hoverbg = "";
   switch (type) {
-    case 2:
+    case "light":
       bg = `${theme.colors.light}`;
       color = `${theme.colors.dark}`;
       hoverbg = `#a5a4a4`;
       break;
-    case 3:
+    case "success":
       bg = `${theme.colors.success}`;
       color = `${theme.colors.light}`;
       hoverbg = `${theme.colors.info}`;
       break;
-    case 4:
+    case "danger":
       bg = `${theme.colors.danger}`;
       color = `${theme.colors.light}`;
       hoverbg = `${theme.colors.info}`;
@@ -47,6 +47,9 @@ const Buttons = ({ children, type }) => {
               defaultHoverBg: hoverbg,
               defaultHoverBorderColor: `none`,
               defaultHoverColor: color,
+              defaultActiveBg: hoverbg,
+              defaultActiveBorderColor: "none",
+              defaultActiveColor: color,
               defaultShadow: `0 3px 0 ${hoverbg}`,
             },
           },

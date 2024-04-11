@@ -9,7 +9,11 @@ const WarpHome = styled.div`
 `;
 
 const Home = () => {
-  return <WarpHome></WarpHome>;
+  return (
+    <WarpHome>
+      <Buttons type="">主持</Buttons>
+    </WarpHome>
+  );
 };
 
 export default Home;
