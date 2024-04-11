@@ -1,10 +1,10 @@
 import React from "react";
 import { Button, ConfigProvider } from "antd";
-import theme from "../globals/theme";
+import theme from "../css/theme";
 
 // <Buttons type="light">主持</Buttons>
 
-const Buttons = ({ children, type }) => {
+const Buttons = ({ children, type, size = "default" }) => {
   // type secondary :#996484
   // type light :#F5F2F0
   // type success :#78B159
@@ -55,7 +55,7 @@ const Buttons = ({ children, type }) => {
           },
         }}
       >
-        <Button>{children}</Button>
+        <Button size={size}>{children}</Button>
       </ConfigProvider>
     </div>
   );

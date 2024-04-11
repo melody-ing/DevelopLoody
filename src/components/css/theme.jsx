@@ -11,7 +11,7 @@ const theme = {
     secondary: "#996484", // 輔助色,褐紫色
     tertiary: "#664358",
     success: "#78B159", // 成功、正面的綠色
-    danger: "#D65749", // 警示、錯誤的紅色
+    danger: "#d65749", // 警示、錯誤的紅色
     warning: "#F6BD30", // 提醒、警告的橘黃色
     info: "#3f3a3a", // 資訊的深灰色
     light: "#F5F2F0", // 背景、淺色元素的米白

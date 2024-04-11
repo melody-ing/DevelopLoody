@@ -1,15 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import Buttons from "../../components/Buttons";
-
-const WarpHome = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background-color: #ebdb86;
-`;
+import PrimaryBg from "../../components/css/PrimaryBg";
 
 const Home = () => {
-  return <WarpHome></WarpHome>;
+  return <PrimaryBg></PrimaryBg>;
 };
 
 export default Home;

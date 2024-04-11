@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import BaseGlobalStyle from "./components/globals/BaseGlobalStyle";
+import BaseGlobalStyle from "./components/css/BaseGlobalStyle";
 
 const App = () => {
   return (
