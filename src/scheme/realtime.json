@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": "g4w56hb",
+      "name": "Melody",
+      "selected": "",
+      "time": "",
+      "score": 0,
+      "addScore": 0
+    },
+    {
+      "id": "flkgmjrlt54",
+      "name": "Ken",
+      "selected": "",
+      "time": "",
+      "score": 0,
+      "addScore": 0
+    }
+  ],
+  "state": "lobby",
+  "answer": ["A", "B", "C"]
+}

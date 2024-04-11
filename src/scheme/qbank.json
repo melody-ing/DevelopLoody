@@ -1,0 +1,26 @@
+{
+  "qbanks": [
+    {
+      "id": "f45352",
+      "name": "test",
+      "questions": [
+        {
+          "question": "我們最大的魅力",
+          "type": "MC",
+          "media": "",
+          "answer": "B",
+          "option": ["一", "二", "三", "四"],
+          "timeLimit": 5
+        },
+        {
+          "question": "我們最大的魅力",
+          "type": "MC",
+          "media": "",
+          "answer": "B",
+          "option": ["一", "二", "三", "四"],
+          "timeLimit": 10
+        }
+      ]
+    }
+  ]
+}

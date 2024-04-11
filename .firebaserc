@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "midterm-3762a"
-  }
+    "default": "midterm-3762a",
+    "Loody": "loody-ing"
+  },
+  "targets": {},
+  "etags": {}
 }
