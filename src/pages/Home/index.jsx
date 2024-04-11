@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Buttons from "../../components/Buttons";
 
 const WarpHome = styled.div`
   width: 100vw;

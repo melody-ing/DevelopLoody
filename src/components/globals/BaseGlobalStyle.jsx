@@ -8,7 +8,7 @@ const BaseGlobalStyle = createGlobalStyle`
 * {
   margin: 0;
   box-sizing: border-box;
-  font-family: Noto Sans TC;
+  font-family: "Noto Sans TC", sans-serif;
 }
 
 html {
@@ -36,6 +36,8 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+
 
 main {
   min-height: 100vh;
