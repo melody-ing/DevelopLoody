@@ -9,6 +9,7 @@ import Timeout from "./Timeout";
 import Rank from "./Rank";
 import End from "./End";
 import { useStateStore } from "../../utils/hook/useStateStore";
+import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -24,53 +25,67 @@ const Question = styled.h2`
 `;
 
 const Game = () => {
-  const { state, answer, setState, setAnswer } = useStateStore();
+  const path = "qbank";
+  const documentId = "uRjHQ7uQS06iBADYJSSH";
+
+  const qbank = useGetFireStore(path, documentId);
+
+  const { state, setState } = useStateStore();
+  const [qNumber, setQNumber] = useState(0);
   const navigate = useNavigate();
   let title = "";
   let button = "";
   let content = null;
   let nextState = "";
+  console.log(qbank);
 
-  switch (state) {
-    case "game":
-      title = "晚餐吃甚麼";
-      button = "略過";
-      content = (
-        <>
-          <Home />
-          <Options />
-        </>
-      );
-      nextState = "timeout";
-      break;
-    case "timeout":
-      title = "晚餐吃甚麼";
-      button = "排名";
-      content = (
-        <>
-          <Timeout />
-          <Options answer={answer} />
-        </>
-      );
-      nextState = "rank";
-      break;
-    case "rank":
-      title = "記分板";
-      button = "下一題";
-      content = <Rank />;
-      nextState = "game";
-      break;
-    case "end":
-      title = "結束";
-      button = "首頁";
-      content = <End />;
+  if (qbank) {
+    const questions = qbank.questions[qNumber];
+    const answer = qbank.questions[qNumber].answer;
+    switch (state) {
+      case "game":
+        title = questions.title;
+        button = "略過";
+        content = (
+          <>
+            <Home questions={questions} />
+            <Options questions={questions} />
+          </>
+        );
+        nextState = "timeout";
+        break;
+      case "timeout":
+        title = questions.title;
+        button = "排名";
+        content = (
+          <>
+            <Timeout />
+            <Options questions={questions} answer={answer} />
+          </>
+        );
+        nextState = "rank";
+        break;
+      case "rank":
+        title = "記分板";
+        button = "下一題";
+        content = <Rank />;
+        nextState = "game";
+        break;
+      case "end":
+        title = "結束";
+        button = "首頁";
+        content = <End />;
+    }
   }
 
   function onClickBtn() {
     if (state === "end") {
       navigate("/");
     } else {
-      setState(nextState);
+      state === "rank" && setQNumber((qNumber) => qNumber + 1);
+      qNumber === qbank.questions.length - 1 && state === "timeout"
+        ? setState("end")
+        : setState(nextState);
     }
   }
 

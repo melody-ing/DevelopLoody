@@ -3,21 +3,14 @@ import theme from "../../../components/css/theme";
 import Buttons from "../../../components/Buttons";
 import { styled } from "styled-components";
 
-const Question = styled.h2`
-  width: auto;
-  height: auto;
-  padding: 1rem;
-  background-color: ${theme.colors.light};
-`;
-
-const LimitTime = styled.div`
+const TimeLimit = styled.div`
   position: absolute;
   bottom: 50%;
   padding: 2rem;
-  background-color: ${theme.colors.tertiary}66;
-  color: ${theme.colors.light};
+  background-color: ${theme.colors.secondary}66;
+  color: ${theme.colors.tertiary};
   font-size: 5rem;
-  width: 8rem;
+  width: auto;
   height: 8rem;
   line-height: 4rem;
 `;
@@ -27,8 +20,8 @@ const Attenance = styled.div`
   bottom: 50%;
   padding: 2rem;
   right: 0;
-  background-color: ${theme.colors.tertiary}66;
-  color: ${theme.colors.light};
+  background-color: ${theme.colors.secondary}66;
+  color: ${theme.colors.tertiary};
   font-size: 2rem;
   width: 18rem;
   height: 14rem;
@@ -39,13 +32,13 @@ const Attenance = styled.div`
   }
 `;
 
-const Home = () => {
+const Home = ({ questions }) => {
   return (
     <>
-      <LimitTime>5</LimitTime>
+      <TimeLimit>{questions.timeLimit}</TimeLimit>
 
       <Attenance>
-        作答人數： <p>5</p>
+        作答人數： <p>0</p>
       </Attenance>
     </>
   );

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
-import { getDatabase, ref, set } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -11,6 +11,7 @@ import { getDatabase, ref, set } from "firebase/database";
 const firebaseConfig = {
   apiKey: "AIzaSyB8yiMuX2g8mMWuKI1H4NaHOof5pO5YfYM",
   authDomain: "loody-ing.firebaseapp.com",
+  databaseURL: "https://loody-ing-default-rtdb.firebaseio.com",
   projectId: "loody-ing",
   storageBucket: "loody-ing.appspot.com",
   messagingSenderId: "862682833648",

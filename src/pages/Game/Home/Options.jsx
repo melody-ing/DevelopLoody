@@ -27,11 +27,10 @@ const Correct = styled.svg`
   color: ${theme.colors.danger};
 `;
 
-const Options = ({ answer }) => {
-  console.log(answer);
+const Options = ({ questions, answer }) => {
   return (
     <WrapOptions>
-      {["牛肉麵", "牛肉麵", "牛肉麵", "牛肉麵"].map((item, index) => {
+      {questions.options.map((item, index) => {
         return (
           <h3 key={index}>
             {answer === index && (
