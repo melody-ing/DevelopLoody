@@ -1,10 +1,10 @@
 {
-  "users": [
-    {
+  "users": {
+    "zv0aT3r0xQFyMx4wOIpH": {
+      "email": "9999@gmail.com",
       "id": "zv0aT3r0xQFyMx4wOIpH",
       "name": "Melody",
-      "email": "9999@gmail.com",
       "qbank": ["uRjHQ7uQS06iBADYJSSH"]
     }
-  ]
+  }
 }

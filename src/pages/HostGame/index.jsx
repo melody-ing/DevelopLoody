@@ -8,7 +8,7 @@ import Options from "./Home/Options";
 import Timeout from "./Timeout";
 import Rank from "./Rank";
 import End from "./End";
-import { useStateStore } from "../../utils/hook/useStateStore";
+import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 
 const WrapGame = styled.div`
@@ -30,7 +30,7 @@ const HostGame = () => {
 
   const qbank = useGetFireStore(path, documentId);
 
-  const { state, setState } = useStateStore();
+  const { state, setState } = useGameStore();
   const [qNumber, setQNumber] = useState(0);
   const navigate = useNavigate();
   let title = "";

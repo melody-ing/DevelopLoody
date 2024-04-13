@@ -13,7 +13,7 @@ export const useGetRealTime = (path) => {
         if (snapshot.exists()) {
           const users = snapshot.val();
           console.log("Users data:", users);
-          setRealTime(Object.values(users));
+          setRealTime(users);
         } else {
           console.log("No data available");
         }

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import Home from "./Home";
 import theme from "../../components/css/theme";
@@ -7,9 +6,11 @@ import Options from "./Home/Options";
 import Timeout from "./Timeout";
 import End from "./End";
 import Lobby from "./Lobby";
+import Score from "./Score";
 import PrimaryBg from "../../components/css/PrimaryBg";
-import { useStateStore } from "../../utils/hook/useStateStore";
+import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
+import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 
 const WrapGame = styled(PrimaryBg)`
   width: 100%;
@@ -28,55 +29,50 @@ const Question = styled.h2`
   }
 `;
 
-const User = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 3rem;
-  background-color: ${theme.colors.secondary};
-  color: ${theme.colors.light};
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-`;
-
 const PartGame = () => {
-  const path = "qbank";
   const documentId = "uRjHQ7uQS06iBADYJSSH";
+  const { state, userId } = useGameStore();
 
-  const qbank = useGetFireStore(path, documentId);
+  const qbank = useGetFireStore("qbank", documentId);
 
-  const { state, setState } = useStateStore();
+  const user = useGetRealTime(`users/-NvLufWobRKj-dtMesOb`);
+  // const user = useGetRealTime(`users/${userId}`);
+  console.log(user);
   const [qNumber, setQNumber] = useState(0);
-  const navigate = useNavigate();
+
   let title = "";
   let content = null;
   let nextState = "";
-  console.log(qbank);
 
   if (qbank) {
     const questions = qbank.questions[qNumber];
-    const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
         title = questions.title;
-        content = <Lobby />;
+        content = <Lobby user={user} />;
         break;
+
       case "game":
         title = questions.title;
         content = (
           <>
             <Home questions={questions} />
             <Options questions={questions} />
+            <Score user={user} />
           </>
         );
         nextState = "timeout";
         break;
+
       case "timeout":
       case "rank":
         title = questions.title;
-        content = <Timeout />;
+        content = (
+          <>
+            <Timeout user={user} />
+            <Score user={user} />
+          </>
+        );
         nextState = "rank";
         break;
 
@@ -86,26 +82,11 @@ const PartGame = () => {
     }
   }
 
-  function onClickBtn() {
-    if (state === "end") {
-      navigate("/");
-    } else {
-      state === "rank" && setQNumber((qNumber) => qNumber + 1);
-      qNumber === qbank.questions.length - 1 && state === "timeout"
-        ? setState("end")
-        : setState(nextState);
-    }
-  }
-
   return (
     <WrapGame>
       <Question>{title}</Question>
 
       {content}
-      <User>
-        <p>Melody</p>
-        <p>646</p>
-      </User>
     </WrapGame>
   );
 };

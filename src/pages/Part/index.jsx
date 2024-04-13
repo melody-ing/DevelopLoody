@@ -6,6 +6,7 @@ import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
+import { useGameStore } from "../../utils/hook/useGameStore";
 
 const WrapPart = styled(PrimaryBg)`
   display: flex;
@@ -30,7 +31,7 @@ const Entry = styled.div`
   /* background-color: ${theme.colors.light}; */
 `;
 
-const InputPin = styled.input`
+const InputName = styled.input`
   height: 6rem;
   width: 85%;
   border: 1px solid #ccc;
@@ -74,22 +75,12 @@ const Button = styled.button`
   }
 `;
 
-const Login = styled.p`
-  color: ${theme.colors.secondary};
-  text-decoration: underline;
-  cursor: pointer;
-`;
-
 const Part = () => {
   const [isJoin, setIsJoin] = useState(false);
-  const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState("");
+  const { setUserId } = useGameStore();
 
   const navigation = useNavigate();
-
-  function handlePart() {
-    navigation("/part/game");
-  }
 
   function handleJoin() {
     if (userName !== "") {
@@ -98,12 +89,15 @@ const Part = () => {
       const userRef = ref(database, "users");
       const newUserRef = push(userRef);
       set(newUserRef, {
+        addScore: 0,
         id: newUserRef.key,
         name: userName,
-        selected: "",
         score: 0,
+        selected: "",
+        time: Date.now(),
       });
       setUserId(newUserRef.key);
+      navigation("/part/game");
     }
   }
 
@@ -111,8 +105,11 @@ const Part = () => {
     <WrapPart>
       <UserName>請輸入暱稱</UserName>
       <Entry>
-        <InputPin placeholder="暱稱" />
-        <Button onClick={handlePart} size="large">
+        <InputName
+          placeholder="暱稱"
+          onChange={(e) => setUserName(e.target.value)}
+        />
+        <Button onClick={handleJoin} size="large">
           <p>進入</p>
         </Button>
       </Entry>

@@ -1,28 +1,26 @@
 {
-  "qbank": [
-    {
+  "qbank": {
+    "uRjHQ7uQS06iBADYJSSH": {
       "id": "uRjHQ7uQS06iBADYJSSH",
-      "name": "test",
+      "name": "Test question bank",
       "questions": [
         {
-          "id": "JJRTdG5rVTPX3b8HtSks",
-          "question": "早餐吃甚麼?",
-          "type": "mc",
-          "media": "",
           "answer": 1,
+          "media": "",
           "options": ["一", "二", "三", "四"],
-          "timeLimit": 10
+          "timeLimit": 10,
+          "title": "早餐吃甚麼?",
+          "type": "mc"
         },
         {
-          "id": "nfRedlWq5woFyqHwvIL6",
-          "question": "哈樓你好嗎?",
-          "type": "tf",
-          "media": "",
           "answer": 0,
+          "media": "",
           "options": ["T", "F"],
-          "timeLimit": 15
+          "timeLimit": 15,
+          "title": "哈樓你好嗎?",
+          "type": "tf"
         }
       ]
     }
-  ]
+  }
 }

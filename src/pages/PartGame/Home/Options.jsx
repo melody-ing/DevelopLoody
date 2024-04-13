@@ -5,7 +5,7 @@ import theme from "../../../components/css/theme";
 const WrapOptions = styled.div`
   position: absolute;
   width: 99%;
-  bottom: 4rem;
+  bottom: 6rem;
   left: 0;
   display: grid;
   grid-template-columns: 50% 50%;
@@ -22,6 +22,8 @@ const WrapOptions = styled.div`
   }
 
   ${theme.breakpoints.sm} {
+    bottom: 4rem;
+
     width: 100vw;
     height: 96vh;
     top: 0;

@@ -5,7 +5,7 @@ import Buttons from "../../components/Buttons";
 import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import { useStateStore } from "../../utils/hook/useStateStore";
+import { useGameStore } from "../../utils/hook/useGameStore";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -91,8 +91,9 @@ const StartBtn = styled.div`
 `;
 
 const Host = () => {
-  const { state, setState } = useStateStore();
+  const { setState } = useGameStore();
   const realTime = useGetRealTime("users");
+  const users = realTime && Object.values(realTime);
 
   return (
     <WrapHost>
@@ -107,7 +108,7 @@ const Host = () => {
           <img src="qrcode.png" alt="" />
         </JoinCode>
         <Participants>
-          {realTime?.map((user, index) => (
+          {users?.map((user, index) => (
             <p key={user.id}>{user.name}</p>
           ))}
         </Participants>
