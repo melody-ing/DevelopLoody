@@ -15,7 +15,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route index element={<Home />} />
         <Route path="part" element={<Participate />} />
         <Route path="host" element={<Host />} />
-
         <Route path="game" element={<Game />} />
       </Route>
     </Routes>

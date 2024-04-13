@@ -17,6 +17,7 @@ const theme = {
     light: "#F5F2F0", // 背景、淺色元素的米白
     dark: "#262424", // 文字、深色元素的黑色
   },
+  shadow: "0px 5px 8px 0px #33333369",
 };
 
 export default theme;

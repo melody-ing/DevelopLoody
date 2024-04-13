@@ -98,7 +98,7 @@ const Host = () => {
     <WrapHost>
       <WrapHome>
         {" "}
-        <Logo src="title.png" alt="" />
+        <Logo src="logo.png" alt="" />
         <JoinCode>
           <WrapCode>
             <div>遊戲PIN碼：</div>
