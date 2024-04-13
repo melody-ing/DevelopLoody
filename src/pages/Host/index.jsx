@@ -113,8 +113,10 @@ const Host = () => {
         </Participants>
         <Attenance>12</Attenance>
         <StartBtn>
-          <Link to="/game">
-            <Buttons size="large">開始</Buttons>
+          <Link to="/host/game">
+            <Buttons size="large" onClick={() => setState("game")}>
+              開始
+            </Buttons>
           </Link>
         </StartBtn>
       </WrapHome>

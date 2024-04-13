@@ -79,7 +79,7 @@ const Home = () => {
   const navigation = useNavigate();
 
   function handleLogin() {
-    navigation("/login");
+    navigation("/host");
   }
 
   function handlePart() {

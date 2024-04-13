@@ -80,7 +80,7 @@ const Login = styled.p`
   cursor: pointer;
 `;
 
-const Participate = () => {
+const Part = () => {
   const [isJoin, setIsJoin] = useState(false);
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState("");
@@ -88,7 +88,7 @@ const Participate = () => {
   const navigation = useNavigate();
 
   function handlePart() {
-    navigation("/part");
+    navigation("/part/game");
   }
 
   function handleJoin() {
@@ -120,4 +120,4 @@ const Participate = () => {
   );
 };
 
-export default Participate;
+export default Part;

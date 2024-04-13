@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
 export const useStateStore = create((set) => ({
-  state: "game",
+  state: "lobby",
   setState: (nextState) => set({ state: nextState }),
 }));

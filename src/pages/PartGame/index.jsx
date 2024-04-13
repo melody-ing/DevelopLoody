@@ -3,17 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
 import theme from "../../components/css/theme";
-import Buttons from "../../components/Buttons";
 import Options from "./Home/Options";
 import Timeout from "./Timeout";
-import Rank from "./Rank";
 import End from "./End";
+import Lobby from "./Lobby";
+import PrimaryBg from "../../components/css/PrimaryBg";
 import { useStateStore } from "../../utils/hook/useStateStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 
-const WrapGame = styled.div`
+const WrapGame = styled(PrimaryBg)`
   width: 100%;
-  height: 94vh;
+  height: 100vh;
   position: relative;
 `;
 
@@ -22,9 +22,26 @@ const Question = styled.h2`
   height: auto;
   padding: 1rem;
   background-color: ${theme.colors.light};
+
+  ${theme.breakpoints.sm} {
+    display: none;
+  }
 `;
 
-const Game = () => {
+const User = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3rem;
+  background-color: ${theme.colors.secondary};
+  color: ${theme.colors.light};
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+const PartGame = () => {
   const path = "qbank";
   const documentId = "uRjHQ7uQS06iBADYJSSH";
 
@@ -34,7 +51,6 @@ const Game = () => {
   const [qNumber, setQNumber] = useState(0);
   const navigate = useNavigate();
   let title = "";
-  let button = "";
   let content = null;
   let nextState = "";
   console.log(qbank);
@@ -43,9 +59,12 @@ const Game = () => {
     const questions = qbank.questions[qNumber];
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
+      case "lobby":
+        title = questions.title;
+        content = <Lobby />;
+        break;
       case "game":
         title = questions.title;
-        button = "略過";
         content = (
           <>
             <Home questions={questions} />
@@ -55,25 +74,14 @@ const Game = () => {
         nextState = "timeout";
         break;
       case "timeout":
+      case "rank":
         title = questions.title;
-        button = "排名";
-        content = (
-          <>
-            <Timeout />
-            <Options questions={questions} answer={answer} />
-          </>
-        );
+        content = <Timeout />;
         nextState = "rank";
         break;
-      case "rank":
-        title = "記分板";
-        button = "下一題";
-        content = <Rank />;
-        nextState = "game";
-        break;
+
       case "end":
         title = "結束";
-        button = "首頁";
         content = <End />;
     }
   }
@@ -92,12 +100,14 @@ const Game = () => {
   return (
     <WrapGame>
       <Question>{title}</Question>
-      <div onClick={onClickBtn}>
-        <Buttons>{button}</Buttons>
-      </div>
+
       {content}
+      <User>
+        <p>Melody</p>
+        <p>646</p>
+      </User>
     </WrapGame>
   );
 };
 
-export default Game;
+export default PartGame;
