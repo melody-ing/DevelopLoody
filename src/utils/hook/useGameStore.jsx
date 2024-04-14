@@ -4,6 +4,6 @@ export const useGameStore = create((set) => ({
   userId: null,
   setUserId: (nextUserId) => set({ userId: nextUserId }),
 
-  state: "game",
+  state: "lobby",
   setState: (nextState) => set({ state: nextState }),
 }));

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
+import { updateRealTime } from "../../../utils/updateRealTime";
 
 const WrapOptions = styled.div`
   position: absolute;
@@ -11,14 +12,16 @@ const WrapOptions = styled.div`
   grid-template-columns: 50% 50%;
   gap: 10px;
 
-  h3 {
+  button {
     cursor: pointer;
     max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 8rem;
+    font-size: larger;
     background-color: ${theme.colors.light};
+    border: none;
   }
 
   ${theme.breakpoints.sm} {
@@ -30,7 +33,7 @@ const WrapOptions = styled.div`
 
     padding: 2rem;
 
-    h3 {
+    button {
       height: 100%;
     }
   }
@@ -43,11 +46,22 @@ const Correct = styled.svg`
 `;
 
 const Options = ({ questions, answer }) => {
-  return (
+  const [isAnswer, setIsAnswer] = useState(false);
+  function handleAnswer(e) {
+    updateRealTime(`users/-NvLufWobRKj-dtMesOb`, {
+      selected: +e.target.value,
+      score: 100,
+    });
+    setIsAnswer(true);
+  }
+
+  return isAnswer ? (
+    <p>等一下別人喔</p>
+  ) : (
     <WrapOptions>
       {questions.options.map((item, index) => {
         return (
-          <h3 key={index}>
+          <button key={index} onClick={handleAnswer} value={index}>
             {answer === index && (
               <Correct
                 xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +79,7 @@ const Options = ({ questions, answer }) => {
               </Correct>
             )}
             {item}
-          </h3>
+          </button>
         );
       })}
     </WrapOptions>

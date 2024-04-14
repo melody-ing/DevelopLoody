@@ -4,6 +4,7 @@ import Home from "./Home";
 import theme from "../../components/css/theme";
 import Options from "./Home/Options";
 import Timeout from "./Timeout";
+import Rank from "./Rank";
 import End from "./End";
 import Lobby from "./Lobby";
 import Score from "./Score";
@@ -11,6 +12,7 @@ import PrimaryBg from "../../components/css/PrimaryBg";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import { updateRealTime } from "../../utils/updateRealTime";
 
 const WrapGame = styled(PrimaryBg)`
   width: 100%;
@@ -31,21 +33,22 @@ const Question = styled.h2`
 
 const PartGame = () => {
   const documentId = "uRjHQ7uQS06iBADYJSSH";
-  const { state, userId } = useGameStore();
+  // const { state, userId } = useGameStore();
 
   const qbank = useGetFireStore("qbank", documentId);
-
   const user = useGetRealTime(`users/-NvLufWobRKj-dtMesOb`);
   // const user = useGetRealTime(`users/${userId}`);
-  console.log(user);
-  const [qNumber, setQNumber] = useState(0);
+  const qNumber = useGetRealTime("question/id");
+  const state = useGetRealTime("state");
 
   let title = "";
   let content = null;
   let nextState = "";
 
-  if (qbank) {
+  if (qbank && user && qNumber !== null) {
     const questions = qbank.questions[qNumber];
+    const answer = qbank.questions[qNumber].answer;
+    console.log(questions);
     switch (state) {
       case "lobby":
         title = questions.title;
@@ -57,7 +60,7 @@ const PartGame = () => {
         content = (
           <>
             <Home questions={questions} />
-            <Options questions={questions} />
+            <Options questions={questions} user={user} />
             <Score user={user} />
           </>
         );
@@ -65,15 +68,25 @@ const PartGame = () => {
         break;
 
       case "timeout":
-      case "rank":
         title = questions.title;
         content = (
           <>
-            <Timeout user={user} />
+            <Timeout user={user} questions={questions} answer={answer} />
             <Score user={user} />
           </>
         );
         nextState = "rank";
+        break;
+      case "rank":
+        title = questions.title;
+        content = (
+          <>
+            <Rank user={user} />
+            <Score user={user} />
+          </>
+        );
+        nextState = "rank";
+        updateRealTime(`users/-NvLufWobRKj-dtMesOb`, { selected: null });
         break;
 
       case "end":

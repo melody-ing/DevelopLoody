@@ -10,6 +10,8 @@ import Rank from "./Rank";
 import End from "./End";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
+import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import { updateRealTime } from "../../utils/updateRealTime";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -30,16 +32,16 @@ const HostGame = () => {
 
   const qbank = useGetFireStore(path, documentId);
 
-  const { state, setState } = useGameStore();
-  const [qNumber, setQNumber] = useState(0);
+  const qNumber = useGetRealTime("question/id");
+  const state = useGetRealTime("state");
+
   const navigate = useNavigate();
   let title = "";
   let button = "";
   let content = null;
   let nextState = "";
-  console.log(qbank);
 
-  if (qbank) {
+  if (qbank && qNumber !== null) {
     const questions = qbank.questions[qNumber];
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
@@ -75,6 +77,9 @@ const HostGame = () => {
         title = "結束";
         button = "首頁";
         content = <End />;
+        updateRealTime(`question`, { id: 0 });
+        nextState = "lobby";
+
         break;
       default:
         title = questions.title;
@@ -90,21 +95,27 @@ const HostGame = () => {
     }
   }
 
-  function onClickBtn() {
+  function setQNumber(qNumber) {
+    updateRealTime("question", { id: qNumber + 1 });
+  }
+
+  function handleState() {
+    updateRealTime("/", { state: nextState });
+
     if (state === "end") {
       navigate("/");
     } else {
-      state === "rank" && setQNumber((qNumber) => qNumber + 1);
-      qNumber === qbank.questions.length - 1 && state === "timeout"
-        ? setState("end")
-        : setState(nextState);
+      state === "rank" && setQNumber(qNumber);
+      qNumber === qbank.questions.length - 1 &&
+        state === "timeout" &&
+        updateRealTime("/", { state: "end" });
     }
   }
 
   return (
     <WrapGame>
       <Question>{title}</Question>
-      <div onClick={onClickBtn}>
+      <div onClick={handleState}>
         <Buttons>{button}</Buttons>
       </div>
       {content}

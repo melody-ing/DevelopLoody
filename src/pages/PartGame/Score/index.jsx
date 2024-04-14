@@ -30,8 +30,8 @@ const User = styled.div`
 const Score = ({ user }) => {
   return (
     <User>
-      <p>{user?.name}</p>
-      <p>{user?.score}</p>
+      <p>{user.name}</p>
+      <p>{user.score}</p>
     </User>
   );
 };

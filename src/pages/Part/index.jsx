@@ -93,7 +93,6 @@ const Part = () => {
         id: newUserRef.key,
         name: userName,
         score: 0,
-        selected: "",
         time: Date.now(),
       });
       setUserId(newUserRef.key);

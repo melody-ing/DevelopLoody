@@ -12,7 +12,7 @@ export const useGetRealTime = (path) => {
       (snapshot) => {
         if (snapshot.exists()) {
           const users = snapshot.val();
-          console.log("Users data:", users);
+          // console.log("Users data:", users);
           setRealTime(users);
         } else {
           console.log("No data available");
@@ -25,6 +25,6 @@ export const useGetRealTime = (path) => {
 
     // 在組件卸載時清理監聽器
     return () => unsubscribe();
-  }, []);
+  }, [path]);
   return realTime;
 };

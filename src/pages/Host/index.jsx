@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { useGameStore } from "../../utils/hook/useGameStore";
+import { updateRealTime } from "../../utils/updateRealTime";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -91,9 +92,12 @@ const StartBtn = styled.div`
 `;
 
 const Host = () => {
-  const { setState } = useGameStore();
   const realTime = useGetRealTime("users");
   const users = realTime && Object.values(realTime);
+
+  function handleState() {
+    updateRealTime("/", { state: "game" });
+  }
 
   return (
     <WrapHost>
@@ -113,11 +117,9 @@ const Host = () => {
           ))}
         </Participants>
         <Attenance>12</Attenance>
-        <StartBtn>
+        <StartBtn onClick={handleState}>
           <Link to="/host/game">
-            <Buttons size="large" onClick={() => setState("game")}>
-              開始
-            </Buttons>
+            <Buttons size="large">開始</Buttons>
           </Link>
         </StartBtn>
       </WrapHome>
