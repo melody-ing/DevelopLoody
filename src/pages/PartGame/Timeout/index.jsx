@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { useGetRealTime } from "../../../utils/hook/useGetRealTime";
-import { updateRealTime } from "../../../utils/updateRealTime";
+import { useGameStore } from "../../../utils/hook/useGameStore";
 
 const Timeout = ({ user, answer }) => {
-  const realTime = useGetRealTime(`users/-NvLufWobRKj-dtMesOb`);
+  const { userId, documentId } = useGameStore();
+  const realTime = useGetRealTime(`${documentId}/users/${userId}`);
 
   return (
     <div>

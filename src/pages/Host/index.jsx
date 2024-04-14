@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { useGameStore } from "../../utils/hook/useGameStore";
-import { updateRealTime } from "../../utils/updateRealTime";
+import { updateRealTime } from "../../utils/reviseRealTime";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -92,11 +92,12 @@ const StartBtn = styled.div`
 `;
 
 const Host = () => {
-  const realTime = useGetRealTime("users");
+  const { documentId } = useGameStore();
+  const realTime = useGetRealTime(`${documentId}/users`);
   const users = realTime && Object.values(realTime);
 
   function handleState() {
-    updateRealTime("/", { state: "game" });
+    updateRealTime(documentId, { state: "game" });
   }
 
   return (

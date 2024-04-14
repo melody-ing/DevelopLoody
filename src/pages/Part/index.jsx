@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Answer from "./Answer";
 import { database } from "../../utils/firebase";
 import { ref, push, set } from "firebase/database";
 import styled from "styled-components";
@@ -7,6 +6,7 @@ import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
 import { useGameStore } from "../../utils/hook/useGameStore";
+import { updateRealTime } from "../../utils/reviseRealTime";
 
 const WrapPart = styled(PrimaryBg)`
   display: flex;
@@ -28,7 +28,6 @@ const Entry = styled.div`
   width: 30rem;
   margin-bottom: 1.2rem;
   border-radius: 10px;
-  /* background-color: ${theme.colors.light}; */
 `;
 
 const InputName = styled.input`
@@ -76,17 +75,15 @@ const Button = styled.button`
 `;
 
 const Part = () => {
-  const [isJoin, setIsJoin] = useState(false);
   const [userName, setUserName] = useState("");
   const { setUserId } = useGameStore();
+  const { documentId } = useGameStore();
 
   const navigation = useNavigate();
 
   function handleJoin() {
     if (userName !== "") {
-      setIsJoin(true);
-
-      const userRef = ref(database, "users");
+      const userRef = ref(database, `${documentId}/users`);
       const newUserRef = push(userRef);
       set(newUserRef, {
         addScore: 0,

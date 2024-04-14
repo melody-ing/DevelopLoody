@@ -11,7 +11,7 @@ import End from "./End";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import { updateRealTime } from "../../utils/updateRealTime";
+import { deleteRealTime, updateRealTime } from "../../utils/reviseRealTime";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -28,12 +28,12 @@ const Question = styled.h2`
 
 const HostGame = () => {
   const path = "qbank";
-  const documentId = "uRjHQ7uQS06iBADYJSSH";
+  const { documentId } = useGameStore();
 
   const qbank = useGetFireStore(path, documentId);
 
-  const qNumber = useGetRealTime("question/id");
-  const state = useGetRealTime("state");
+  const qNumber = useGetRealTime(`${documentId}/question/id`);
+  const state = useGetRealTime(`${documentId}/state`);
 
   const navigate = useNavigate();
   let title = "";
@@ -77,7 +77,7 @@ const HostGame = () => {
         title = "結束";
         button = "首頁";
         content = <End />;
-        updateRealTime(`question`, { id: 0 });
+        updateRealTime(`${documentId}/question`, { id: 0 });
         nextState = "lobby";
 
         break;
@@ -96,19 +96,20 @@ const HostGame = () => {
   }
 
   function setQNumber(qNumber) {
-    updateRealTime("question", { id: qNumber + 1 });
+    updateRealTime(`${documentId}/question`, { id: qNumber + 1 });
   }
 
   function handleState() {
-    updateRealTime("/", { state: nextState });
+    updateRealTime(documentId, { state: nextState });
 
     if (state === "end") {
       navigate("/");
+      deleteRealTime(documentId);
     } else {
       state === "rank" && setQNumber(qNumber);
       qNumber === qbank.questions.length - 1 &&
         state === "timeout" &&
-        updateRealTime("/", { state: "end" });
+        updateRealTime(documentId, { state: "end" });
     }
   }
 

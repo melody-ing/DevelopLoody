@@ -3,6 +3,8 @@ import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
+import { updateRealTime } from "../../utils/reviseRealTime";
+import { useGameStore } from "../../utils/hook/useGameStore";
 
 const WrapHome = styled(PrimaryBg)`
   display: flex;
@@ -77,9 +79,33 @@ const Login = styled.p`
 
 const Home = () => {
   const navigation = useNavigate();
+  const { documentId } = useGameStore();
 
   function handleLogin() {
     navigation("/host");
+    updateRealTime(documentId, {
+      id: documentId,
+      question: { answer: 1, id: 0 },
+      state: "lobby",
+      users: {
+        flkgmjrlt54: {
+          addScore: 0,
+          id: "flkgmjrlt54",
+          name: "Ken",
+          score: 0,
+          selected: "",
+          time: "",
+        },
+        g4w56hb: {
+          addScore: 0,
+          id: "g4w56hb",
+          name: "Melody",
+          score: 0,
+          selected: "",
+          time: "",
+        },
+      },
+    });
   }
 
   function handlePart() {

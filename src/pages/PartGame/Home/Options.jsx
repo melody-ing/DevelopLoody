@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
-import { updateRealTime } from "../../../utils/updateRealTime";
+import { updateRealTime } from "../../../utils/reviseRealTime";
+import { useGameStore } from "../../../utils/hook/useGameStore";
 
 const WrapOptions = styled.div`
   position: absolute;
@@ -46,9 +47,11 @@ const Correct = styled.svg`
 `;
 
 const Options = ({ questions, answer }) => {
+  const { userId, documentId } = useGameStore();
+
   const [isAnswer, setIsAnswer] = useState(false);
   function handleAnswer(e) {
-    updateRealTime(`users/-NvLufWobRKj-dtMesOb`, {
+    updateRealTime(`${documentId}/users/${userId}`, {
       selected: +e.target.value,
       score: 100,
     });

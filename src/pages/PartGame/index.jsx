@@ -12,7 +12,8 @@ import PrimaryBg from "../../components/css/PrimaryBg";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import { updateRealTime } from "../../utils/updateRealTime";
+import { updateRealTime } from "../../utils/reviseRealTime";
+import { useNavigate } from "react-router-dom";
 
 const WrapGame = styled(PrimaryBg)`
   width: 100%;
@@ -32,23 +33,27 @@ const Question = styled.h2`
 `;
 
 const PartGame = () => {
-  const documentId = "uRjHQ7uQS06iBADYJSSH";
-  // const { state, userId } = useGameStore();
+  const { userId, documentId } = useGameStore();
+  const navigation = useNavigate();
 
   const qbank = useGetFireStore("qbank", documentId);
-  const user = useGetRealTime(`users/-NvLufWobRKj-dtMesOb`);
-  // const user = useGetRealTime(`users/${userId}`);
-  const qNumber = useGetRealTime("question/id");
-  const state = useGetRealTime("state");
+  const user = useGetRealTime(`${documentId}/users/${userId}`);
+  const qNumber = useGetRealTime(`${documentId}/question/id`);
+  const state = useGetRealTime(`${documentId}/state`);
 
   let title = "";
   let content = null;
   let nextState = "";
 
+  useEffect(() => {
+    if (!userId) {
+      navigation("/");
+    }
+  }, [userId, navigation]);
+
   if (qbank && user && qNumber !== null) {
     const questions = qbank.questions[qNumber];
     const answer = qbank.questions[qNumber].answer;
-    console.log(questions);
     switch (state) {
       case "lobby":
         title = questions.title;
@@ -86,7 +91,7 @@ const PartGame = () => {
           </>
         );
         nextState = "rank";
-        updateRealTime(`users/-NvLufWobRKj-dtMesOb`, { selected: null });
+        updateRealTime(`${documentId}/users/${user.id}`, { selected: null });
         break;
 
       case "end":
