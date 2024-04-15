@@ -92,7 +92,7 @@ const StartBtn = styled.div`
 `;
 
 const Host = () => {
-  const { documentId } = useGameStore();
+  const { userId, documentId } = useGameStore();
   const realTime = useGetRealTime(`${documentId}/users`);
   const users = realTime && Object.values(realTime);
 
@@ -114,7 +114,7 @@ const Host = () => {
         </JoinCode>
         <Participants>
           {users?.map((user, index) => (
-            <p key={user.id}>{user.name}</p>
+            <p key={index}>{user.name}</p>
           ))}
         </Participants>
         <Attenance>12</Attenance>

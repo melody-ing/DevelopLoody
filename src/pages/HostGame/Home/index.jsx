@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import theme from "../../../components/css/theme";
 import Buttons from "../../../components/Buttons";
 import { styled } from "styled-components";
+import { useGameStore } from "../../../utils/hook/useGameStore";
+import { updateRealTime } from "../../../utils/reviseRealTime";
 
 const TimeLimit = styled.div`
   position: absolute;
@@ -32,13 +34,23 @@ const Attenance = styled.div`
   }
 `;
 
-const Home = ({ questions }) => {
+const Home = ({ questions, users, documentId }) => {
+  const { reply, setReply } = useGameStore();
+
+  useEffect(() => {
+    users && setReply(users);
+  }, [users]);
+
+  useEffect(() => {
+    if (reply === 0) updateRealTime(`${documentId}`, { time: Date.now() });
+  }, [reply]);
+
   return (
     <>
       <TimeLimit>{questions.timeLimit}</TimeLimit>
 
       <Attenance>
-        作答人數： <p>0</p>
+        作答人數： <p>{reply}</p>
       </Attenance>
     </>
   );

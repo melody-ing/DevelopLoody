@@ -27,13 +27,13 @@ const Question = styled.h2`
 `;
 
 const HostGame = () => {
-  const path = "qbank";
   const { documentId } = useGameStore();
 
-  const qbank = useGetFireStore(path, documentId);
+  const qbank = useGetFireStore("qbank", documentId);
 
   const qNumber = useGetRealTime(`${documentId}/question/id`);
   const state = useGetRealTime(`${documentId}/state`);
+  const users = useGetRealTime(`${documentId}/users`);
 
   const navigate = useNavigate();
   let title = "";
@@ -41,7 +41,7 @@ const HostGame = () => {
   let content = null;
   let nextState = "";
 
-  if (qbank && qNumber !== null) {
+  if (qbank && qNumber !== null && users) {
     const questions = qbank.questions[qNumber];
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
@@ -50,10 +50,11 @@ const HostGame = () => {
         button = "略過";
         content = (
           <>
-            <Home questions={questions} />
+            <Home questions={questions} users={users} documentId={documentId} />
             <Options questions={questions} />
           </>
         );
+
         nextState = "timeout";
         break;
       case "timeout":

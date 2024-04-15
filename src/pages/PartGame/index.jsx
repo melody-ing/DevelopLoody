@@ -40,10 +40,22 @@ const PartGame = () => {
   const user = useGetRealTime(`${documentId}/users/${userId}`);
   const qNumber = useGetRealTime(`${documentId}/question/id`);
   const state = useGetRealTime(`${documentId}/state`);
+  const qTime = useGetRealTime(`${documentId}/time`);
+
+  function setScore(time, userTime) {
+    if (userTime & time) {
+      const delayTime = parseInt((userTime - time) / 1000);
+      const addScore = 1000 - delayTime * 79;
+      if (user.selected !== undefined)
+        updateRealTime(`${documentId}/users/${userId}`, { addScore });
+      return addScore;
+    }
+  }
 
   let title = "";
   let content = null;
   let nextState = "";
+  let addScore = 0;
 
   useEffect(() => {
     if (!userId) {
@@ -65,11 +77,18 @@ const PartGame = () => {
         content = (
           <>
             <Home questions={questions} />
-            <Options questions={questions} user={user} />
+            <Options
+              questions={questions}
+              user={user}
+              qTime={qTime}
+              addScore={addScore}
+            />
             <Score user={user} />
           </>
         );
         nextState = "timeout";
+        addScore = setScore(qTime, user.time);
+
         break;
 
       case "timeout":
@@ -77,10 +96,11 @@ const PartGame = () => {
         content = (
           <>
             <Timeout user={user} questions={questions} answer={answer} />
-            <Score user={user} />
+            <Score user={user} isRank={true} />
           </>
         );
         nextState = "rank";
+
         break;
       case "rank":
         title = questions.title;
@@ -91,7 +111,9 @@ const PartGame = () => {
           </>
         );
         nextState = "rank";
-        updateRealTime(`${documentId}/users/${user.id}`, { selected: null });
+        updateRealTime(`${documentId}/users/${userId}`, {
+          selected: null,
+        });
         break;
 
       case "end":

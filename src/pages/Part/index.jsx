@@ -6,7 +6,7 @@ import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
 import { useGameStore } from "../../utils/hook/useGameStore";
-import { updateRealTime } from "../../utils/reviseRealTime";
+import { pushRealTime, updateRealTime } from "../../utils/reviseRealTime";
 
 const WrapPart = styled(PrimaryBg)`
   display: flex;
@@ -83,16 +83,13 @@ const Part = () => {
 
   function handleJoin() {
     if (userName !== "") {
-      const userRef = ref(database, `${documentId}/users`);
-      const newUserRef = push(userRef);
-      set(newUserRef, {
+      const userId = pushRealTime(`${documentId}/users`, {
         addScore: 0,
-        id: newUserRef.key,
         name: userName,
         score: 0,
         time: Date.now(),
       });
-      setUserId(newUserRef.key);
+      setUserId(userId);
       navigation("/part/game");
     }
   }

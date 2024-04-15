@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
+import { updateRealTime } from "../../../utils/reviseRealTime";
+import { useGameStore } from "../../../utils/hook/useGameStore";
 
 const User = styled.div`
   position: absolute;
@@ -27,7 +29,18 @@ const User = styled.div`
   }
 `;
 
-const Score = ({ user }) => {
+const Score = ({ user, isRank }) => {
+  const { userId, documentId } = useGameStore();
+  const totalScore = user.score + user?.addScore;
+
+  useEffect(() => {
+    console.log(isRank);
+    if (isRank)
+      updateRealTime(`${documentId}/users/${userId}`, {
+        score: totalScore,
+      });
+  }, [isRank]);
+
   return (
     <User>
       <p>{user.name}</p>

@@ -90,19 +90,13 @@ const Home = () => {
       users: {
         flkgmjrlt54: {
           addScore: 0,
-          id: "flkgmjrlt54",
           name: "Ken",
           score: 0,
-          selected: "",
-          time: "",
         },
         g4w56hb: {
           addScore: 0,
-          id: "g4w56hb",
           name: "Melody",
           score: 0,
-          selected: "",
-          time: "",
         },
       },
     });

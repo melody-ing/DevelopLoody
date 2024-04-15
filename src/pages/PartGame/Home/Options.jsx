@@ -46,14 +46,15 @@ const Correct = styled.svg`
   color: ${theme.colors.danger};
 `;
 
-const Options = ({ questions, answer }) => {
+const Options = ({ questions, addScore, user }) => {
   const { userId, documentId } = useGameStore();
 
   const [isAnswer, setIsAnswer] = useState(false);
   function handleAnswer(e) {
     updateRealTime(`${documentId}/users/${userId}`, {
       selected: +e.target.value,
-      score: 100,
+      addScore,
+      time: Date.now(),
     });
     setIsAnswer(true);
   }
@@ -65,22 +66,6 @@ const Options = ({ questions, answer }) => {
       {questions.options.map((item, index) => {
         return (
           <button key={index} onClick={handleAnswer} value={index}>
-            {answer === index && (
-              <Correct
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m4.5 12.75 6 6 9-13.5"
-                />
-              </Correct>
-            )}
             {item}
           </button>
         );

@@ -5,6 +5,11 @@ import { getDoc, doc } from "firebase/firestore";
 export const useGetFireStore = (path, documentId) => {
   const [firestore, setFirestore] = useState(null);
   useEffect(() => {
+    if (!documentId) {
+      console.log("documentId is undefined");
+      return;
+    }
+
     const fetchData = async () => {
       const docRef = doc(db, path, documentId);
       const docSnapshot = await getDoc(docRef);
