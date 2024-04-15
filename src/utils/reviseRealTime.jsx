@@ -5,7 +5,7 @@ export const updateRealTime = (path, data) => {
   return update(ref(database, path), data);
 };
 
-export const deleteRealTime = (path) => {
+export const removeRealTime = (path) => {
   return remove(ref(database, path));
 };
 

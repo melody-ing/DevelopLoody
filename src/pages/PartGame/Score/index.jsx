@@ -31,10 +31,9 @@ const User = styled.div`
 
 const Score = ({ user, isRank }) => {
   const { userId, documentId } = useGameStore();
-  const totalScore = user.score + user?.addScore;
+  const totalScore = user.score + user.addScore;
 
   useEffect(() => {
-    console.log(isRank);
     if (isRank)
       updateRealTime(`${documentId}/users/${userId}`, {
         score: totalScore,

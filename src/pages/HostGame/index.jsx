@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
@@ -11,7 +11,7 @@ import End from "./End";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import { deleteRealTime, updateRealTime } from "../../utils/reviseRealTime";
+import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -27,15 +27,35 @@ const Question = styled.h2`
 `;
 
 const HostGame = () => {
-  const { documentId } = useGameStore();
+  const { documentId, userId, reply, setReply } = useGameStore();
 
   const qbank = useGetFireStore("qbank", documentId);
 
   const qNumber = useGetRealTime(`${documentId}/question/id`);
   const state = useGetRealTime(`${documentId}/state`);
   const users = useGetRealTime(`${documentId}/users`);
+  const time = useGetRealTime(`${documentId}/time`);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      e.preventDefault();
+    }
+
+    function handleUnload(e) {
+      updateRealTime(documentId, { state: "home" });
+      removeRealTime(documentId);
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  });
+
   let title = "";
   let button = "";
   let content = null;
@@ -50,11 +70,17 @@ const HostGame = () => {
         button = "略過";
         content = (
           <>
-            <Home questions={questions} users={users} documentId={documentId} />
+            <Home
+              questions={questions}
+              users={users}
+              documentId={documentId}
+              time={time}
+            />
             <Options questions={questions} />
           </>
         );
-
+        if (reply === Object.values(users).length)
+          updateRealTime(documentId, { state: "timeout" });
         nextState = "timeout";
         break;
       case "timeout":
@@ -62,7 +88,7 @@ const HostGame = () => {
         button = "排名";
         content = (
           <>
-            <Timeout />
+            <Timeout setReply={setReply} />
             <Options questions={questions} answer={answer} />
           </>
         );
@@ -71,13 +97,20 @@ const HostGame = () => {
       case "rank":
         title = "記分板";
         button = "下一題";
-        content = <Rank />;
+        content = (
+          <Rank users={users} documentId={documentId} userId={userId} />
+        );
         nextState = "game";
         break;
       case "end":
         title = "結束";
         button = "首頁";
-        content = <End />;
+        content = (
+          <>
+            <Rank users={users} />
+            <End />
+          </>
+        );
         updateRealTime(`${documentId}/question`, { id: 0 });
         nextState = "lobby";
 
@@ -105,7 +138,7 @@ const HostGame = () => {
 
     if (state === "end") {
       navigate("/");
-      deleteRealTime(documentId);
+      removeRealTime(documentId);
     } else {
       state === "rank" && setQNumber(qNumber);
       qNumber === qbank.questions.length - 1 &&

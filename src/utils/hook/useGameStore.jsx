@@ -5,10 +5,7 @@ export const useGameStore = create((set) => ({
   setDocumentId: (id) => set({ documentId: id }),
 
   reply: 0,
-  setReply: (users) => {
-    const num = Object.values(users).filter(
-      (user) => user.selected !== undefined
-    )?.length;
+  setReply: (num) => {
     set({ reply: num });
   },
 

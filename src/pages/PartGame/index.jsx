@@ -37,6 +37,7 @@ const PartGame = () => {
   const navigation = useNavigate();
 
   const qbank = useGetFireStore("qbank", documentId);
+  const users = useGetRealTime(`${documentId}/users`);
   const user = useGetRealTime(`${documentId}/users/${userId}`);
   const qNumber = useGetRealTime(`${documentId}/question/id`);
   const state = useGetRealTime(`${documentId}/state`);
@@ -45,17 +46,19 @@ const PartGame = () => {
   function setScore(time, userTime) {
     if (userTime & time) {
       const delayTime = parseInt((userTime - time) / 1000);
-      const addScore = 1000 - delayTime * 79;
+      const addScore = delayTime <= 10 ? 1000 - delayTime * 79 : 210;
       if (user.selected !== undefined)
         updateRealTime(`${documentId}/users/${userId}`, { addScore });
+
       return addScore;
     }
+    updateRealTime(`${documentId}/users/${userId}`, { addScore: 0 });
   }
 
   let title = "";
   let content = null;
-  let nextState = "";
   let addScore = 0;
+  let nextState = "";
 
   useEffect(() => {
     if (!userId) {
@@ -63,7 +66,7 @@ const PartGame = () => {
     }
   }, [userId, navigation]);
 
-  if (qbank && user && qNumber !== null) {
+  if (qbank && user && qNumber !== null && users && state) {
     const questions = qbank.questions[qNumber];
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
@@ -87,7 +90,9 @@ const PartGame = () => {
           </>
         );
         nextState = "timeout";
-        addScore = setScore(qTime, user.time);
+        user.selected === answer
+          ? (addScore = setScore(qTime, user.time))
+          : (addScore = setScore(null, null));
 
         break;
 
@@ -106,7 +111,7 @@ const PartGame = () => {
         title = questions.title;
         content = (
           <>
-            <Rank user={user} />
+            <Rank userId={userId} user={user} users={users} />
             <Score user={user} />
           </>
         );
@@ -118,7 +123,15 @@ const PartGame = () => {
 
       case "end":
         title = "結束";
-        content = <End />;
+        content = (
+          <>
+            <Rank userId={userId} user={user} users={users} />
+            <End />
+          </>
+        );
+        break;
+      default:
+        navigation("/");
     }
   }
 

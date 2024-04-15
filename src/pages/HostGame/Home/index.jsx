@@ -34,16 +34,29 @@ const Attenance = styled.div`
   }
 `;
 
-const Home = ({ questions, users, documentId }) => {
+const Home = ({ questions, users, documentId, time }) => {
   const { reply, setReply } = useGameStore();
 
   useEffect(() => {
-    users && setReply(users);
+    const num = Object.values(users).filter(
+      (user) => user.selected !== undefined
+    )?.length;
+    users && setReply(num);
   }, [users]);
 
   useEffect(() => {
     if (reply === 0) updateRealTime(`${documentId}`, { time: Date.now() });
   }, [reply]);
+
+  const currentTime = Date.now();
+  console.log(time + 5000, currentTime);
+  useEffect(() => {
+    const timeUntilTarget = time + 5000 - currentTime;
+    console.log(timeUntilTarget);
+    if (timeUntilTarget <= 0) {
+      updateRealTime(documentId, { state: "timeout" });
+    }
+  }, [currentTime]);
 
   return (
     <>
