@@ -87,6 +87,20 @@ const Home = () => {
       id: documentId,
       question: { answer: 1, id: 0 },
       state: "lobby",
+      users: {
+        flkgmjrlt54: {
+          addScore: 0,
+          name: "Ken",
+          score: 0,
+          time: "",
+        },
+        g4w56hb: {
+          addScore: 0,
+          name: "Melody",
+          score: 0,
+          time: "",
+        },
+      },
     });
   }
 

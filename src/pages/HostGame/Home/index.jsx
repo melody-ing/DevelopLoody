@@ -36,6 +36,7 @@ const Attenance = styled.div`
 
 const Home = ({ questions, users, documentId, time }) => {
   const { reply, setReply } = useGameStore();
+  const [count, setCount] = useState(questions.timeLimit);
 
   useEffect(() => {
     const num = Object.values(users).filter(
@@ -48,19 +49,20 @@ const Home = ({ questions, users, documentId, time }) => {
     if (reply === 0) updateRealTime(`${documentId}`, { time: Date.now() });
   }, [reply]);
 
-  const currentTime = Date.now();
-  console.log(time + 5000, currentTime);
   useEffect(() => {
-    const timeUntilTarget = time + 5000 - currentTime;
-    console.log(timeUntilTarget);
-    if (timeUntilTarget <= 0) {
-      updateRealTime(documentId, { state: "timeout" });
-    }
-  }, [currentTime]);
+    const countDown = setInterval(() => {
+      setCount(count - 1);
+      if (count <= 0) {
+        updateRealTime(`${documentId}`, { state: "timeout" });
+      }
+    }, 1000);
+
+    return () => clearInterval(countDown);
+  }, [count]);
 
   return (
     <>
-      <TimeLimit>{questions.timeLimit}</TimeLimit>
+      <TimeLimit>{count}</TimeLimit>
 
       <Attenance>
         作答人數： <p>{reply}</p>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
@@ -37,6 +37,17 @@ const HostGame = () => {
   const time = useGetRealTime(`${documentId}/time`);
 
   const navigate = useNavigate();
+
+  window.onpopstate = () => {
+    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    navigate(null, "", "/host/game");
+    if (confirmLeave) {
+      // 如果使用者選擇取消,可以在這裡執行一些操作
+      updateRealTime(documentId, { state: "home" });
+      removeRealTime(documentId);
+      navigate("/");
+    }
+  };
 
   useEffect(() => {
     function handleBeforeUnload(e) {
