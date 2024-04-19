@@ -7,7 +7,7 @@ const theme = {
     xxs: "@media screen and (max-width:320px)",
   },
   colors: {
-    primary: "#EBDB86", // 主色調,淺黃色
+    primary: "#ebdb86", // 主色調,淺黃色
     secondary: "#996484", // 輔助色,褐紫色
     tertiary: "#664358",
     success: "#78B159", // 成功、正面的綠色

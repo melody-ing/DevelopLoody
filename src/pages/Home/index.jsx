@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
 import { updateRealTime } from "../../utils/reviseRealTime";
 import { useGameStore } from "../../utils/hook/useGameStore";
+import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 
 const WrapHome = styled(PrimaryBg)`
   display: flex;
@@ -78,41 +79,60 @@ const Login = styled.p`
 `;
 
 const Home = () => {
-  const navigation = useNavigate();
-  const { documentId } = useGameStore();
-
+  const navigate = useNavigate();
+  const { setDocumentId, setUserId, userId } = useGameStore();
+  const pin = Math.floor(Math.random() * 900000) + 100000;
+  const [inputPin, setInputPin] = useState("");
+  const temporaryId = "uRjHQ7uQS06iBADYJSSH";
+  const temporaryUserId = "zv0aT3r0xQFyMx4wOIpH";
   function handleLogin() {
-    navigation("/host");
-    updateRealTime(documentId, {
-      id: documentId,
-      question: { answer: 1, id: 0 },
-      state: "lobby",
-      users: {
-        flkgmjrlt54: {
-          addScore: 0,
-          name: "Ken",
-          score: 0,
-          time: "",
-        },
-        g4w56hb: {
-          addScore: 0,
-          name: "Melody",
-          score: 0,
-          time: "",
-        },
-      },
-    });
+    setUserId(temporaryUserId);
+    navigate(`/dashboard/${temporaryUserId}`);
+    // setDocumentId(temporaryId);
+    // navigate(`/host/${temporaryId}`);
+    // updateRealTime(temporaryId, {
+    //   id: temporaryId,
+    //   pin: pin.toString(),
+    //   question: { answer: 1, id: 0 },
+    //   state: "lobby",
+    //   // users: {
+    //   //   flkgmjrlt54: {
+    //   //     addScore: 0,
+    //   //     name: "Ken",
+    //   //     score: 0,
+    //   //     time: "",
+    //   //   },
+    //   //   g4w56hb: {
+    //   //     addScore: 0,
+    //   //     name: "Melody",
+    //   //     score: 0,
+    //   //     time: "",
+    //   //   },
+    //   // },
+    // });
   }
 
+  const realTime = useGetRealTime();
   function handlePart() {
-    navigation("/part");
+    const room =
+      realTime &&
+      Object.values(realTime).filter((data) => data.pin === `${inputPin}`);
+
+    if (room.length > 0) {
+      setDocumentId(room[0].id);
+      navigate(`/part/${room[0].id} `);
+    }
   }
 
   return (
     <WrapHome>
       <Logo src="logo.png" alt="" />
       <Entry>
-        <InputPin placeholder="遊戲pin碼" />
+        <InputPin
+          placeholder="遊戲pin碼"
+          value={inputPin}
+          onChange={(e) => setInputPin(e.target.value)}
+        />
         <Button onClick={handlePart} size="large">
           <p>進入</p>
         </Button>

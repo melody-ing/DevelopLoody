@@ -78,8 +78,9 @@ const Part = () => {
   const [userName, setUserName] = useState("");
   const { setUserId } = useGameStore();
   const { documentId } = useGameStore();
+  console.log(documentId);
 
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   function handleJoin() {
     if (userName !== "") {
@@ -90,7 +91,7 @@ const Part = () => {
         time: Date.now(),
       });
       setUserId(userId);
-      navigation("/part/game");
+      navigate(`/part/game/${documentId}`);
     }
   }
 

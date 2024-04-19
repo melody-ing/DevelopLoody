@@ -12,7 +12,7 @@ import PrimaryBg from "../../components/css/PrimaryBg";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import { updateRealTime } from "../../utils/reviseRealTime";
+import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate } from "react-router-dom";
 
 const WrapGame = styled(PrimaryBg)`
@@ -34,7 +34,7 @@ const Question = styled.h2`
 
 const PartGame = () => {
   const { userId, documentId } = useGameStore();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const qbank = useGetFireStore("qbank", documentId);
   const users = useGetRealTime(`${documentId}/users`);
@@ -55,6 +55,32 @@ const PartGame = () => {
     updateRealTime(`${documentId}/users/${userId}`, { addScore: 0 });
   }
 
+  window.onpopstate = () => {
+    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    navigate(null, "", "/part/game");
+    if (confirmLeave) {
+      removeRealTime(`${documentId}/users/${userId}`);
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      e.preventDefault();
+    }
+
+    function handleUnload() {
+      removeRealTime(`${documentId}/users/${userId}`);
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  });
+
   let title = "";
   let content = null;
   let addScore = 0;
@@ -62,9 +88,9 @@ const PartGame = () => {
 
   useEffect(() => {
     if (!userId) {
-      navigation("/");
+      navigate("/");
     }
-  }, [userId, navigation]);
+  }, [userId, navigate]);
 
   if (qbank && user && qNumber !== null && users && state) {
     const questions = qbank.questions[qNumber];
@@ -131,13 +157,13 @@ const PartGame = () => {
         );
         break;
       default:
-        navigation("/");
+        navigate("/");
     }
   }
 
   return (
     <WrapGame>
-      <Question>{title}</Question>
+      {state !== "lobby" && <Question>{title}</Question>}
 
       {content}
     </WrapGame>

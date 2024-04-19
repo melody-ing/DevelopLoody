@@ -8,16 +8,20 @@ import HostGame from "./pages/HostGame/index.jsx";
 import PartGame from "./pages/PartGame/index.jsx";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DashBoard from "./pages/DashBoard/index.jsx";
+import Create from "./pages/Create/index.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
-        <Route path="host" element={<Host />} />
-        <Route path="host/game" element={<HostGame />} />
-        <Route path="part" element={<Part />} />
-        <Route path="part/game" element={<PartGame />} />
+        <Route path="host/:documentId" element={<Host />} />
+        <Route path="host/game/:documentId" element={<HostGame />} />
+        <Route path="part/:documentId" element={<Part />} />
+        <Route path="part/game/:documentId" element={<PartGame />} />
+        <Route path="dashboard/:userId" element={<DashBoard />} />
+        <Route path="create/:userId" element={<Create />} />
       </Route>
     </Routes>
   </BrowserRouter>

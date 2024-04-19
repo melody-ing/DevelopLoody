@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
@@ -19,6 +19,12 @@ const WrapGame = styled.div`
   position: relative;
 `;
 
+const WrapBtn = styled.div`
+  position: fixed;
+  right: 3rem;
+  top: 60%;
+`;
+
 const Question = styled.h2`
   width: auto;
   height: auto;
@@ -37,24 +43,31 @@ const HostGame = () => {
   const time = useGetRealTime(`${documentId}/time`);
 
   const navigate = useNavigate();
+  const prevUsersRef = useRef();
 
-  window.onpopstate = () => {
-    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
-    navigate(null, "", "/host/game");
-    if (confirmLeave) {
-      // 如果使用者選擇取消,可以在這裡執行一些操作
-      updateRealTime(documentId, { state: "home" });
-      removeRealTime(documentId);
-      navigate("/");
-    }
-  };
+  // window.onpopstate = () => {
+  //   const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+  //   if (confirmLeave) {
+  //     navigate("/");
+  //     updateRealTime(documentId, { state: "home" });
+  //     removeRealTime(documentId);
+  //     return;
+  //   }
+  //   navigate(`/host/game/${documentId}`);
+  // };
+
+  // window.close = () => {
+  //   navigate("/");
+  //   updateRealTime(documentId, { state: "home" });
+  //   removeRealTime(documentId);
+  // };
 
   useEffect(() => {
     function handleBeforeUnload(e) {
       e.preventDefault();
     }
 
-    function handleUnload(e) {
+    function handleUnload() {
       updateRealTime(documentId, { state: "home" });
       removeRealTime(documentId);
     }
@@ -71,6 +84,17 @@ const HostGame = () => {
   let button = "";
   let content = null;
   let nextState = "";
+
+  // useEffect(() => {
+  //   if (users === null && prevUsersRef.current !== (null && undefined)) {
+  //     console.log("nulll");
+  //     navigate("/host");
+  //     updateRealTime(documentId, { state: "lobby" });
+  //     removeRealTime(documentId);
+  //   }
+  //   console.log(users);
+  //   prevUsersRef.current = users;
+  // }, [users]);
 
   if (qbank && qNumber !== null && users) {
     const questions = qbank.questions[qNumber];
@@ -99,7 +123,12 @@ const HostGame = () => {
         button = "排名";
         content = (
           <>
-            <Timeout setReply={setReply} />
+            <Timeout
+              users={users}
+              setReply={setReply}
+              qbank={qbank}
+              qNumber={qNumber}
+            />
             <Options questions={questions} answer={answer} />
           </>
         );
@@ -114,16 +143,15 @@ const HostGame = () => {
         nextState = "game";
         break;
       case "end":
-        title = "結束";
+        title = "最終排名";
         button = "首頁";
         content = (
           <>
-            <Rank users={users} />
-            <End />
+            <End users={users} />
           </>
         );
         updateRealTime(`${documentId}/question`, { id: 0 });
-        nextState = "lobby";
+        nextState = "home";
 
         break;
       default:
@@ -161,9 +189,9 @@ const HostGame = () => {
   return (
     <WrapGame>
       <Question>{title}</Question>
-      <div onClick={handleState}>
+      <WrapBtn onClick={handleState}>
         <Buttons>{button}</Buttons>
-      </div>
+      </WrapBtn>
       {content}
     </WrapGame>
   );

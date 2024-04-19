@@ -1,6 +1,7 @@
 {
   "uRjHQ7uQS06iBADYJSSH": {
     "id": "uRjHQ7uQS06iBADYJSSH",
+    "pin": 123456,
     "question": { "answer": 1, "id": 0 },
     "state": "lobby",
     "users": {

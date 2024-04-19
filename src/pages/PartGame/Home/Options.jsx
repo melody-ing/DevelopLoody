@@ -8,6 +8,7 @@ const WrapOptions = styled.div`
   position: absolute;
   width: 99%;
   bottom: 6rem;
+
   left: 0;
   display: grid;
   grid-template-columns: 50% 50%;
@@ -29,7 +30,7 @@ const WrapOptions = styled.div`
     bottom: 4rem;
 
     width: 100vw;
-    height: 96vh;
+    height: 90vh;
     top: 0;
 
     padding: 2rem;
@@ -38,12 +39,6 @@ const WrapOptions = styled.div`
       height: 100%;
     }
   }
-`;
-
-const Correct = styled.svg`
-  width: 4.4rem;
-  height: 4.4rem;
-  color: ${theme.colors.danger};
 `;
 
 const Options = ({ questions, addScore, user }) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { updateRealTime } from "../../../utils/reviseRealTime";
+import theme from "../../../components/css/theme";
 
 const WrapRank = styled.div`
   display: flex;
@@ -9,12 +9,17 @@ const WrapRank = styled.div`
 `;
 
 const UsersRank = styled.div`
+  margin-top: 3rem;
   display: flex;
   justify-content: space-between;
-  width: 80%;
+  width: 60%;
+  font-size: 3rem;
+  box-shadow: ${theme.shadow};
+  padding: 2rem;
+  border-radius: 10px;
 `;
 
-const Rank = ({ users, documentId, userId }) => {
+const Rank = ({ users }) => {
   return (
     <WrapRank>
       {Object.values(users)

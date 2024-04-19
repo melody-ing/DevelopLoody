@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import Buttons from "../../components/Buttons";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
-import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { updateRealTime } from "../../utils/reviseRealTime";
+import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
+import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -92,12 +93,13 @@ const StartBtn = styled.div`
 `;
 
 const Host = () => {
-  const { userId, documentId } = useGameStore();
-  const realTime = useGetRealTime(`${documentId}/users`);
-  const users = realTime && Object.values(realTime);
-
+  const navigate = useNavigate();
+  const { documentId, eventData } = useGameStore();
+  const { users = [] } = eventData || {};
+  const pin = useGetRealTime(`${documentId}/pin`);
   function handleState() {
     updateRealTime(documentId, { state: "game" });
+    navigate(`/host/game/${documentId}`);
   }
 
   return (
@@ -108,21 +110,27 @@ const Host = () => {
         <JoinCode>
           <WrapCode>
             <div>遊戲PIN碼：</div>
-            <p>750331</p>
+            <p>{pin}</p>
           </WrapCode>
-          <img src="qrcode.png" alt="" />
+          <QRCodeCanvas
+            value={`https://loody-ing.web.app/part/game/${documentId}`}
+            bgColor={`${theme.colors.primary}`}
+            fgColor={`${theme.colors.tertiary}`}
+            level={"L"}
+            size={150}
+          />
         </JoinCode>
         <Participants>
-          {users?.map((user, index) => (
+          {Object.values(users)?.map((user, index) => (
             <p key={index}>{user.name}</p>
           ))}
         </Participants>
-        <Attenance>12</Attenance>
-        <StartBtn onClick={handleState}>
-          <Link to="/host/game">
+        {users && <Attenance>{Object.keys(users).length}</Attenance>}
+        {users && (
+          <StartBtn onClick={handleState}>
             <Buttons size="large">開始</Buttons>
-          </Link>
-        </StartBtn>
+          </StartBtn>
+        )}
       </WrapHome>
     </WrapHost>
   );

@@ -1,8 +1,18 @@
 import { create } from "zustand";
 
 export const useGameStore = create((set) => ({
-  documentId: "uRjHQ7uQS06iBADYJSSH",
+  documentId: "0",
   setDocumentId: (id) => set({ documentId: id }),
+
+  eventData: null,
+  setEventData: (data) => {
+    set({ eventData: data });
+  },
+
+  qbankData: null,
+  setQbankData: (data) => {
+    set({ qbankData: data });
+  },
 
   reply: 0,
   setReply: (num) => {

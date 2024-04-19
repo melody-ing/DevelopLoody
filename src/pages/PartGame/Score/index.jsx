@@ -5,7 +5,7 @@ import { updateRealTime } from "../../../utils/reviseRealTime";
 import { useGameStore } from "../../../utils/hook/useGameStore";
 
 const User = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -21,10 +21,10 @@ const User = styled.div`
   }
 
   ${theme.breakpoints.sm} {
-    height: 3rem;
+    height: 5rem;
 
     p {
-      font-size: large;
+      font-size: 12.4;
     }
   }
 `;

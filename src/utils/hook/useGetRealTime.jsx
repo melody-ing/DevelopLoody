@@ -11,11 +11,12 @@ export const useGetRealTime = (path) => {
       userRef,
       (snapshot) => {
         if (snapshot.exists()) {
-          const users = snapshot.val();
-          // console.log("Users data:", users);
-          setRealTime(users);
+          const data = snapshot.val();
+          // console.log("Users data:", data);
+          setRealTime(data);
         } else {
           console.log("No data available");
+          setRealTime(null);
         }
       },
       (error) => {
