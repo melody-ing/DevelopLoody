@@ -21,7 +21,7 @@ const Logo = styled.img`
   cursor: pointer;
 `;
 
-const Header = () => {
+const Header = ({ children }) => {
   const navigate = useNavigate();
   function handleHome() {
     navigate("/");
@@ -30,6 +30,7 @@ const Header = () => {
   return (
     <WarpHeader>
       <Logo src="/logo.png" alt="" onClick={handleHome} />
+      {children}
       <Buttons>登入</Buttons>
     </WarpHeader>
   );

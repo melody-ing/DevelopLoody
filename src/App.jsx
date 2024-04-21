@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import BaseGlobalStyle from "./components/css/BaseGlobalStyle";
 import { useGameStore } from "./utils/hook/useGameStore";
 import { useGetRealTime } from "./utils/hook/useGetRealTime";
-import { useGetFireStore } from "./utils/hook/useGetFireStore";
+import { useGetFireStore } from "./utils/hook/useReviseFireStore";
 
 const App = () => {
   const { setEventData, documentId, setQbankData } = useGameStore();

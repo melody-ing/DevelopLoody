@@ -101,7 +101,6 @@ const Timeout = ({ setReply, users, qbank, qNumber }) => {
       }) &&
       usersAnswer.push(answers[qType][index]);
   });
-  console.log(usersAnswer);
 
   useEffect(() => {
     setReply(0);

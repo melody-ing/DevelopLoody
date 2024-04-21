@@ -85,10 +85,12 @@ const Home = () => {
   const [inputPin, setInputPin] = useState("");
   const temporaryId = "uRjHQ7uQS06iBADYJSSH";
   const temporaryUserId = "zv0aT3r0xQFyMx4wOIpH";
+
   function handleLogin() {
     setUserId(temporaryUserId);
+
     navigate(`/dashboard/${temporaryUserId}`);
-    // setDocumentId(temporaryId);
+    setDocumentId(temporaryId);
     // navigate(`/host/${temporaryId}`);
     // updateRealTime(temporaryId, {
     //   id: temporaryId,

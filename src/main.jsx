@@ -21,7 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="part/:documentId" element={<Part />} />
         <Route path="part/game/:documentId" element={<PartGame />} />
         <Route path="dashboard/:userId" element={<DashBoard />} />
-        <Route path="create/:userId" element={<Create />} />
+        <Route path="create/:userId/:documentId" element={<Create />} />
       </Route>
     </Routes>
   </BrowserRouter>

@@ -78,7 +78,6 @@ const Part = () => {
   const [userName, setUserName] = useState("");
   const { setUserId } = useGameStore();
   const { documentId } = useGameStore();
-  console.log(documentId);
 
   const navigate = useNavigate();
 

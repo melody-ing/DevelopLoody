@@ -10,7 +10,7 @@ import Lobby from "./Lobby";
 import Score from "./Score";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import { useGameStore } from "../../utils/hook/useGameStore";
-import { useGetFireStore } from "../../utils/hook/useGetFireStore";
+import { useGetFireStore } from "../../utils/hook/useReviseFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate } from "react-router-dom";
