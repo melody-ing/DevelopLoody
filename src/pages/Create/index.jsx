@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../../components/Header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -16,18 +16,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+
 import styled from "styled-components";
 import theme from "@/components/css/theme";
 import Buttons from "@/components/Buttons";
 import Clone from "./Clone";
 import Delete from "./Delete";
-import {
-  useGetFireStore,
-  useSetFirestore,
-} from "@/utils/hook/useReviseFireStore";
-import { useParams } from "react-router-dom";
-import { setFireStore, updateFireStore } from "@/utils/reviseFireStore";
-import { update } from "firebase/database";
+import { useGetFireStore } from "@/utils/hook/useReviseFireStore";
+import { useNavigate, useParams } from "react-router-dom";
+import { setFireStore } from "@/utils/reviseFireStore";
 
 const HeaderInput = styled.p`
   width: 100%;
@@ -275,19 +273,21 @@ const SaveButton = styled.div`
 `;
 
 const Create = () => {
-  const { documentId } = useParams();
+  const navigate = useNavigate();
+  const { documentId, userId } = useParams();
   let getQbankData = useGetFireStore("qbank", documentId);
 
   const [editNum, setEditNum] = useState(0);
   const qBankNameRef = useRef(null);
   const titleRef = useRef(null);
   const answerRefs = useRef([]);
-  const question = getQbankData ? getQbankData?.questions[editNum] : null;
+  const question = getQbankData?.questions[editNum];
   const [answerRadio, setAnswerRadio] = useState(0);
   const [questionType, setQuestionType] = useState(null);
   const [timeLimit, setTimeLimit] = useState(null);
+  const [isRender, setIsRender] = useState(false);
 
-  function debounce(fn, delay = 1000) {
+  function debounce(fn, delay = 500) {
     let timer = null;
     return (...args) => {
       clearTimeout(timer);
@@ -295,9 +295,8 @@ const Create = () => {
     };
   }
 
-  console.log(getQbankData);
   useEffect(() => {
-    if (getQbankData) {
+    if (question) {
       setAnswerRadio(question.answer);
       setQuestionType(question.type);
       setTimeLimit(question.timeLimit);
@@ -306,10 +305,17 @@ const Create = () => {
 
   function handlePickQuestion(index) {
     setEditNum(index);
+    clearTextContent();
+  }
+
+  function clearTextContent() {
+    titleRef.current.textContent = "";
+    for (let i = 0; i < answerRefs.current.length; i++) {
+      answerRefs.current[i].textContent = "";
+    }
   }
 
   const editTitle = debounce(() => {
-    console.log(titleRef.current.textContent);
     getQbankData.questions[editNum].title = titleRef.current.textContent;
     setFireStore("qbank", documentId, getQbankData);
   });
@@ -318,7 +324,6 @@ const Create = () => {
   }
 
   function handleAnswerRadio(e) {
-    console.log(e.target.value);
     setAnswerRadio(+e.target.value);
     getQbankData.questions[editNum].answer = +e.target.value;
     setFireStore("qbank", documentId, getQbankData);
@@ -330,7 +335,6 @@ const Create = () => {
     setFireStore("qbank", documentId, getQbankData);
   });
   function handleAnswerInput(index) {
-    console.log(answerRefs.current[index].current);
     editAnswers(index);
   }
 
@@ -344,14 +348,57 @@ const Create = () => {
 
   function handleQuestionType(e) {
     setQuestionType(e);
-    console.log(e);
     getQbankData.questions[editNum].type = e;
+
+    if (e === "mc") getQbankData.questions[editNum].options = ["", "", "", ""];
+    if (e === "tf") getQbankData.questions[editNum].options = ["是", "否"];
+    if (e === "sa") getQbankData.questions[editNum].options = [""];
+
     setFireStore("qbank", documentId, getQbankData);
+    setIsRender(false);
   }
 
   function handleTimeLimit(e) {
     setTimeLimit(e);
     getQbankData.questions[editNum].timeLimit = e;
+    setFireStore("qbank", documentId, getQbankData);
+  }
+
+  function handleAddQuestion(type) {
+    let options = [];
+    switch (type) {
+      case "mc":
+        options = ["", "", "", ""];
+        break;
+      case "tf":
+        options = ["", ""];
+        break;
+      case "sa":
+        options = [""];
+        break;
+    }
+
+    getQbankData.questions.push({
+      answer: 0,
+      media: "",
+      options,
+      timeLimit: 10,
+      title: "",
+      type,
+    });
+    setFireStore("qbank", documentId, getQbankData);
+    setIsRender(!isRender);
+  }
+
+  function handleClone(index) {
+    getQbankData.questions.splice(index, 0, getQbankData.questions[index]);
+    setIsRender(!isRender);
+    setFireStore("qbank", documentId, getQbankData);
+  }
+
+  function handleDelete(index) {
+    getQbankData.questions.splice(index, 1);
+    setIsRender(!isRender);
     setFireStore("qbank", documentId, getQbankData);
   }
 
@@ -381,6 +428,7 @@ const Create = () => {
                     return (
                       <DropdownMenuItem
                         key={index}
+                        onClick={(e) => handleAddQuestion(item.id)}
                         className="text-3xl pr-44 py-5 cursor-pointer"
                       >
                         <DropImg src={`/icon/${item.id}.png`} alt="" />
@@ -400,13 +448,17 @@ const Create = () => {
                     onClick={() => handlePickQuestion(index)}
                   >
                     <FlexTop>
-                      <img src="/icon/mc.png" alt="" />
+                      <img src={`/icon/${question.type}.png`} alt="" />
                       <Title>{question.title}</Title>
                     </FlexTop>
                     <Information>
-                      <Clone />
+                      <div onClick={() => handleClone(index)}>
+                        <Clone />
+                      </div>
                       <p>{index + 1}</p>
-                      <Delete />
+                      <div onClick={() => handleDelete(index)}>
+                        <Delete />
+                      </div>
                     </Information>
                   </WrapQuestion>
                 );
@@ -421,7 +473,7 @@ const Create = () => {
                 suppressContentEditableWarning
                 onInput={handleTitleInput}
               >
-                {question.title}
+                {question?.title}
               </QuestionSpan>
             </QuestionP>
             <FileLabel htmlFor="fileInput">
@@ -433,7 +485,7 @@ const Create = () => {
               accept="audio/*,image/*,.png"
             />
             <WrapAnswer>
-              {question.options.map((option, index) => (
+              {question?.options.map((option, index) => (
                 <WrapAnswerInput key={index}>
                   <input
                     type="radio"
@@ -497,10 +549,17 @@ const Create = () => {
                 <WrapSelectItem value={180}>3分鐘</WrapSelectItem>
               </WrapSelectContent>
             </WrapSelect>
+
             <SaveButton>
-              <Buttons size="large" width="7.4" type="success">
-                完成
-              </Buttons>
+              <div
+                onClick={() => {
+                  navigate(`/dashboard/${userId}`);
+                }}
+              >
+                <Buttons size="large" width="7.4" type="success">
+                  完成
+                </Buttons>
+              </div>
             </SaveButton>
           </RulesWrapper>
         </Wrapper>
