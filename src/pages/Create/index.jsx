@@ -329,6 +329,7 @@ const Create = () => {
   useEffect(() => {
     if (getQbankData) {
       setStateQuestions(getQbankData.questions);
+      setQBankName(getQbankData.name);
     }
 
     if (question) {

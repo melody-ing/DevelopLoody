@@ -11,12 +11,6 @@ const App = () => {
   const getQbankData = useGetFireStore("qbank", documentId);
 
   useEffect(() => {
-    if (getEventData) {
-      setEventData(getEventData);
-    }
-  }, [getEventData]);
-
-  useEffect(() => {
     if (getQbankData) {
       setQbankData(getQbankData);
     }

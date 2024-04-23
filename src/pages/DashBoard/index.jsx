@@ -25,6 +25,7 @@ import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import { useGetFireStores } from "@/utils/hook/useGetFireStore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { updateRealTime } from "@/utils/reviseRealTime";
 
 const WrapDashBoard = styled.div`
   width: 70%;
@@ -142,7 +143,7 @@ const HoverCardContent = styled.div`
 const DashBoard = () => {
   const navigate = useNavigate();
 
-  const { userId, documentId } = useGameStore();
+  const { setEventData, userId, documentId, setDocumentId } = useGameStore();
   const [isHover, setIsHover] = useState(false);
   const [data, setData] = useState([]);
   const [mediaUrl, setMediaUrl] = useState(null);
@@ -218,7 +219,34 @@ const DashBoard = () => {
   function handleEdit(id) {
     navigate(`/create/${userId}/${id}`);
   }
-  function handleHost(id) {}
+
+  function handleHost(id) {
+    const pin = Math.floor(Math.random() * 900000) + 100000;
+
+    setDocumentId(id);
+
+    updateRealTime(id, {
+      id,
+      pin: pin.toString(),
+      question: { answer: 1, id: 0 },
+      state: "lobby",
+      // users: {
+      //   flkgmjrlt54: {
+      //     addScore: 0,
+      //     name: "Ken",
+      //     score: 0,
+      //     time: "",
+      //   },
+      //   g4w56hb: {
+      //     addScore: 0,
+      //     name: "Melody",
+      //     score: 0,
+      //     time: "",
+      //   },
+      // },
+    });
+    navigate(`/host/${id}/${pin}`);
+  }
 
   return (
     <>
@@ -228,7 +256,7 @@ const DashBoard = () => {
         <WrapQuestionBanks>
           {data &&
             data?.map((item) => (
-              <>
+              <div key={item.id}>
                 <FileInput
                   type="file"
                   id="fileInput"
@@ -281,7 +309,7 @@ const DashBoard = () => {
                     </WrapContextMenuItem>
                   </WrapContextMenuContent>
                 </ContextMenu>
-              </>
+              </div>
             ))}
         </WrapQuestionBanks>
       </WrapDashBoard>

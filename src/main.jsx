@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
-        <Route path="host/:documentId" element={<Host />} />
+        <Route path="host/:documentId/:pin" element={<Host />} />
         <Route path="host/game/:documentId" element={<HostGame />} />
         <Route path="part/:documentId" element={<Part />} />
         <Route path="part/game/:documentId" element={<PartGame />} />

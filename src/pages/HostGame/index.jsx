@@ -8,6 +8,7 @@ import Options from "./Home/Options";
 import Timeout from "./Timeout";
 import Rank from "./Rank";
 import End from "./End";
+import Media from "./Home/Media";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
@@ -111,6 +112,7 @@ const HostGame = () => {
               documentId={documentId}
               time={time}
             />
+            <Media questions={questions} />
             <Options questions={questions} />
           </>
         );
@@ -129,6 +131,7 @@ const HostGame = () => {
               qbank={qbank}
               qNumber={qNumber}
             />
+
             <Options questions={questions} answer={answer} />
           </>
         );

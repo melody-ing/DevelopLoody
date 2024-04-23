@@ -6,6 +6,26 @@ import { useNavigate } from "react-router-dom";
 import { updateRealTime } from "../../utils/reviseRealTime";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const WrapHome = styled(PrimaryBg)`
   display: flex;
@@ -54,7 +74,7 @@ const InputPin = styled.input`
   }
 `;
 
-const Button = styled.button`
+const WrapButton = styled.button`
   background-color: ${theme.colors.dark};
   font-size: larger;
   color: ${theme.colors.light};
@@ -78,10 +98,21 @@ const Login = styled.p`
   cursor: pointer;
 `;
 
+const WrapDialog = styled(Dialog)``;
+
+const WrapDialogContent = styled(DialogContent)`
+  width: 55rem;
+  text-align: left;
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff00;
+  border: none;
+`;
+
 const Home = () => {
   const navigate = useNavigate();
   const { setDocumentId, setUserId, userId } = useGameStore();
-  const pin = Math.floor(Math.random() * 900000) + 100000;
+
   const [inputPin, setInputPin] = useState("");
   const temporaryId = "uRjHQ7uQS06iBADYJSSH";
   const temporaryUserId = "zv0aT3r0xQFyMx4wOIpH";
@@ -89,29 +120,8 @@ const Home = () => {
   function handleLogin() {
     setUserId(temporaryUserId);
 
-    navigate(`/dashboard/${temporaryUserId}`);
+    // navigate(`/dashboard/${temporaryUserId}`);
     setDocumentId(temporaryId);
-    // navigate(`/host/${temporaryId}`);
-    // updateRealTime(temporaryId, {
-    //   id: temporaryId,
-    //   pin: pin.toString(),
-    //   question: { answer: 1, id: 0 },
-    //   state: "lobby",
-    //   // users: {
-    //   //   flkgmjrlt54: {
-    //   //     addScore: 0,
-    //   //     name: "Ken",
-    //   //     score: 0,
-    //   //     time: "",
-    //   //   },
-    //   //   g4w56hb: {
-    //   //     addScore: 0,
-    //   //     name: "Melody",
-    //   //     score: 0,
-    //   //     time: "",
-    //   //   },
-    //   // },
-    // });
   }
 
   const realTime = useGetRealTime();
@@ -135,11 +145,110 @@ const Home = () => {
           value={inputPin}
           onChange={(e) => setInputPin(e.target.value)}
         />
-        <Button onClick={handlePart} size="large">
+        <WrapButton onClick={handlePart} size="large">
           <p>進入</p>
-        </Button>
+        </WrapButton>
       </Entry>
-      <Login onClick={handleLogin}>製作自己的Loody</Login>
+      <WrapDialog>
+        <DialogTrigger>
+          {" "}
+          <Login onClick={handleLogin}>製作自己的Loody</Login>
+        </DialogTrigger>
+        <WrapDialogContent>
+          <Tabs defaultValue="login" className="w-[500px]">
+            <TabsList className="grid w-full grid-cols-2 h-[5.6rem]">
+              <TabsTrigger className="h-[5rem] text-4xl" value="login">
+                登入
+              </TabsTrigger>
+              <TabsTrigger className="h-[5rem] text-4xl" value="register">
+                註冊
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="login">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[3.2rem] my-20">
+                    已經有帳號了嗎?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-10">
+                  <div className="space-y-2">
+                    <Label className=" text-[1.6rem]" htmlFor="email">
+                      電子信箱
+                    </Label>
+                    <Input
+                      className="text-[1.6rem] h-[5rem]"
+                      id="email"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className=" text-[1.6rem]" htmlFor="password">
+                      密碼
+                    </Label>
+                    <Input
+                      className="text-[1.6rem] h-[5rem] "
+                      id="password"
+                      defaultValue=""
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="text-[2.4rem] h-[5rem] w-[100%] mt-20">
+                    登入
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+            <TabsContent value="register">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[3.2rem] my-20">
+                    感謝你的註冊呦
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-10">
+                  <div className="space-y-2">
+                    <Label className=" text-[1.6rem]" htmlFor="email">
+                      電子信箱
+                    </Label>
+                    <Input
+                      className="text-[1.6rem] h-[5rem]"
+                      id="email"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className=" text-[1.6rem]" htmlFor="password">
+                      密碼
+                    </Label>
+                    <Input
+                      className="text-[1.6rem] h-[5rem] "
+                      id="password"
+                      defaultValue=""
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className=" text-[1.6rem]" htmlFor="name">
+                      使用者名稱
+                    </Label>
+                    <Input
+                      className="text-[1.6rem] h-[5rem] "
+                      id="name"
+                      defaultValue=""
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="text-[2.4rem] h-[5rem] w-[100%] mt-20">
+                    登入
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </WrapDialogContent>
+      </WrapDialog>
     </WrapHome>
   );
 };
