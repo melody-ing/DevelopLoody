@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import Header from "../../components/Header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -16,20 +17,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import styled from "styled-components";
 import theme from "@/components/css/theme";
 import Buttons from "@/components/Buttons";
 import Clone from "./Clone";
 import Delete from "./Delete";
-import { useGetFireStore } from "@/utils/hook/useReviseFireStore";
+
+import { useGetFireStore } from "@/utils/hook/useGetFireStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { setFireStore } from "@/utils/reviseFireStore";
+import { serverTimestamp } from "firebase/firestore";
+
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+import { v4 as uuidv4 } from "uuid";
 
 const HeaderInput = styled.p`
   width: 100%;
-  /* height: ˋrem; */
   padding: 1rem;
   border-radius: 5px;
   font-size: 1.6rem;
@@ -202,19 +208,33 @@ const FileInput = styled.input`
 
 const FileLabel = styled.label`
   display: inline-block;
-  padding: 10px 20px;
-  width: 40rem;
-  height: 10%;
-  background-color: rgb(153, 100, 132, 0.1);
+  padding: 1rem;
+  max-width: 70rem;
+  height: auto;
+  border: 2px solid #ccc;
   color: #333;
+  position: relative;
 
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 3rem;
+  margin-top: 2.4rem;
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  img {
+    max-height: 30rem;
+    object-fit: contain;
+  }
+`;
+
+const InputMediaDelete = styled.div`
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  border-radius: 5px;
+  background-color: #ffffffb5;
 `;
 
 const RulesWrapper = styled(ScrollArea)`
@@ -285,7 +305,9 @@ const Create = () => {
   const [answerRadio, setAnswerRadio] = useState(0);
   const [questionType, setQuestionType] = useState(null);
   const [timeLimit, setTimeLimit] = useState(null);
-  const [isRender, setIsRender] = useState(false);
+  const [stateQuestions, setStateQuestions] = useState(null);
+  const [mediaUrl, setMediaUrl] = useState(null);
+  const [title, setTitle] = useState("");
 
   function debounce(fn, delay = 500) {
     let timer = null;
@@ -296,22 +318,53 @@ const Create = () => {
   }
 
   useEffect(() => {
+    if (getQbankData) {
+      setStateQuestions(getQbankData.questions);
+    }
+
     if (question) {
       setAnswerRadio(question.answer);
       setQuestionType(question.type);
       setTimeLimit(question.timeLimit);
+      setMediaUrl(question.media);
+      setTitle(question.title);
     }
   }, [getQbankData, editNum]);
 
+  const onDragEnd = (event) => {
+    const { source, destination } = event;
+
+    if (!destination) {
+      return;
+    }
+
+    let newItems = [...stateQuestions];
+    const [remove] = newItems.splice(source.index, 1);
+
+    newItems.splice(destination.index, 0, remove);
+
+    setStateQuestions(newItems);
+    getQbankData.questions = newItems;
+    setFireStore("qbank", documentId, getQbankData);
+  };
+
   function handlePickQuestion(index) {
     setEditNum(index);
-    clearTextContent();
+
+    if (editNum !== index) {
+      clearTextContent();
+    }
   }
 
   function clearTextContent() {
-    titleRef.current.textContent = "";
-    for (let i = 0; i < answerRefs.current.length; i++) {
-      answerRefs.current[i].textContent = "";
+    if (titleRef.current.textContent) {
+      titleRef.current.textContent = "";
+    }
+
+    if (answerRefs.current.textContent) {
+      for (let i = 0; i < answerRefs.current.length; i++) {
+        answerRefs.current[i].textContent = "";
+      }
     }
   }
 
@@ -320,6 +373,7 @@ const Create = () => {
     setFireStore("qbank", documentId, getQbankData);
   });
   function handleTitleInput() {
+    setTitle(titleRef.current.textContent);
     editTitle();
   }
 
@@ -355,7 +409,6 @@ const Create = () => {
     if (e === "sa") getQbankData.questions[editNum].options = [""];
 
     setFireStore("qbank", documentId, getQbankData);
-    setIsRender(false);
   }
 
   function handleTimeLimit(e) {
@@ -371,7 +424,7 @@ const Create = () => {
         options = ["", "", "", ""];
         break;
       case "tf":
-        options = ["", ""];
+        options = ["是", "否"];
         break;
       case "sa":
         options = [""];
@@ -380,6 +433,7 @@ const Create = () => {
 
     getQbankData.questions.push({
       answer: 0,
+      id: uuidv4(),
       media: "",
       options,
       timeLimit: 10,
@@ -387,19 +441,77 @@ const Create = () => {
       type,
     });
     setFireStore("qbank", documentId, getQbankData);
-    setIsRender(!isRender);
   }
 
-  function handleClone(index) {
+  function handleClone(index, e) {
+    e.stopPropagation();
     getQbankData.questions.splice(index, 0, getQbankData.questions[index]);
-    setIsRender(!isRender);
     setFireStore("qbank", documentId, getQbankData);
   }
 
-  function handleDelete(index) {
+  function handleDelete(index, e) {
+    e.stopPropagation();
+    if (index === editNum) {
+      console.log(index, editNum);
+      setEditNum(index - 1);
+    } else if (editNum >= getQbankData.questions.length - 1) {
+      setEditNum(editNum - 1);
+    }
     getQbankData.questions.splice(index, 1);
-    setIsRender(!isRender);
     setFireStore("qbank", documentId, getQbankData);
+  }
+
+  function handleFileInput(e) {
+    e.preventDefault();
+    if (e) {
+      const file = e.target.files[0];
+      const fileType = file.type;
+
+      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const validVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
+      const validAudioTypes = ["audio/mpeg", "audio/wav", "audio/ogg"];
+
+      if (
+        validImageTypes.includes(fileType) ||
+        validVideoTypes.includes(fileType) ||
+        validAudioTypes.includes(fileType)
+      ) {
+        const storage = getStorage();
+        const imagesRef = ref(storage, `${Date.now()}`);
+        uploadBytes(imagesRef, file)
+          .then((snapshot) => {
+            getDownloadURL(snapshot.ref)
+              .then((url) => {
+                setMediaUrl(url);
+                getQbankData.questions[editNum].media = url;
+                setFireStore("qbank", documentId, getQbankData);
+              })
+              .catch((error) => {
+                console.log(error.message);
+              });
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
+
+        return;
+      }
+      alert("無效的檔案");
+    }
+  }
+
+  function handleDeleteMedia(e) {
+    e.preventDefault();
+
+    setMediaUrl("");
+    getQbankData.questions[editNum].media = "";
+    setFireStore("qbank", documentId, getQbankData);
+  }
+
+  function handleComplete() {
+    getQbankData.editTime = serverTimestamp();
+    setFireStore("qbank", documentId, getQbankData);
+    navigate(`/dashboard/${userId}`);
   }
 
   return (
@@ -440,29 +552,61 @@ const Create = () => {
               </DropdownMenu>
             </WrapButton>
             <QuestionsWrapper>
-              {getQbankData.questions.map((question, index) => {
-                return (
-                  <WrapQuestion
-                    key={index}
-                    $editNum={editNum === index}
-                    onClick={() => handlePickQuestion(index)}
-                  >
-                    <FlexTop>
-                      <img src={`/icon/${question.type}.png`} alt="" />
-                      <Title>{question.title}</Title>
-                    </FlexTop>
-                    <Information>
-                      <div onClick={() => handleClone(index)}>
-                        <Clone />
-                      </div>
-                      <p>{index + 1}</p>
-                      <div onClick={() => handleDelete(index)}>
-                        <Delete />
-                      </div>
-                    </Information>
-                  </WrapQuestion>
-                );
-              })}
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="123">
+                  {(provided, snapshot) => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                      {stateQuestions?.map((question, index) => (
+                        <div key={question.id}>
+                          <Draggable
+                            key={question.id}
+                            draggableId={`${question.id}`}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                {
+                                  <WrapQuestion
+                                    key={question.id}
+                                    $editNum={editNum === index}
+                                    onClick={() => handlePickQuestion(index)}
+                                  >
+                                    <FlexTop>
+                                      <img
+                                        src={`/icon/${question.type}.png`}
+                                        alt=""
+                                      />
+                                      <Title>{question.title}</Title>
+                                    </FlexTop>
+                                    <Information>
+                                      <div
+                                        onClick={(e) => handleClone(index, e)}
+                                      >
+                                        <Clone />
+                                      </div>
+                                      <p>{index + 1}</p>
+                                      <div
+                                        onClick={(e) => handleDelete(index, e)}
+                                      >
+                                        <Delete />
+                                      </div>
+                                    </Information>
+                                  </WrapQuestion>
+                                }
+                              </div>
+                            )}
+                          </Draggable>
+                        </div>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </QuestionsWrapper>
           </QuestionsPositions>
           <EditAreaWrapper>
@@ -473,16 +617,26 @@ const Create = () => {
                 suppressContentEditableWarning
                 onInput={handleTitleInput}
               >
-                {question?.title}
+                {title}
               </QuestionSpan>
             </QuestionP>
             <FileLabel htmlFor="fileInput">
-              <p>輸入檔案</p>
+              {mediaUrl === "" ? (
+                <p>輸入圖片、音訊或影音檔案</p>
+              ) : (
+                <>
+                  <img src={mediaUrl} />
+                  <InputMediaDelete onClick={handleDeleteMedia}>
+                    <Delete size={4.4} />
+                  </InputMediaDelete>
+                </>
+              )}
             </FileLabel>
             <FileInput
               type="file"
               id="fileInput"
               accept="audio/*,image/*,.png"
+              onChange={handleFileInput}
             />
             <WrapAnswer>
               {question?.options.map((option, index) => (
@@ -551,11 +705,7 @@ const Create = () => {
             </WrapSelect>
 
             <SaveButton>
-              <div
-                onClick={() => {
-                  navigate(`/dashboard/${userId}`);
-                }}
-              >
+              <div onClick={handleComplete}>
                 <Buttons size="large" width="7.4" type="success">
                   完成
                 </Buttons>
