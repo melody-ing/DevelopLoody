@@ -42,9 +42,11 @@ const HeaderInput = styled.p`
   border: 1px solid #ddd;
 `;
 
-const HeaderSpan = styled.span`
+const QBankNameInput = styled.input`
   width: 100%;
   outline: none;
+  border: none;
+  font-size: 2rem;
 `;
 
 const Wrapper = styled.div`
@@ -153,9 +155,12 @@ const QuestionP = styled.p`
   align-items: center;
 `;
 
-const QuestionSpan = styled.span`
+const QuestionInput = styled.input`
   width: 100%;
   outline: none;
+  text-align: center;
+  border: none;
+  font-size: 3rem;
 `;
 
 const WrapAnswer = styled.div`
@@ -197,9 +202,11 @@ const TextAreaWrapper = styled.p`
   align-items: center;
 `;
 
-const TextAreaSpan = styled.span`
+const TextAreaInput = styled.input`
   width: 100%;
   outline: none;
+  border: none;
+  font-size: 2.6rem;
 `;
 
 const FileInput = styled.input`
@@ -308,8 +315,10 @@ const Create = () => {
   const [stateQuestions, setStateQuestions] = useState(null);
   const [mediaUrl, setMediaUrl] = useState(null);
   const [title, setTitle] = useState("");
+  const [options, setOptions] = useState([]);
+  const [qBankName, setQBankName] = useState("");
 
-  function debounce(fn, delay = 500) {
+  function debounce(fn, delay = 100) {
     let timer = null;
     return (...args) => {
       clearTimeout(timer);
@@ -328,6 +337,7 @@ const Create = () => {
       setTimeLimit(question.timeLimit);
       setMediaUrl(question.media);
       setTitle(question.title);
+      setOptions(question.options);
     }
   }, [getQbankData, editNum]);
 
@@ -368,13 +378,14 @@ const Create = () => {
     }
   }
 
-  const editTitle = debounce(() => {
-    getQbankData.questions[editNum].title = titleRef.current.textContent;
+  const editTitle = debounce((title) => {
+    getQbankData.questions[editNum].title = title;
     setFireStore("qbank", documentId, getQbankData);
   });
-  function handleTitleInput() {
-    setTitle(titleRef.current.textContent);
-    editTitle();
+  function handleTitleInput(e) {
+    setTitle(e.target.value);
+    getQbankData.questions[editNum].title = e.target.value;
+    setFireStore("qbank", documentId, getQbankData);
   }
 
   function handleAnswerRadio(e) {
@@ -388,16 +399,25 @@ const Create = () => {
       answerRefs.current[index].textContent;
     setFireStore("qbank", documentId, getQbankData);
   });
-  function handleAnswerInput(index) {
-    editAnswers(index);
+  function handleAnswerInput(e, index) {
+    setOptions((options) => {
+      const newArray = [...options];
+      newArray[index] = e.target.value;
+      return newArray;
+    });
+    getQbankData.questions[editNum].options[index] = e.target.value;
+    setFireStore("qbank", documentId, getQbankData);
   }
 
   const editQBankName = debounce(() => {
     getQbankData.name = qBankNameRef.current.textContent;
     setFireStore("qbank", documentId, getQbankData);
   });
-  function handleQBankName() {
-    editQBankName();
+  function handleQBankName(e) {
+    setQBankName(e.target.value);
+    // editQBankName();
+    getQbankData.name = e.target.value;
+    setFireStore("qbank", documentId, getQbankData);
   }
 
   function handleQuestionType(e) {
@@ -524,7 +544,7 @@ const Create = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="outline-none">
                   <SingleButton>
-                    <Buttons size="large">新增</Buttons>
+                    <Buttons>新增</Buttons>
                   </SingleButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="border-4">
@@ -611,14 +631,7 @@ const Create = () => {
           </QuestionsPositions>
           <EditAreaWrapper>
             <QuestionP>
-              <QuestionSpan
-                ref={titleRef}
-                contentEditable
-                suppressContentEditableWarning
-                onInput={handleTitleInput}
-              >
-                {title}
-              </QuestionSpan>
+              <QuestionInput value={title} onChange={handleTitleInput} />
             </QuestionP>
             <FileLabel htmlFor="fileInput">
               {mediaUrl === "" ? (
@@ -650,14 +663,10 @@ const Create = () => {
                     checked={index === answerRadio}
                   />{" "}
                   <TextAreaWrapper>
-                    <TextAreaSpan
-                      ref={(ref) => (answerRefs.current[index] = ref)}
-                      contentEditable
-                      suppressContentEditableWarning
-                      onInput={() => handleAnswerInput(index)}
-                    >
-                      {option}
-                    </TextAreaSpan>
+                    <TextAreaInput
+                      value={options[index]}
+                      onChange={(e) => handleAnswerInput(e, index)}
+                    />
                   </TextAreaWrapper>
                 </WrapAnswerInput>
               ))}
@@ -667,14 +676,7 @@ const Create = () => {
             <InputTitle>題庫名稱</InputTitle>
 
             <HeaderInput>
-              <HeaderSpan
-                ref={qBankNameRef}
-                contentEditable
-                suppressContentEditableWarning
-                onInput={handleQBankName}
-              >
-                {getQbankData.name}
-              </HeaderSpan>
+              <QBankNameInput value={qBankName} onChange={handleQBankName} />
             </HeaderInput>
             <InputTitle>題型</InputTitle>
             <WrapSelect value={questionType} onValueChange={handleQuestionType}>
@@ -706,9 +708,7 @@ const Create = () => {
 
             <SaveButton>
               <div onClick={handleComplete}>
-                <Buttons size="large" width="7.4" type="success">
-                  完成
-                </Buttons>
+                <Buttons type="success">完成</Buttons>
               </div>
             </SaveButton>
           </RulesWrapper>
