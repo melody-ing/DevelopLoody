@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import Buttons from "../../components/Buttons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { updateRealTime } from "../../utils/reviseRealTime";
@@ -94,9 +94,20 @@ const StartBtn = styled.div`
 
 const Host = () => {
   const navigate = useNavigate();
-  const { documentId, eventData } = useGameStore();
-  const { users = [] } = eventData || {};
-  const pin = useGetRealTime(`${documentId}/pin`);
+  const { setEventData, setQbankData } = useGameStore();
+
+  const { pin, documentId } = useParams();
+  const eventData = useGetRealTime(documentId);
+  const { users = {} } = eventData || {};
+  console.log(Object.keys(users).length);
+
+  useEffect(() => {
+    if (eventData) {
+      setEventData(eventData);
+    }
+  }, [eventData]);
+
+  console.log(pin);
   function handleState() {
     updateRealTime(documentId, { state: "game" });
     navigate(`/host/game/${documentId}`);
@@ -126,9 +137,9 @@ const Host = () => {
           ))}
         </Participants>
         {users && <Attenance>{Object.keys(users).length}</Attenance>}
-        {users && (
+        {Object.keys(users).length !== 0 && (
           <StartBtn onClick={handleState}>
-            <Buttons size="large">開始</Buttons>
+            <Buttons>開始</Buttons>
           </StartBtn>
         )}
       </WrapHome>
