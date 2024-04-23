@@ -5,10 +5,16 @@ import styled from "styled-components";
 // <Buttons type="light">主持</Buttons>
 
 const Button = styled.div`
-  ${({ $bg, $color, $hoverbg, $width }) =>
-    `background-color: ${$bg}; color: ${$color}; &:hover{ background-color:${$hoverbg}}; width: ${$width}rem; box-shadow: 0 3.4px 0px 0 ${$hoverbg}; `};
-  height: 4rem;
-  font-size: 2rem;
+  ${({ $bg, $color, $hoverbg, $size }) =>
+    `
+    background-color: ${$bg}; 
+    color: ${$color}; 
+    &:hover{ background-color:${$hoverbg}}; 
+    width: ${$size}rem; 
+    box-shadow: 0 3.4px 0px 0 ${$hoverbg};
+    font-size: ${($size * 2) / 10}rem;
+    height: ${$size / 2.4}rem;
+     `};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,8 +35,6 @@ const Buttons = ({ children, type, size = "default" }) => {
   let bg = "";
   let color = "";
   let hoverbg = "";
-  let width = "";
-  let height = "";
 
   switch (type) {
     case "light":
@@ -60,33 +64,26 @@ const Buttons = ({ children, type, size = "default" }) => {
 
   switch (size) {
     case "small":
-      width = "8";
+      size = "8";
 
       break;
 
     case "medium":
-      width = "10";
-      height = "4";
+      size = "10";
 
       break;
 
     case "large":
-      width = "20";
+      size = "20";
 
       break;
     default:
-      width = "10";
+      size = "10";
       break;
   }
 
   return (
-    <Button
-      $size={size}
-      $bg={bg}
-      $color={color}
-      $hoverbg={hoverbg}
-      $width={width}
-    >
+    <Button $bg={bg} $color={color} $hoverbg={hoverbg} $size={size}>
       <p>{children}</p>
     </Button>
   );

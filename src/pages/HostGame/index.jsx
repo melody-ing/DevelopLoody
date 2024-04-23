@@ -9,7 +9,7 @@ import Timeout from "./Timeout";
 import Rank from "./Rank";
 import End from "./End";
 import { useGameStore } from "../../utils/hook/useGameStore";
-import { useGetFireStore } from "../../utils/hook/useReviseFireStore";
+import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 
