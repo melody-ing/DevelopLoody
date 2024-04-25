@@ -5,9 +5,38 @@ import {
   collection,
   addDoc,
   deleteDoc,
+  getDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
+
+export const getFireStore = async (path, documentId) => {
+  const docRef = doc(db, path, documentId);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    // console.log("Document data:", docSnap.data());
+    return docSnap.data();
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+  }
+};
+
+// export const getFireStore = async (path, documentId) => {
+//   const docRef = doc(db, path, documentId);
+//   const unsubscribe = onSnapshot(docRef, (docSnap) => {
+//     if (docSnap.exists()) {
+//       console.log("Document data:", docSnap.data());
+//       return docSnap.data();
+//     } else {
+//       console.log("No such document!");
+//     }
+//   });
+
+//   return unsubscribe;
+// };
 
 export const updateFireStore = async (path, documentId, data) => {
   try {

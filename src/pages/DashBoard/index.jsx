@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../../components/Header";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useNavigate } from "react-router-dom";
@@ -18,14 +18,18 @@ import Plus from "./Plus";
 import {
   addFireStore,
   deleteFireStore,
+  getFireStore,
+  setFireStore,
   updateFireStore,
 } from "@/utils/reviseFireStore";
-import { serverTimestamp } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import { useGetFireStores } from "@/utils/hook/useGetFireStore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateRealTime } from "@/utils/reviseRealTime";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app, db } from "@/utils/firebase";
 
 const WrapDashBoard = styled.div`
   width: 70%;
@@ -141,33 +145,84 @@ const HoverCardContent = styled.div`
 `;
 
 const DashBoard = () => {
-  const navigate = useNavigate();
-
-  const { setEventData, userId, documentId, setDocumentId } = useGameStore();
-  const [isHover, setIsHover] = useState(false);
-  const [data, setData] = useState([]);
-  const [mediaUrl, setMediaUrl] = useState(null);
-
-  const getFireStores = useGetFireStores("qbank");
-
-  useEffect(() => {
-    setData(getFireStores);
-  }, [getFireStores]);
-
-  async function handleAddFireStore() {
-    navigate(`/create/${userId}/${documentId}`);
+  const auth = getAuth(app);
+  const user = auth.currentUser;
+  let uid = null;
+  if (user) {
+    uid = user.uid;
   }
 
+  const navigate = useNavigate();
+
+  const { userId, setDocumentId } = useGameStore();
+  const [isHover, setIsHover] = useState(false);
+  const [data, setData] = useState([]);
+  const chooseQBankId = useRef("");
+
+  const qbanks = useGetFireStores(`users/${uid}/qbanks`);
+
+  useEffect(() => {
+    const fetchData = () => {
+      qbanks.forEach((qbank) => {
+        const docRef = doc(db, "qbank", qbank.id);
+        const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            // 處理即時更新的資料並放入setData中
+            setData((prevData) => {
+              const newData = [...prevData];
+              const index = newData.findIndex((item) => item.id === qbank.id);
+              if (index !== -1) {
+                newData[index] = { id: qbank.id, ...docSnapshot.data() };
+              } else {
+                newData.push({ id: qbank.id, ...docSnapshot.data() });
+              }
+              return newData;
+            });
+          } else {
+            console.log("Document does not exist");
+          }
+        });
+
+        // 返回取消監聽的函式以便清理
+        return unsubscribe;
+      });
+    };
+    fetchData();
+  }, [qbanks]);
+  console.log(qbanks);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log("User is signed in");
+      } else {
+        console.log("User is not signed in");
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // useEffect(() => {
+  //   setData(getFireStores);
+  // }, [getFireStores]);
+
   async function handleAddQBank() {
-    addFireStore("qbank", {
+    console.log(userId);
+    const uuid = uuidv4();
+    setFireStore(`users/${uid}/qbanks`, uuid, { id: uuid });
+    setFireStore("qbank", uuid, {
       editTime: serverTimestamp(),
       name: `${moment().format("YYYY/MM/D h:mm:ss")}`,
       owner: "icecube0816",
+      id: uuid,
       mainImg: "",
       questions: [
         {
           answer: 0,
-          id: uuidv4(),
+          id: uuid,
           media: "",
           options: ["", "", "", ""],
           timeLimit: 10,
@@ -179,12 +234,16 @@ const DashBoard = () => {
   }
 
   function handleDelete(id) {
+    console.log(uid, id);
+    deleteFireStore(`users/${uid}/qbanks`, id);
     deleteFireStore("qbank", id);
+    setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
   }
   function handleRename(e, id) {
     updateFireStore("qbank", id, { name: e.target.value });
   }
   function handleAddImg(e, id) {
+    console.log(chooseQBankId.current);
     e.preventDefault();
     if (e) {
       const file = e.target.files[0];
@@ -199,9 +258,9 @@ const DashBoard = () => {
           .then((snapshot) => {
             getDownloadURL(snapshot.ref)
               .then((url) => {
-                setMediaUrl(url);
-
-                updateFireStore("qbank", id, { mainImg: url });
+                updateFireStore("qbank", chooseQBankId.current, {
+                  mainImg: url,
+                });
               })
               .catch((error) => {
                 console.log(error.message);
@@ -217,7 +276,7 @@ const DashBoard = () => {
     }
   }
   function handleEdit(id) {
-    navigate(`/create/${userId}/${id}`);
+    navigate(`/create/${id}`);
   }
 
   function handleHost(id) {
@@ -230,20 +289,6 @@ const DashBoard = () => {
       pin: pin.toString(),
       question: { answer: 1, id: 0 },
       state: "lobby",
-      // users: {
-      //   flkgmjrlt54: {
-      //     addScore: 0,
-      //     name: "Ken",
-      //     score: 0,
-      //     time: "",
-      //   },
-      //   g4w56hb: {
-      //     addScore: 0,
-      //     name: "Melody",
-      //     score: 0,
-      //     time: "",
-      //   },
-      // },
     });
     navigate(`/host/${id}/${pin}`);
   }
@@ -280,7 +325,7 @@ const DashBoard = () => {
                           {moment
                             .unix(item?.editTime?.seconds)
                             .add(item?.editTime?.nanoseconds / 1e9, "seconds")
-                            .format("YYYY-MM-DD HH:mm")}
+                            .format("YYYY-MM-DD")}
                         </QBankTime>
                         <WrapQBankButtons>
                           <div onClick={() => handleEdit(item.id)}>
@@ -297,12 +342,16 @@ const DashBoard = () => {
                       </WrapQBankInfo>
                     </WrapQuestionBank>
                   </ContextMenuTrigger>
+
                   <WrapContextMenuContent>
-                    <WrapContextMenuItem>
+                    <WrapContextMenuItem onClick={() => handleDelete(item.id)}>
                       <Delete size={12} />
                       <p>刪除</p>
                     </WrapContextMenuItem>
-                    <WrapContextMenuItem>
+
+                    <WrapContextMenuItem
+                      onClick={() => (chooseQBankId.current = item.id)}
+                    >
                       <FileLabel htmlFor="fileInput">
                         <Image size={12} /> <p>新增首圖</p>
                       </FileLabel>

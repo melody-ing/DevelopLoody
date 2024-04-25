@@ -33,6 +33,9 @@ import { serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { v4 as uuidv4 } from "uuid";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+import { app } from "@/utils/firebase";
 
 const HeaderInput = styled.p`
   width: 100%;
@@ -192,6 +195,28 @@ const WrapAnswerInput = styled.div`
   }
 `;
 
+const WrapShortAnswerInput = styled.div`
+  width: 80%;
+  height: 10rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 0px 4px 0px #33333369;
+  justify-content: space-around;
+  padding: 1rem;
+  padding-left: 2rem;
+  border-radius: 5px;
+  position: absolute;
+  bottom: 10rem;
+`;
+
+const ShortAnswerInput = styled.input`
+  width: 100%;
+  outline: none;
+  border: none;
+  font-size: 2.6rem;
+  text-align: center;
+`;
+
 const TextAreaWrapper = styled.p`
   width: 100%;
   max-width: 34rem;
@@ -305,9 +330,9 @@ const Create = () => {
   let getQbankData = useGetFireStore("qbank", documentId);
 
   const [editNum, setEditNum] = useState(0);
-  const qBankNameRef = useRef(null);
-  const titleRef = useRef(null);
-  const answerRefs = useRef([]);
+  // const qBankNameRef = useRef(null);
+  // const titleRef = useRef(null);
+  // const answerRefs = useRef([]);
   const question = getQbankData?.questions[editNum];
   const [answerRadio, setAnswerRadio] = useState(0);
   const [questionType, setQuestionType] = useState(null);
@@ -317,6 +342,22 @@ const Create = () => {
   const [title, setTitle] = useState("");
   const [options, setOptions] = useState([]);
   const [qBankName, setQBankName] = useState("");
+
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log("User is signed in");
+      } else {
+        console.log("User is not signed in");
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   function debounce(fn, delay = 100) {
     let timer = null;
@@ -362,27 +403,27 @@ const Create = () => {
   function handlePickQuestion(index) {
     setEditNum(index);
 
-    if (editNum !== index) {
-      clearTextContent();
-    }
+    // if (editNum !== index) {
+    //   clearTextContent();
+    // }
   }
 
-  function clearTextContent() {
-    if (titleRef.current.textContent) {
-      titleRef.current.textContent = "";
-    }
+  // function clearTextContent() {
+  //   if (titleRef.current.textContent) {
+  //     titleRef.current.textContent = "";
+  //   }
 
-    if (answerRefs.current.textContent) {
-      for (let i = 0; i < answerRefs.current.length; i++) {
-        answerRefs.current[i].textContent = "";
-      }
-    }
-  }
+  //   if (answerRefs.current.textContent) {
+  //     for (let i = 0; i < answerRefs.current.length; i++) {
+  //       answerRefs.current[i].textContent = "";
+  //     }
+  //   }
+  // }
 
-  const editTitle = debounce((title) => {
-    getQbankData.questions[editNum].title = title;
-    setFireStore("qbank", documentId, getQbankData);
-  });
+  // const editTitle = debounce((title) => {
+  //   getQbankData.questions[editNum].title = title;
+  //   setFireStore("qbank", documentId, getQbankData);
+  // });
   function handleTitleInput(e) {
     setTitle(e.target.value);
     getQbankData.questions[editNum].title = e.target.value;
@@ -390,16 +431,22 @@ const Create = () => {
   }
 
   function handleAnswerRadio(e) {
-    setAnswerRadio(+e.target.value);
-    getQbankData.questions[editNum].answer = +e.target.value;
+    if (question.type === "mc" || question.type === "tf") {
+      setAnswerRadio(+e.target.value);
+      getQbankData.questions[editNum].answer = +e.target.value;
+    }
+    if (question.type === "sa") {
+      setAnswerRadio(e.target.value);
+      getQbankData.questions[editNum].answer = e.target.value;
+    }
     setFireStore("qbank", documentId, getQbankData);
   }
 
-  const editAnswers = debounce((index) => {
-    getQbankData.questions[editNum].options[index] =
-      answerRefs.current[index].textContent;
-    setFireStore("qbank", documentId, getQbankData);
-  });
+  // const editAnswers = debounce((index) => {
+  //   getQbankData.questions[editNum].options[index] =
+  //     answerRefs.current[index].textContent;
+  //   setFireStore("qbank", documentId, getQbankData);
+  // });
   function handleAnswerInput(e, index) {
     setOptions((options) => {
       const newArray = [...options];
@@ -410,10 +457,10 @@ const Create = () => {
     setFireStore("qbank", documentId, getQbankData);
   }
 
-  const editQBankName = debounce(() => {
-    getQbankData.name = qBankNameRef.current.textContent;
-    setFireStore("qbank", documentId, getQbankData);
-  });
+  // const editQBankName = debounce(() => {
+  //   getQbankData.name = qBankNameRef.current.textContent;
+  //   setFireStore("qbank", documentId, getQbankData);
+  // });
   function handleQBankName(e) {
     setQBankName(e.target.value);
     // editQBankName();
@@ -439,6 +486,7 @@ const Create = () => {
   }
 
   function handleAddQuestion(type) {
+    setEditNum(getQbankData.questions.length);
     let options = [];
     switch (type) {
       case "mc":
@@ -471,9 +519,11 @@ const Create = () => {
   }
 
   function handleDelete(index, e) {
+    if (getQbankData.questions.length === 1) {
+      return;
+    }
     e.stopPropagation();
     if (index === editNum) {
-      console.log(index, editNum);
       setEditNum(index - 1);
     } else if (editNum >= getQbankData.questions.length - 1) {
       setEditNum(editNum - 1);
@@ -532,7 +582,7 @@ const Create = () => {
   function handleComplete() {
     getQbankData.editTime = serverTimestamp();
     setFireStore("qbank", documentId, getQbankData);
-    navigate(`/dashboard/${userId}`);
+    navigate(`/dashboard`);
   }
 
   return (
@@ -636,7 +686,7 @@ const Create = () => {
             </QuestionP>
             <FileLabel htmlFor="fileInput">
               {mediaUrl === "" ? (
-                <p>輸入圖片、音訊或影音檔案</p>
+                <p>輸入圖片</p>
               ) : (
                 <>
                   <img src={mediaUrl} />
@@ -652,26 +702,41 @@ const Create = () => {
               accept="audio/*,image/*,.png"
               onChange={handleFileInput}
             />
-            <WrapAnswer>
-              {question?.options.map((option, index) => (
-                <WrapAnswerInput key={index}>
-                  <input
-                    type="radio"
-                    name="answer"
-                    id={`radio${index}`}
-                    value={index}
-                    onChange={handleAnswerRadio}
-                    checked={index === answerRadio}
-                  />{" "}
-                  <TextAreaWrapper>
-                    <TextAreaInput
-                      value={options[index]}
-                      onChange={(e) => handleAnswerInput(e, index)}
+            {(question.type === "mc" || question.type === "tf") && (
+              <WrapAnswer>
+                {question?.options.map((option, index) => (
+                  <WrapAnswerInput key={index}>
+                    <input
+                      type="radio"
+                      name="answer"
+                      id={`radio${index}`}
+                      value={index}
+                      onChange={handleAnswerRadio}
+                      checked={index === answerRadio}
                     />
-                  </TextAreaWrapper>
-                </WrapAnswerInput>
+                    <TextAreaWrapper>
+                      <TextAreaInput
+                        value={option}
+                        onChange={(e) => handleAnswerInput(e, index)}
+                      />
+                    </TextAreaWrapper>
+                  </WrapAnswerInput>
+                ))}
+              </WrapAnswer>
+            )}
+            {question.type === "sa" &&
+              question?.options.map((option, index) => (
+                <WrapShortAnswerInput key={index}>
+                  <ShortAnswerInput
+                    type="text"
+                    value={option}
+                    onChange={(e) => {
+                      handleAnswerRadio(e);
+                      handleAnswerInput(e, index);
+                    }}
+                  />
+                </WrapShortAnswerInput>
               ))}
-            </WrapAnswer>
           </EditAreaWrapper>
           <RulesWrapper>
             <InputTitle>題庫名稱</InputTitle>

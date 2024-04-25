@@ -27,6 +27,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { getFireStore, setFireStore } from "@/utils/reviseFireStore";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
+import { collection, query, where } from "firebase/firestore";
+
+import { app, db } from "@/utils/firebase";
+import { v4 as uuidv4 } from "uuid";
+import { firebaseAuthState } from "@/utils/firebaseAuth";
+
+const auth = getAuth(app);
+
 const WrapHome = styled(PrimaryBg)`
   display: flex;
   flex-direction: column;
@@ -111,18 +128,13 @@ const WrapDialogContent = styled(DialogContent)`
 
 const Home = () => {
   const navigate = useNavigate();
-  const { setDocumentId, setUserId, userId } = useGameStore();
+  const { setDocumentId, setUserId } = useGameStore();
+
+  const [inputEmail, setInputEmail] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
+  const [inputName, setInputName] = useState("");
 
   const [inputPin, setInputPin] = useState("");
-  const temporaryId = "uRjHQ7uQS06iBADYJSSH";
-  const temporaryUserId = "zv0aT3r0xQFyMx4wOIpH";
-
-  function handleLogin() {
-    setUserId(temporaryUserId);
-
-    // navigate(`/dashboard/${temporaryUserId}`);
-    setDocumentId(temporaryId);
-  }
 
   const realTime = useGetRealTime();
   function handlePart() {
@@ -132,8 +144,75 @@ const Home = () => {
 
     if (room.length > 0) {
       setDocumentId(room[0].id);
-      navigate(`/part/${room[0].id} `);
+      navigate(`/part/${room[0].id}/${inputPin} `);
     }
+  }
+
+  function handleEmptyInput() {
+    setInputEmail("");
+    setInputPassword("");
+    setInputName("");
+  }
+
+  function handleRegister() {
+    createUserWithEmailAndPassword(auth, inputEmail, inputPassword)
+      .then((userCredential) => {
+        // Signed up
+        const userId = uuidv4();
+        const user = userCredential.user;
+        updateProfile(user, {
+          displayName: inputName,
+        });
+        setFireStore("users", auth.currentUser.uid, {
+          email: inputEmail,
+          name: inputName,
+          uid: auth.currentUser.uid,
+          userId,
+        });
+        console.log("Registered");
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
+
+    handleEmptyInput();
+  }
+
+  async function handleLogin() {
+    signInWithEmailAndPassword(auth, inputEmail, inputPassword)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        const userData = getFireStore("users", user.uid);
+        return userData;
+      })
+      .then((userData) => {
+        setUserId(userData.userId);
+        localStorage.setItem("userId", userData.userId);
+        navigate(`/dashboard`);
+        console.log("logged in");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        // ..
+      });
+  }
+
+  function handleAuthState() {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        navigate(`/dashboard`);
+        console.log("User is signed in");
+      } else {
+        console.log("User is not signed in");
+      }
+    });
   }
 
   return (
@@ -152,10 +231,14 @@ const Home = () => {
       <WrapDialog>
         <DialogTrigger>
           {" "}
-          <Login onClick={handleLogin}>製作自己的Loody</Login>
+          <Login onClick={handleAuthState}>製作自己的Loody</Login>
         </DialogTrigger>
         <WrapDialogContent>
-          <Tabs defaultValue="login" className="w-[500px]">
+          <Tabs
+            defaultValue="login"
+            className="w-[500px]"
+            onValueChange={handleEmptyInput}
+          >
             <TabsList className="grid w-full grid-cols-2 h-[5.6rem]">
               <TabsTrigger className="h-[5rem] text-4xl" value="login">
                 登入
@@ -177,9 +260,12 @@ const Home = () => {
                       電子信箱
                     </Label>
                     <Input
+                      type="email"
                       className="text-[1.6rem] h-[5rem]"
                       id="email"
-                      defaultValue=""
+                      value={inputEmail}
+                      onChange={(e) => setInputEmail(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -189,12 +275,17 @@ const Home = () => {
                     <Input
                       className="text-[1.6rem] h-[5rem] "
                       id="password"
-                      defaultValue=""
+                      value={inputPassword}
+                      onChange={(e) => setInputPassword(e.target.value)}
+                      required
                     />
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="text-[2.4rem] h-[5rem] w-[100%] mt-20">
+                  <Button
+                    onClick={handleLogin}
+                    className="text-[2.4rem] h-[5rem] w-[100%] mt-20"
+                  >
                     登入
                   </Button>
                 </CardFooter>
@@ -215,7 +306,10 @@ const Home = () => {
                     <Input
                       className="text-[1.6rem] h-[5rem]"
                       id="email"
-                      defaultValue=""
+                      type="email"
+                      value={inputEmail}
+                      onChange={(e) => setInputEmail(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -225,7 +319,9 @@ const Home = () => {
                     <Input
                       className="text-[1.6rem] h-[5rem] "
                       id="password"
-                      defaultValue=""
+                      value={inputPassword}
+                      onChange={(e) => setInputPassword(e.target.value)}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -235,13 +331,18 @@ const Home = () => {
                     <Input
                       className="text-[1.6rem] h-[5rem] "
                       id="name"
-                      defaultValue=""
+                      value={inputName}
+                      onChange={(e) => setInputName(e.target.value)}
+                      required
                     />
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="text-[2.4rem] h-[5rem] w-[100%] mt-20">
-                    登入
+                  <Button
+                    className="text-[2.4rem] h-[5rem] w-[100%] mt-20"
+                    onClick={handleRegister}
+                  >
+                    註冊
                   </Button>
                 </CardFooter>
               </Card>
