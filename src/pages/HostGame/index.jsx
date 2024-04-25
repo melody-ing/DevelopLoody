@@ -9,10 +9,13 @@ import Timeout from "./Timeout";
 import Rank from "./Rank";
 import End from "./End";
 import Media from "./Home/Media";
+import SetReply from "./SetReply";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "@/utils/firebase";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -35,7 +38,6 @@ const Question = styled.h2`
 
 const HostGame = () => {
   const { documentId, userId, reply, setReply } = useGameStore();
-
   const qbank = useGetFireStore("qbank", documentId);
 
   const qNumber = useGetRealTime(`${documentId}/question/id`);
@@ -45,6 +47,22 @@ const HostGame = () => {
 
   const navigate = useNavigate();
   const prevUsersRef = useRef();
+
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log("User is signed in");
+      } else {
+        console.log("User is not signed in");
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // window.onpopstate = () => {
   //   const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
@@ -113,7 +131,7 @@ const HostGame = () => {
               time={time}
             />
             <Media questions={questions} />
-            <Options questions={questions} />
+            {questions.type === "sa" || <Options questions={questions} />}
           </>
         );
         if (reply === Object.values(users).length)
@@ -125,13 +143,16 @@ const HostGame = () => {
         button = "排名";
         content = (
           <>
-            <Timeout
-              users={users}
-              setReply={setReply}
-              qbank={qbank}
-              qNumber={qNumber}
-            />
-
+            {questions.type === "sa" || (
+              <Timeout
+                questions={questions}
+                users={users}
+                setReply={setReply}
+                qbank={qbank}
+                qNumber={qNumber}
+              />
+            )}
+            <SetReply />
             <Options questions={questions} answer={answer} />
           </>
         );
@@ -176,6 +197,7 @@ const HostGame = () => {
   }
 
   function handleState() {
+    console.log("press");
     updateRealTime(documentId, { state: nextState });
 
     if (state === "end") {

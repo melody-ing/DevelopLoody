@@ -78,7 +78,7 @@ const WrapTimeout = styled.div`
   margin: 3rem auto;
 `;
 
-const Timeout = ({ setReply, users, qbank, qNumber }) => {
+const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
   const qType = qbank.questions[qNumber].type;
 
   const peopleNum = (ans) =>
@@ -88,8 +88,6 @@ const Timeout = ({ setReply, users, qbank, qNumber }) => {
   const data = [];
 
   const answers = { mc: ["A", "B", "C", "D"], tf: ["T", "F"] };
-
-  console.log(answers[qType]); //這邊有問題
 
   const usersAnswer = [];
   answers[qType].forEach((ans, index) => {
@@ -101,10 +99,6 @@ const Timeout = ({ setReply, users, qbank, qNumber }) => {
       }) &&
       usersAnswer.push(answers[qType][index]);
   });
-
-  useEffect(() => {
-    setReply(0);
-  }, []);
 
   return (
     <WrapTimeout>

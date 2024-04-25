@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { styled } from "styled-components";
 import Home from "./Home";
 import theme from "../../components/css/theme";
@@ -13,7 +13,9 @@ import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "@/utils/firebase";
 
 const WrapGame = styled(PrimaryBg)`
   width: 100%;
@@ -33,8 +35,9 @@ const Question = styled.h2`
 `;
 
 const PartGame = () => {
-  const { userId, documentId } = useGameStore();
+  const { userId } = useGameStore();
   const navigate = useNavigate();
+  const { documentId } = useParams();
 
   const qbank = useGetFireStore("qbank", documentId);
   const users = useGetRealTime(`${documentId}/users`);
@@ -79,7 +82,7 @@ const PartGame = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("unload", handleUnload);
     };
-  });
+  }, []);
 
   let title = "";
   let content = null;
@@ -88,12 +91,15 @@ const PartGame = () => {
 
   useEffect(() => {
     if (!userId) {
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 0);
     }
   }, [userId, navigate]);
 
   if (qbank && user && qNumber !== null && users && state) {
     const questions = qbank.questions[qNumber];
+
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
@@ -106,12 +112,14 @@ const PartGame = () => {
         content = (
           <>
             <Home questions={questions} />
+
             <Options
               questions={questions}
               user={user}
               qTime={qTime}
               addScore={addScore}
             />
+
             <Score user={user} />
           </>
         );

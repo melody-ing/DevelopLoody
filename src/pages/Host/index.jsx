@@ -6,8 +6,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { updateRealTime } from "../../utils/reviseRealTime";
-import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "@/utils/firebase";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -99,7 +101,22 @@ const Host = () => {
   const { pin, documentId } = useParams();
   const eventData = useGetRealTime(documentId);
   const { users = {} } = eventData || {};
-  console.log(Object.keys(users).length);
+
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log("User is signed in");
+      } else {
+        console.log("User is not signed in");
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (eventData) {
@@ -107,7 +124,6 @@ const Host = () => {
     }
   }, [eventData]);
 
-  console.log(pin);
   function handleState() {
     updateRealTime(documentId, { state: "game" });
     navigate(`/host/game/${documentId}`);
@@ -124,7 +140,7 @@ const Host = () => {
             <p>{pin}</p>
           </WrapCode>
           <QRCodeCanvas
-            value={`https://loody-ing.web.app/part/game/${documentId}`}
+            value={`https://loody-ing.web.app/part/${documentId}/${pin}`}
             bgColor={`${theme.colors.primary}`}
             fgColor={`${theme.colors.tertiary}`}
             level={"L"}

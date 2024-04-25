@@ -18,10 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route index element={<Home />} />
         <Route path="host/:documentId/:pin" element={<Host />} />
         <Route path="host/game/:documentId" element={<HostGame />} />
-        <Route path="part/:documentId" element={<Part />} />
+        <Route path="part/:documentId/:pin" element={<Part />} />
         <Route path="part/game/:documentId" element={<PartGame />} />
-        <Route path="dashboard/:userId" element={<DashBoard />} />
-        <Route path="create/:userId/:documentId" element={<Create />} />
+        <Route path="dashboard" element={<DashBoard />} />
+        <Route path="create/:documentId" element={<Create />} />
       </Route>
     </Routes>
   </BrowserRouter>

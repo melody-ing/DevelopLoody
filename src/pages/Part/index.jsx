@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { database } from "../../utils/firebase";
 import { ref, push, set } from "firebase/database";
 import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { pushRealTime, updateRealTime } from "../../utils/reviseRealTime";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "../../utils/firebase";
 
 const WrapPart = styled(PrimaryBg)`
   display: flex;
@@ -76,8 +78,12 @@ const Button = styled.button`
 
 const Part = () => {
   const [userName, setUserName] = useState("");
-  const { setUserId } = useGameStore();
-  const { documentId } = useGameStore();
+  const { setUserId, setDocumentId } = useGameStore();
+  // const { documentId } = useGameStore();
+  const { documentId } = useParams();
+  useEffect(() => {
+    setDocumentId(documentId);
+  }, [documentId]);
 
   const navigate = useNavigate();
 
