@@ -4,6 +4,7 @@ import theme from "../../../components/css/theme";
 import { updateRealTime } from "../../../utils/reviseRealTime";
 import { useGameStore } from "../../../utils/hook/useGameStore";
 import Buttons from "@/components/Buttons";
+import { serverTimestamp } from "firebase/firestore";
 
 const WrapOptions = styled.div`
   position: absolute;
@@ -91,14 +92,14 @@ const Options = ({ questions, addScore, user }) => {
       updateRealTime(`${documentId}/users/${userId}`, {
         selected: +e.target.value,
         addScore,
-        time: Date.now(),
+        time: serverTimestamp(),
       });
     }
     if (questions.type === "sa") {
       updateRealTime(`${documentId}/users/${userId}`, {
         selected: shortAnswer,
         addScore,
-        time: Date.now(),
+        time: serverTimestamp(),
       });
     }
     setIsAnswer(true);

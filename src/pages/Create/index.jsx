@@ -35,7 +35,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import { app } from "@/utils/firebase";
+import { Slide, toast } from "react-toastify";
 
 const HeaderInput = styled.p`
   width: 100%;
@@ -548,7 +548,7 @@ const Create = () => {
         validAudioTypes.includes(fileType)
       ) {
         const storage = getStorage();
-        const imagesRef = ref(storage, `${Date.now()}`);
+        const imagesRef = ref(storage, `${serverTimestamp()}`);
         uploadBytes(imagesRef, file)
           .then((snapshot) => {
             getDownloadURL(snapshot.ref)
@@ -580,6 +580,18 @@ const Create = () => {
   }
 
   function handleComplete() {
+    toast.warn("編輯完成", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      icon: false,
+      transition: Slide,
+    });
     getQbankData.editTime = serverTimestamp();
     setFireStore("qbank", documentId, getQbankData);
     navigate(`/dashboard`);

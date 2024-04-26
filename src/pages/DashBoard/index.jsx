@@ -253,7 +253,7 @@ const DashBoard = () => {
 
       if (validImageTypes.includes(fileType)) {
         const storage = getStorage();
-        const imagesRef = ref(storage, `${Date.now()}`);
+        const imagesRef = ref(storage, `${serverTimestamp()}`);
         uploadBytes(imagesRef, file)
           .then((snapshot) => {
             getDownloadURL(snapshot.ref)

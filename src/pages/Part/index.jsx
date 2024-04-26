@@ -9,6 +9,7 @@ import { useGameStore } from "../../utils/hook/useGameStore";
 import { pushRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../utils/firebase";
+import { serverTimestamp } from "firebase/firestore";
 
 const WrapPart = styled(PrimaryBg)`
   display: flex;
@@ -93,7 +94,7 @@ const Part = () => {
         addScore: 0,
         name: userName,
         score: 0,
-        time: Date.now(),
+        time: serverTimestamp(),
       });
       setUserId(userId);
       navigate(`/part/game/${documentId}`);

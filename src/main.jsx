@@ -6,6 +6,7 @@ import Host from "./pages/Host/index.jsx";
 import Home from "./pages/Home/index.jsx";
 import HostGame from "./pages/HostGame/index.jsx";
 import PartGame from "./pages/PartGame/index.jsx";
+import Friday from "./pages/Friday.jsx";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashBoard from "./pages/DashBoard/index.jsx";
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="part/game/:documentId" element={<PartGame />} />
         <Route path="dashboard" element={<DashBoard />} />
         <Route path="create/:documentId" element={<Create />} />
+        <Route path="friday" element={<Friday />} />
       </Route>
     </Routes>
   </BrowserRouter>

@@ -41,6 +41,7 @@ import { collection, query, where } from "firebase/firestore";
 import { app, db } from "@/utils/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { firebaseAuthState } from "@/utils/firebaseAuth";
+import { Slide, toast } from "react-toastify";
 
 const auth = getAuth(app);
 
@@ -171,6 +172,18 @@ const Home = () => {
         });
         console.log("Registered");
         console.log(user);
+        toast.warn(`初次見面${inputName}`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          icon: false,
+          transition: Slide,
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -194,6 +207,19 @@ const Home = () => {
         localStorage.setItem("userId", userData.userId);
         navigate(`/dashboard`);
         console.log("logged in");
+
+        toast.warn(`${userData.name}你好`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          icon: false,
+          transition: Slide,
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
