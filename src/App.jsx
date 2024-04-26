@@ -7,6 +7,8 @@ import { useGetFireStore } from "./utils/hook/useGetFireStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "./utils/firebase";
 import { getFireStore } from "./utils/reviseFireStore";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const { setEventData, documentId, setQbankData, setUserId } = useGameStore();
@@ -42,6 +44,7 @@ const App = () => {
     <div>
       <BaseGlobalStyle />
       <Outlet />
+      <ToastContainer />
     </div>
   );
 };
