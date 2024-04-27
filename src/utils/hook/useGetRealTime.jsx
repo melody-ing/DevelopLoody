@@ -3,29 +3,33 @@ import { ref, onValue } from "firebase/database";
 import { database } from "../firebase";
 
 export const useGetRealTime = (path) => {
-  const [realTime, setRealTime] = useState(null);
-
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(null);
   useEffect(() => {
     const userRef = ref(database, path);
     const unsubscribe = onValue(
       userRef,
       (snapshot) => {
-        if (snapshot.exists()) {
+        try {
           const data = snapshot.val();
-          // console.log("Users data:", data);
-          setRealTime(data);
-        } else {
+          setData(data);
+        } catch (error) {
           console.log("No data available");
-          setRealTime(null);
+          setIsError(error.message);
+          setData(null);
+        } finally {
+          setIsLoading(false);
         }
       },
       (error) => {
-        console.error("Error fetching users data:", error);
+        setIsError(error.message);
+        setIsLoading(false);
       }
     );
 
     // 在組件卸載時清理監聽器
     return () => unsubscribe();
   }, [path]);
-  return realTime;
+  return { data, isError, isLoading };
 };

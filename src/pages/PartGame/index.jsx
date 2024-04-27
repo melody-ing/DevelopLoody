@@ -16,6 +16,8 @@ import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/utils/firebase";
+import Media from "./Home/Media";
+import ReactLoading from "react-loading";
 
 const WrapGame = styled(PrimaryBg)`
   width: 100%;
@@ -34,35 +36,51 @@ const Question = styled.h2`
   }
 `;
 
+const Loading = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10rem;
+`;
+
 const PartGame = () => {
   const { userId } = useGameStore();
   const navigate = useNavigate();
-  const { documentId } = useParams();
+  const { documentId: getUrlDocumentId } = useParams();
 
-  const qbank = useGetFireStore("qbank", documentId);
-  const users = useGetRealTime(`${documentId}/users`);
-  const user = useGetRealTime(`${documentId}/users/${userId}`);
-  const qNumber = useGetRealTime(`${documentId}/question/id`);
-  const state = useGetRealTime(`${documentId}/state`);
-  const qTime = useGetRealTime(`${documentId}/time`);
+  const {
+    data: qbank,
+    isError,
+    isLoading,
+  } = useGetFireStore("qbank", getUrlDocumentId);
+  const {
+    data: realTimeData,
+    isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTime();
+  const realTime = realTimeData?.[getUrlDocumentId];
+  const users = realTime?.users;
+  const user = realTime?.users?.[userId];
+  const qNumber = realTime?.question?.id;
+  const state = realTime?.state;
+  const qTime = realTime?.time;
 
   function setScore(time, userTime) {
     if (userTime & time) {
       const delayTime = parseInt((userTime - time) / 1000);
       const addScore = delayTime <= 10 ? 1000 - delayTime * 79 : 210;
       if (user.selected !== undefined)
-        updateRealTime(`${documentId}/users/${userId}`, { addScore });
+        updateRealTime(`${getUrlDocumentId}/users/${userId}`, { addScore });
 
       return addScore;
     }
-    updateRealTime(`${documentId}/users/${userId}`, { addScore: 0 });
+    updateRealTime(`${getUrlDocumentId}/users/${userId}`, { addScore: 0 });
   }
 
   window.onpopstate = () => {
     const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
     navigate(null, "", "/part/game");
     if (confirmLeave) {
-      removeRealTime(`${documentId}/users/${userId}`);
+      removeRealTime(`${getUrlDocumentId}/users/${userId}`);
       navigate("/");
     }
   };
@@ -73,7 +91,7 @@ const PartGame = () => {
     }
 
     function handleUnload() {
-      removeRealTime(`${documentId}/users/${userId}`);
+      removeRealTime(`${getUrlDocumentId}/users/${userId}`);
     }
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -112,6 +130,7 @@ const PartGame = () => {
         content = (
           <>
             <Home questions={questions} />
+            <Media questions={questions} />
 
             <Options
               questions={questions}
@@ -150,7 +169,7 @@ const PartGame = () => {
           </>
         );
         nextState = "rank";
-        updateRealTime(`${documentId}/users/${userId}`, {
+        updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
           selected: null,
         });
         break;
@@ -171,9 +190,22 @@ const PartGame = () => {
 
   return (
     <WrapGame>
-      {state !== "lobby" && <Question>{title}</Question>}
+      {isLoading || isRTLoading ? (
+        <Loading>
+          <ReactLoading
+            type="bars"
+            color={theme.colors.light}
+            height={100}
+            width={100}
+          />
+        </Loading>
+      ) : (
+        <>
+          {state !== "lobby" && <Question>{title}</Question>}
 
-      {content}
+          {content}
+        </>
+      )}
     </WrapGame>
   );
 };

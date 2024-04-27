@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
 import theme from "../../components/css/theme";
@@ -15,7 +15,7 @@ import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "@/utils/firebase";
+import ReactLoading from "react-loading";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -36,14 +36,29 @@ const Question = styled.h2`
   background-color: ${theme.colors.light};
 `;
 
-const HostGame = () => {
-  const { documentId, userId, reply, setReply } = useGameStore();
-  const qbank = useGetFireStore("qbank", documentId);
+const Loading = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10rem;
+`;
 
-  const qNumber = useGetRealTime(`${documentId}/question/id`);
-  const state = useGetRealTime(`${documentId}/state`);
-  const users = useGetRealTime(`${documentId}/users`);
-  const time = useGetRealTime(`${documentId}/time`);
+const HostGame = () => {
+  const { userId, reply, setReply } = useGameStore();
+  const { documentId: getUrlDocumentId } = useParams();
+  const {
+    data: qbank,
+    isError,
+    isLoading,
+  } = useGetFireStore("qbank", getUrlDocumentId);
+  const {
+    data: realTimeData,
+    isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTime();
+  const qNumber = realTimeData?.[getUrlDocumentId]?.question.id;
+  const state = realTimeData?.[getUrlDocumentId]?.state;
+  const users = realTimeData?.[getUrlDocumentId]?.users;
+  const time = realTimeData?.[getUrlDocumentId]?.time;
 
   const navigate = useNavigate();
   const prevUsersRef = useRef();
@@ -68,17 +83,17 @@ const HostGame = () => {
   //   const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
   //   if (confirmLeave) {
   //     navigate("/");
-  //     updateRealTime(documentId, { state: "home" });
-  //     removeRealTime(documentId);
+  //     updateRealTime(getUrlDocumentId, { state: "home" });
+  //     removeRealTime(getUrlDocumentId);
   //     return;
   //   }
-  //   navigate(`/host/game/${documentId}`);
+  //   navigate(`/host/game/${getUrlDocumentId}`);
   // };
 
   // window.close = () => {
   //   navigate("/");
-  //   updateRealTime(documentId, { state: "home" });
-  //   removeRealTime(documentId);
+  //   updateRealTime(getUrlDocumentId, { state: "home" });
+  //   removeRealTime(getUrlDocumentId);
   // };
 
   useEffect(() => {
@@ -87,8 +102,8 @@ const HostGame = () => {
     }
 
     function handleUnload() {
-      updateRealTime(documentId, { state: "home" });
-      removeRealTime(documentId);
+      updateRealTime(getUrlDocumentId, { state: "home" });
+      removeRealTime(getUrlDocumentId);
     }
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -108,8 +123,8 @@ const HostGame = () => {
   //   if (users === null && prevUsersRef.current !== (null && undefined)) {
   //     console.log("nulll");
   //     navigate("/host");
-  //     updateRealTime(documentId, { state: "lobby" });
-  //     removeRealTime(documentId);
+  //     updateRealTime(getUrlDocumentId, { state: "lobby" });
+  //     removeRealTime(getUrlDocumentId);
   //   }
   //   console.log(users);
   //   prevUsersRef.current = users;
@@ -127,15 +142,14 @@ const HostGame = () => {
             <Home
               questions={questions}
               users={users}
-              documentId={documentId}
-              time={time}
+              getUrlDocumentId={getUrlDocumentId}
             />
             <Media questions={questions} />
             {questions.type === "sa" || <Options questions={questions} />}
           </>
         );
         if (reply === Object.values(users).length)
-          updateRealTime(documentId, { state: "timeout" });
+          updateRealTime(getUrlDocumentId, { state: "timeout" });
         nextState = "timeout";
         break;
       case "timeout":
@@ -162,7 +176,11 @@ const HostGame = () => {
         title = "記分板";
         button = "下一題";
         content = (
-          <Rank users={users} documentId={documentId} userId={userId} />
+          <Rank
+            users={users}
+            getUrlDocumentId={getUrlDocumentId}
+            userId={userId}
+          />
         );
         nextState = "game";
         break;
@@ -174,7 +192,7 @@ const HostGame = () => {
             <End users={users} />
           </>
         );
-        updateRealTime(`${documentId}/question`, { id: 0 });
+        updateRealTime(`${getUrlDocumentId}/question`, { id: 0 });
         nextState = "home";
 
         break;
@@ -193,31 +211,44 @@ const HostGame = () => {
   }
 
   function setQNumber(qNumber) {
-    updateRealTime(`${documentId}/question`, { id: qNumber + 1 });
+    updateRealTime(`${getUrlDocumentId}/question`, { id: qNumber + 1 });
   }
 
   function handleState() {
     console.log("press");
-    updateRealTime(documentId, { state: nextState });
+    updateRealTime(getUrlDocumentId, { state: nextState });
 
     if (state === "end") {
       navigate("/");
-      removeRealTime(documentId);
+      removeRealTime(getUrlDocumentId);
     } else {
       state === "rank" && setQNumber(qNumber);
       qNumber === qbank.questions.length - 1 &&
         state === "timeout" &&
-        updateRealTime(documentId, { state: "end" });
+        updateRealTime(getUrlDocumentId, { state: "end" });
     }
   }
 
   return (
     <WrapGame>
-      <Question>{title}</Question>
-      <WrapBtn onClick={handleState}>
-        <Buttons>{button}</Buttons>
-      </WrapBtn>
-      {content}
+      {isLoading || isRTLoading ? (
+        <Loading>
+          <ReactLoading
+            type="bars"
+            color={theme.colors.primary}
+            height={100}
+            width={100}
+          />
+        </Loading>
+      ) : (
+        <>
+          <Question>{title}</Question>
+          <WrapBtn onClick={handleState}>
+            <Buttons>{button}</Buttons>
+          </WrapBtn>
+          {content}
+        </>
+      )}
     </WrapGame>
   );
 };

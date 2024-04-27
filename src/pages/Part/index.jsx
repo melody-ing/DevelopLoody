@@ -54,7 +54,7 @@ const InputName = styled.input`
     color: #a9a7a7;
   }
 
-  @media (max-width: ${theme.breakpoints.sm}) {
+  ${theme.breakpoints.md} {
     height: 3rem;
   }
 `;
@@ -80,24 +80,23 @@ const Button = styled.button`
 const Part = () => {
   const [userName, setUserName] = useState("");
   const { setUserId, setDocumentId } = useGameStore();
-  // const { documentId } = useGameStore();
-  const { documentId } = useParams();
+  const { documentId: getUrlDocumentId } = useParams();
   useEffect(() => {
-    setDocumentId(documentId);
-  }, [documentId]);
+    setDocumentId(getUrlDocumentId);
+  }, [getUrlDocumentId]);
 
   const navigate = useNavigate();
 
   function handleJoin() {
     if (userName !== "") {
-      const userId = pushRealTime(`${documentId}/users`, {
+      const userId = pushRealTime(`${getUrlDocumentId}/users`, {
         addScore: 0,
         name: userName,
         score: 0,
         time: serverTimestamp(),
       });
       setUserId(userId);
-      navigate(`/part/game/${documentId}`);
+      navigate(`/part/game/${getUrlDocumentId}`);
     }
   }
 

@@ -87,7 +87,7 @@ const InputPin = styled.input`
     color: #a9a7a7;
   }
 
-  @media (max-width: ${theme.breakpoints.sm}) {
+  ${theme.breakpoints.md} {
     height: 3rem;
   }
 `;
@@ -137,7 +137,12 @@ const Home = () => {
 
   const [inputPin, setInputPin] = useState("");
 
-  const realTime = useGetRealTime();
+  const {
+    data: realTime,
+    isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTime();
+  console.log(realTime);
   function handlePart() {
     const room =
       realTime &&
