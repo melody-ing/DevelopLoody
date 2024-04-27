@@ -36,6 +36,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import { Slide, toast } from "react-toastify";
+import ReactLoading from "react-loading";
 
 const HeaderInput = styled.p`
   width: 100%;
@@ -323,12 +324,20 @@ const SaveButton = styled.div`
   left: 0;
   width: 100%;
 `;
+const Loading = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10rem;
+`;
 
 const Create = () => {
   const navigate = useNavigate();
-  const { documentId, userId } = useParams();
-  let getQbankData = useGetFireStore("qbank", documentId);
-
+  const { documentId: getUrlDocumentId, UserId: getUrlUserId } = useParams();
+  const {
+    data: getQbankData,
+    isError,
+    isLoading,
+  } = useGetFireStore("qbank", getUrlDocumentId);
   const [editNum, setEditNum] = useState(0);
   // const qBankNameRef = useRef(null);
   // const titleRef = useRef(null);
@@ -397,7 +406,7 @@ const Create = () => {
 
     setStateQuestions(newItems);
     getQbankData.questions = newItems;
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   };
 
   function handlePickQuestion(index) {
@@ -422,12 +431,12 @@ const Create = () => {
 
   // const editTitle = debounce((title) => {
   //   getQbankData.questions[editNum].title = title;
-  //   setFireStore("qbank", documentId, getQbankData);
+  //   setFireStore("qbank", getUrlDocumentId, getQbankData);
   // });
   function handleTitleInput(e) {
     setTitle(e.target.value);
     getQbankData.questions[editNum].title = e.target.value;
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleAnswerRadio(e) {
@@ -439,13 +448,13 @@ const Create = () => {
       setAnswerRadio(e.target.value);
       getQbankData.questions[editNum].answer = e.target.value;
     }
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   // const editAnswers = debounce((index) => {
   //   getQbankData.questions[editNum].options[index] =
   //     answerRefs.current[index].textContent;
-  //   setFireStore("qbank", documentId, getQbankData);
+  //   setFireStore("qbank", getUrlDocumentId, getQbankData);
   // });
   function handleAnswerInput(e, index) {
     setOptions((options) => {
@@ -454,18 +463,18 @@ const Create = () => {
       return newArray;
     });
     getQbankData.questions[editNum].options[index] = e.target.value;
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   // const editQBankName = debounce(() => {
   //   getQbankData.name = qBankNameRef.current.textContent;
-  //   setFireStore("qbank", documentId, getQbankData);
+  //   setFireStore("qbank", getUrlDocumentId, getQbankData);
   // });
   function handleQBankName(e) {
     setQBankName(e.target.value);
     // editQBankName();
     getQbankData.name = e.target.value;
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleQuestionType(e) {
@@ -476,13 +485,13 @@ const Create = () => {
     if (e === "tf") getQbankData.questions[editNum].options = ["是", "否"];
     if (e === "sa") getQbankData.questions[editNum].options = [""];
 
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleTimeLimit(e) {
     setTimeLimit(e);
     getQbankData.questions[editNum].timeLimit = e;
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleAddQuestion(type) {
@@ -509,13 +518,13 @@ const Create = () => {
       title: "",
       type,
     });
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleClone(index, e) {
     e.stopPropagation();
     getQbankData.questions.splice(index, 0, getQbankData.questions[index]);
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleDelete(index, e) {
@@ -529,7 +538,7 @@ const Create = () => {
       setEditNum(editNum - 1);
     }
     getQbankData.questions.splice(index, 1);
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleFileInput(e) {
@@ -555,7 +564,7 @@ const Create = () => {
               .then((url) => {
                 setMediaUrl(url);
                 getQbankData.questions[editNum].media = url;
-                setFireStore("qbank", documentId, getQbankData);
+                setFireStore("qbank", getUrlDocumentId, getQbankData);
               })
               .catch((error) => {
                 console.log(error.message);
@@ -576,7 +585,7 @@ const Create = () => {
 
     setMediaUrl("");
     getQbankData.questions[editNum].media = "";
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleComplete() {
@@ -593,7 +602,7 @@ const Create = () => {
       transition: Slide,
     });
     getQbankData.editTime = serverTimestamp();
-    setFireStore("qbank", documentId, getQbankData);
+    setFireStore("qbank", getUrlDocumentId, getQbankData);
     navigate(`/dashboard`);
   }
 
@@ -601,196 +610,212 @@ const Create = () => {
     getQbankData && (
       <>
         <Header />
-        <Wrapper>
-          <QuestionsPositions>
-            <WrapButton>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild className="outline-none">
-                  <SingleButton>
-                    <Buttons>新增</Buttons>
-                  </SingleButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="border-4">
-                  <DropdownMenuLabel className="text-2xl ">
-                    題目種類
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {[
-                    { name: "單選題", id: "mc" },
-                    { name: "是非題", id: "tf" },
-                    { name: "簡答題", id: "sa" },
-                  ].map((item, index) => {
-                    return (
-                      <DropdownMenuItem
-                        key={index}
-                        onClick={(e) => handleAddQuestion(item.id)}
-                        className="text-3xl pr-44 py-5 cursor-pointer"
-                      >
-                        <DropImg src={`/icon/${item.id}.png`} alt="" />
-                        {item.name}
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </WrapButton>
-            <QuestionsWrapper>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="123">
-                  {(provided, snapshot) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {stateQuestions?.map((question, index) => (
-                        <div key={question.id}>
-                          <Draggable
-                            key={question.id}
-                            draggableId={`${question.id}`}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                {
-                                  <WrapQuestion
-                                    key={question.id}
-                                    $editNum={editNum === index}
-                                    onClick={() => handlePickQuestion(index)}
-                                  >
-                                    <FlexTop>
-                                      <img
-                                        src={`/icon/${question.type}.png`}
-                                        alt=""
-                                      />
-                                      <Title>{question.title}</Title>
-                                    </FlexTop>
-                                    <Information>
-                                      <div
-                                        onClick={(e) => handleClone(index, e)}
-                                      >
-                                        <Clone />
-                                      </div>
-                                      <p>{index + 1}</p>
-                                      <div
-                                        onClick={(e) => handleDelete(index, e)}
-                                      >
-                                        <Delete />
-                                      </div>
-                                    </Information>
-                                  </WrapQuestion>
-                                }
-                              </div>
-                            )}
-                          </Draggable>
-                        </div>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </QuestionsWrapper>
-          </QuestionsPositions>
-          <EditAreaWrapper>
-            <QuestionP>
-              <QuestionInput value={title} onChange={handleTitleInput} />
-            </QuestionP>
-            <FileLabel htmlFor="fileInput">
-              {mediaUrl === "" ? (
-                <p>輸入圖片</p>
-              ) : (
-                <>
-                  <img src={mediaUrl} />
-                  <InputMediaDelete onClick={handleDeleteMedia}>
-                    <Delete size={4.4} />
-                  </InputMediaDelete>
-                </>
-              )}
-            </FileLabel>
-            <FileInput
-              type="file"
-              id="fileInput"
-              accept="audio/*,image/*,.png"
-              onChange={handleFileInput}
+        {isLoading ? (
+          <Loading>
+            <ReactLoading
+              type="bars"
+              color={theme.colors.primary}
+              height={100}
+              width={100}
             />
-            {(question.type === "mc" || question.type === "tf") && (
-              <WrapAnswer>
-                {question?.options.map((option, index) => (
-                  <WrapAnswerInput key={index}>
-                    <input
-                      type="radio"
-                      name="answer"
-                      id={`radio${index}`}
-                      value={index}
-                      onChange={handleAnswerRadio}
-                      checked={index === answerRadio}
-                    />
-                    <TextAreaWrapper>
-                      <TextAreaInput
-                        value={option}
-                        onChange={(e) => handleAnswerInput(e, index)}
+          </Loading>
+        ) : (
+          <Wrapper>
+            <QuestionsPositions>
+              <WrapButton>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="outline-none">
+                    <SingleButton>
+                      <Buttons>新增</Buttons>
+                    </SingleButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="border-4">
+                    <DropdownMenuLabel className="text-2xl ">
+                      題目種類
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {[
+                      { name: "單選題", id: "mc" },
+                      { name: "是非題", id: "tf" },
+                      { name: "簡答題", id: "sa" },
+                    ].map((item, index) => {
+                      return (
+                        <DropdownMenuItem
+                          key={index}
+                          onClick={(e) => handleAddQuestion(item.id)}
+                          className="text-3xl pr-44 py-5 cursor-pointer"
+                        >
+                          <DropImg src={`/icon/${item.id}.png`} alt="" />
+                          {item.name}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </WrapButton>
+              <QuestionsWrapper>
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <Droppable droppableId="123">
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {stateQuestions?.map((question, index) => (
+                          <div key={question.id}>
+                            <Draggable
+                              key={question.id}
+                              draggableId={`${question.id}`}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  {
+                                    <WrapQuestion
+                                      key={question.id}
+                                      $editNum={editNum === index}
+                                      onClick={() => handlePickQuestion(index)}
+                                    >
+                                      <FlexTop>
+                                        <img
+                                          src={`/icon/${question.type}.png`}
+                                          alt=""
+                                        />
+                                        <Title>{question.title}</Title>
+                                      </FlexTop>
+                                      <Information>
+                                        <div
+                                          onClick={(e) => handleClone(index, e)}
+                                        >
+                                          <Clone />
+                                        </div>
+                                        <p>{index + 1}</p>
+                                        <div
+                                          onClick={(e) =>
+                                            handleDelete(index, e)
+                                          }
+                                        >
+                                          <Delete />
+                                        </div>
+                                      </Information>
+                                    </WrapQuestion>
+                                  }
+                                </div>
+                              )}
+                            </Draggable>
+                          </div>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </QuestionsWrapper>
+            </QuestionsPositions>
+            <EditAreaWrapper>
+              <QuestionP>
+                <QuestionInput value={title} onChange={handleTitleInput} />
+              </QuestionP>
+              <FileLabel htmlFor="fileInput">
+                {mediaUrl === "" ? (
+                  <p>輸入圖片</p>
+                ) : (
+                  <>
+                    <img src={mediaUrl} />
+                    <InputMediaDelete onClick={handleDeleteMedia}>
+                      <Delete size={4.4} />
+                    </InputMediaDelete>
+                  </>
+                )}
+              </FileLabel>
+              <FileInput
+                type="file"
+                id="fileInput"
+                accept="audio/*,image/*,.png"
+                onChange={handleFileInput}
+              />
+              {(question.type === "mc" || question.type === "tf") && (
+                <WrapAnswer>
+                  {question?.options.map((option, index) => (
+                    <WrapAnswerInput key={index}>
+                      <input
+                        type="radio"
+                        name="answer"
+                        id={`radio${index}`}
+                        value={index}
+                        onChange={handleAnswerRadio}
+                        checked={index === answerRadio}
                       />
-                    </TextAreaWrapper>
-                  </WrapAnswerInput>
+                      <TextAreaWrapper>
+                        <TextAreaInput
+                          value={option}
+                          onChange={(e) => handleAnswerInput(e, index)}
+                        />
+                      </TextAreaWrapper>
+                    </WrapAnswerInput>
+                  ))}
+                </WrapAnswer>
+              )}
+              {question.type === "sa" &&
+                question?.options.map((option, index) => (
+                  <WrapShortAnswerInput key={index}>
+                    <ShortAnswerInput
+                      type="text"
+                      value={option}
+                      onChange={(e) => {
+                        handleAnswerRadio(e);
+                        handleAnswerInput(e, index);
+                      }}
+                    />
+                  </WrapShortAnswerInput>
                 ))}
-              </WrapAnswer>
-            )}
-            {question.type === "sa" &&
-              question?.options.map((option, index) => (
-                <WrapShortAnswerInput key={index}>
-                  <ShortAnswerInput
-                    type="text"
-                    value={option}
-                    onChange={(e) => {
-                      handleAnswerRadio(e);
-                      handleAnswerInput(e, index);
-                    }}
-                  />
-                </WrapShortAnswerInput>
-              ))}
-          </EditAreaWrapper>
-          <RulesWrapper>
-            <InputTitle>題庫名稱</InputTitle>
+            </EditAreaWrapper>
+            <RulesWrapper>
+              <InputTitle>題庫名稱</InputTitle>
 
-            <HeaderInput>
-              <QBankNameInput value={qBankName} onChange={handleQBankName} />
-            </HeaderInput>
-            <InputTitle>題型</InputTitle>
-            <WrapSelect value={questionType} onValueChange={handleQuestionType}>
-              <WrapSelectTrigger>
-                <SelectValue placeholder="請選擇" />
-              </WrapSelectTrigger>
-              <WrapSelectContent>
-                <WrapSelectItem value="mc">選擇題</WrapSelectItem>
-                <WrapSelectItem value="tf">是非題</WrapSelectItem>
-                <WrapSelectItem value="sa">簡答題</WrapSelectItem>
-              </WrapSelectContent>
-            </WrapSelect>
+              <HeaderInput>
+                <QBankNameInput value={qBankName} onChange={handleQBankName} />
+              </HeaderInput>
+              <InputTitle>題型</InputTitle>
+              <WrapSelect
+                value={questionType}
+                onValueChange={handleQuestionType}
+              >
+                <WrapSelectTrigger>
+                  <SelectValue placeholder="請選擇" />
+                </WrapSelectTrigger>
+                <WrapSelectContent>
+                  <WrapSelectItem value="mc">選擇題</WrapSelectItem>
+                  <WrapSelectItem value="tf">是非題</WrapSelectItem>
+                  <WrapSelectItem value="sa">簡答題</WrapSelectItem>
+                </WrapSelectContent>
+              </WrapSelect>
 
-            <InputTitle>每題時間</InputTitle>
-            <WrapSelect value={timeLimit} onValueChange={handleTimeLimit}>
-              <WrapSelectTrigger>
-                <SelectValue placeholder="請選擇" />
-              </WrapSelectTrigger>
-              <WrapSelectContent>
-                <WrapSelectItem value={10}>10秒</WrapSelectItem>
-                <WrapSelectItem value={20}>20秒</WrapSelectItem>
-                <WrapSelectItem value={30}>30秒</WrapSelectItem>
-                <WrapSelectItem value={60}>1分鐘</WrapSelectItem>
-                <WrapSelectItem value={90}>1分鐘30秒</WrapSelectItem>
-                <WrapSelectItem value={120}>2分鐘</WrapSelectItem>
-                <WrapSelectItem value={180}>3分鐘</WrapSelectItem>
-              </WrapSelectContent>
-            </WrapSelect>
+              <InputTitle>每題時間</InputTitle>
+              <WrapSelect value={timeLimit} onValueChange={handleTimeLimit}>
+                <WrapSelectTrigger>
+                  <SelectValue placeholder="請選擇" />
+                </WrapSelectTrigger>
+                <WrapSelectContent>
+                  <WrapSelectItem value={10}>10秒</WrapSelectItem>
+                  <WrapSelectItem value={20}>20秒</WrapSelectItem>
+                  <WrapSelectItem value={30}>30秒</WrapSelectItem>
+                  <WrapSelectItem value={60}>1分鐘</WrapSelectItem>
+                  <WrapSelectItem value={90}>1分鐘30秒</WrapSelectItem>
+                  <WrapSelectItem value={120}>2分鐘</WrapSelectItem>
+                  <WrapSelectItem value={180}>3分鐘</WrapSelectItem>
+                </WrapSelectContent>
+              </WrapSelect>
 
-            <SaveButton>
-              <div onClick={handleComplete}>
-                <Buttons type="success">完成</Buttons>
-              </div>
-            </SaveButton>
-          </RulesWrapper>
-        </Wrapper>
+              <SaveButton>
+                <div onClick={handleComplete}>
+                  <Buttons type="success">完成</Buttons>
+                </div>
+              </SaveButton>
+            </RulesWrapper>
+          </Wrapper>
+        )}
       </>
     )
   );

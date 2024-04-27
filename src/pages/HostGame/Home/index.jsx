@@ -35,7 +35,7 @@ const Attenance = styled.div`
   }
 `;
 
-const Home = ({ questions, users, documentId, time }) => {
+const Home = ({ questions, users, documentId }) => {
   const { reply, setReply } = useGameStore();
   const [count, setCount] = useState(questions.timeLimit);
 
@@ -47,7 +47,8 @@ const Home = ({ questions, users, documentId, time }) => {
   }, [users]);
 
   useEffect(() => {
-    if (reply === 0) updateRealTime(`${documentId}`, { time: serverTimestamp });
+    if (reply === 0)
+      updateRealTime(`${documentId}`, { time: serverTimestamp() });
   }, [reply]);
 
   useEffect(() => {

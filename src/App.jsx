@@ -12,9 +12,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const { setEventData, documentId, setQbankData, setUserId } = useGameStore();
-  const getEventData = useGetRealTime(documentId);
-  const getQbankData = useGetFireStore("qbank", documentId);
+  const {
+    data: getEventData,
+    isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTime(documentId);
+  const {
+    data: getQbankData,
+    isError,
+    isLoading,
+  } = useGetFireStore("qbank", documentId);
   const auth = getAuth(app);
+  // const getQbankData = data;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

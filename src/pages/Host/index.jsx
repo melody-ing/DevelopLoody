@@ -98,9 +98,15 @@ const Host = () => {
   const navigate = useNavigate();
   const { setEventData, setQbankData } = useGameStore();
 
-  const { pin, documentId } = useParams();
-  const eventData = useGetRealTime(documentId);
+  const { pin: getUrlPin, documentId: getUrlDocumentId } = useParams();
+  const {
+    data: realTimeData,
+    isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTime();
+  const eventData = realTimeData?.[getUrlDocumentId];
   const { users = {} } = eventData || {};
+  console.log(eventData);
 
   useEffect(() => {
     const auth = getAuth();
@@ -125,8 +131,8 @@ const Host = () => {
   }, [eventData]);
 
   function handleState() {
-    updateRealTime(documentId, { state: "game" });
-    navigate(`/host/game/${documentId}`);
+    updateRealTime(getUrlDocumentId, { state: "game" });
+    navigate(`/host/game/${getUrlDocumentId}`);
   }
 
   return (
@@ -137,10 +143,10 @@ const Host = () => {
         <JoinCode>
           <WrapCode>
             <div>遊戲PIN碼：</div>
-            <p>{pin}</p>
+            <p>{getUrlPin}</p>
           </WrapCode>
           <QRCodeCanvas
-            value={`https://loody-ing.web.app/part/${documentId}/${pin}`}
+            value={`https://loody-ing.web.app/part/${getUrlDocumentId}/${getUrlPin}`}
             bgColor={`${theme.colors.primary}`}
             fgColor={`${theme.colors.tertiary}`}
             level={"L"}

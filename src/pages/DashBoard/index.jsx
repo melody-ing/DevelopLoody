@@ -30,6 +30,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateRealTime } from "@/utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app, db } from "@/utils/firebase";
+import ReactLoading from "react-loading";
 
 const WrapDashBoard = styled.div`
   width: 70%;
@@ -43,6 +44,10 @@ const WrapQuestionBanks = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+
+  ${theme.breakpoints.md} {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
 const WrapQuestionBank = styled.div`
@@ -144,6 +149,12 @@ const HoverCardContent = styled.div`
   border-radius: 5px;
 `;
 
+const Loading = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10rem;
+`;
+
 const DashBoard = () => {
   const auth = getAuth(app);
   const user = auth.currentUser;
@@ -159,11 +170,15 @@ const DashBoard = () => {
   const [data, setData] = useState([]);
   const chooseQBankId = useRef("");
 
-  const qbanks = useGetFireStores(`users/${uid}/qbanks`);
+  const {
+    data: qbanks,
+    isError,
+    isLoading,
+  } = useGetFireStores(`users/${uid}/qbanks`);
 
   useEffect(() => {
     const fetchData = () => {
-      qbanks.forEach((qbank) => {
+      qbanks?.forEach((qbank) => {
         const docRef = doc(db, "qbank", qbank.id);
         const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
           if (docSnapshot.exists()) {
@@ -204,10 +219,6 @@ const DashBoard = () => {
 
     return () => unsubscribe();
   }, []);
-
-  // useEffect(() => {
-  //   setData(getFireStores);
-  // }, [getFireStores]);
 
   async function handleAddQBank() {
     console.log(userId);
@@ -295,83 +306,101 @@ const DashBoard = () => {
 
   return (
     <>
+      {" "}
       <Header />
-      <WrapDashBoard>
-        <h2>題庫</h2>
-        <WrapQuestionBanks>
-          {data &&
-            data?.map((item) => (
-              <div key={item.id}>
-                <FileInput
-                  type="file"
-                  id="fileInput"
-                  accept="image/*"
-                  onChange={(e) => handleAddImg(e, item.id)}
-                />
-                <ContextMenu key={item.id}>
-                  <ContextMenuTrigger>
-                    <WrapQuestionBank>
-                      <WrapQBankImg>
-                        <QBankImg src={item.mainImg} />
-                      </WrapQBankImg>
-                      <WrapQBankInfo>
-                        <QBankName
-                          value={item.name}
-                          onChange={(e) => handleRename(e, item.id)}
-                        />
+      {isLoading ? (
+        <Loading>
+          <ReactLoading
+            type="bars"
+            color={theme.colors.primary}
+            height={100}
+            width={100}
+          />
+        </Loading>
+      ) : (
+        <>
+          <WrapDashBoard>
+            <h2>題庫</h2>
+            <WrapQuestionBanks>
+              {data &&
+                data?.map((item) => (
+                  <div key={item.id}>
+                    <FileInput
+                      type="file"
+                      id="fileInput"
+                      accept="image/*"
+                      onChange={(e) => handleAddImg(e, item.id)}
+                    />
+                    <ContextMenu key={item.id}>
+                      <ContextMenuTrigger>
+                        <WrapQuestionBank>
+                          <WrapQBankImg>
+                            <QBankImg src={item.mainImg} />
+                          </WrapQBankImg>
+                          <WrapQBankInfo>
+                            <QBankName
+                              value={item.name}
+                              onChange={(e) => handleRename(e, item.id)}
+                            />
 
-                        <QBankTime>
-                          上次編輯：
-                          {moment
-                            .unix(item?.editTime?.seconds)
-                            .add(item?.editTime?.nanoseconds / 1e9, "seconds")
-                            .format("YYYY-MM-DD")}
-                        </QBankTime>
-                        <WrapQBankButtons>
-                          <div onClick={() => handleEdit(item.id)}>
-                            <Buttons type="light" size="small">
-                              編輯
-                            </Buttons>
-                          </div>
-                          <div onClick={() => handleHost(item.id)}>
-                            <Buttons type="success" size="small">
-                              主持
-                            </Buttons>
-                          </div>
-                        </WrapQBankButtons>
-                      </WrapQBankInfo>
-                    </WrapQuestionBank>
-                  </ContextMenuTrigger>
+                            <QBankTime>
+                              上次編輯：
+                              {moment
+                                .unix(item?.editTime?.seconds)
+                                .add(
+                                  item?.editTime?.nanoseconds / 1e9,
+                                  "seconds"
+                                )
+                                .format("YYYY-MM-DD")}
+                            </QBankTime>
+                            <WrapQBankButtons>
+                              <div onClick={() => handleEdit(item.id)}>
+                                <Buttons type="light" size="small">
+                                  編輯
+                                </Buttons>
+                              </div>
+                              <div onClick={() => handleHost(item.id)}>
+                                <Buttons type="success" size="small">
+                                  主持
+                                </Buttons>
+                              </div>
+                            </WrapQBankButtons>
+                          </WrapQBankInfo>
+                        </WrapQuestionBank>
+                      </ContextMenuTrigger>
 
-                  <WrapContextMenuContent>
-                    <WrapContextMenuItem onClick={() => handleDelete(item.id)}>
-                      <Delete size={12} />
-                      <p>刪除</p>
-                    </WrapContextMenuItem>
+                      <WrapContextMenuContent>
+                        <WrapContextMenuItem
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <Delete size={12} />
+                          <p>刪除</p>
+                        </WrapContextMenuItem>
 
-                    <WrapContextMenuItem
-                      onClick={() => (chooseQBankId.current = item.id)}
-                    >
-                      <FileLabel htmlFor="fileInput">
-                        <Image size={12} /> <p>新增首圖</p>
-                      </FileLabel>
-                    </WrapContextMenuItem>
-                  </WrapContextMenuContent>
-                </ContextMenu>
-              </div>
-            ))}
-        </WrapQuestionBanks>
-      </WrapDashBoard>
-
-      <AddQBankButton onClick={handleAddQBank}>
-        <div
-          onMouseEnter={() => setIsHover(true)}
-          onMouseLeave={() => setIsHover(false)}
-        >
-          <Plus size={6} />
-        </div>
-      </AddQBankButton>
-      {isHover && <HoverCardContent>建立新題庫</HoverCardContent>}
+                        <WrapContextMenuItem
+                          onClick={() => (chooseQBankId.current = item.id)}
+                        >
+                          <FileLabel htmlFor="fileInput">
+                            <Image size={12} /> <p>新增首圖</p>
+                          </FileLabel>
+                        </WrapContextMenuItem>
+                      </WrapContextMenuContent>
+                    </ContextMenu>
+                  </div>
+                ))}
+            </WrapQuestionBanks>
+          </WrapDashBoard>
+          <AddQBankButton onClick={handleAddQBank}>
+            <div
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}
+            >
+              <Plus size={6} />
+            </div>
+          </AddQBankButton>
+          {isHover && <HoverCardContent>建立新題庫</HoverCardContent>}
+        </>
+      )}
     </>
   );
 };
