@@ -9,6 +9,7 @@ import { app } from "./utils/firebase";
 import { getFireStore } from "./utils/reviseFireStore";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useOnAuthStateChange } from "./utils/hook/useOnAuthStateChange";
 
 const App = () => {
   const { setEventData, documentId, setQbankData, setUserId } = useGameStore();
@@ -23,25 +24,34 @@ const App = () => {
     isLoading,
   } = useGetFireStore("qbank", documentId);
   const auth = getAuth(app);
-  // const getQbankData = data;
+
+  const userUid = useOnAuthStateChange();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        const userData = getFireStore("users", uid);
-        userData.then((data) => {
-          setUserId(data.userId);
-        });
-        console.log(userData);
-        console.log("User is signed in");
-      } else {
-        console.log("User is not signed in");
-      }
+    if (!userUid) return;
+    const userData = getFireStore("users", userUid);
+    userData.then((data) => {
+      setUserId(data.userId);
     });
+  }, [userUid]);
 
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       const uid = user.uid;
+  //       const userData = getFireStore("users", uid);
+  //       userData.then((data) => {
+  //         setUserId(data.userId);
+  //       });
+  //       console.log(userData);
+  //       console.log("User is signed in");
+  //     } else {
+  //       console.log("User is not signed in");
+  //     }
+  //   });
+
+  //   return () => unsubscribe();
+  // }, []);
 
   useEffect(() => {
     if (getQbankData) {

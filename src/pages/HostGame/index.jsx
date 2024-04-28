@@ -12,10 +12,14 @@ import Media from "./Home/Media";
 import SetReply from "./SetReply";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
-import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import {
+  useGetRealTime,
+  useGetRealTimeNavigate,
+} from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ReactLoading from "react-loading";
+import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -54,7 +58,7 @@ const HostGame = () => {
     data: realTimeData,
     isError: isRTError,
     isLoading: isRTLoading,
-  } = useGetRealTime();
+  } = useGetRealTimeNavigate("/", "/dashboard");
   const qNumber = realTimeData?.[getUrlDocumentId]?.question.id;
   const state = realTimeData?.[getUrlDocumentId]?.state;
   const users = realTimeData?.[getUrlDocumentId]?.users;
@@ -63,21 +67,7 @@ const HostGame = () => {
   const navigate = useNavigate();
   const prevUsersRef = useRef();
 
-  useEffect(() => {
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        console.log("User is signed in");
-      } else {
-        console.log("User is not signed in");
-        navigate("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  useOnAuthStateChange();
 
   // window.onpopstate = () => {
   //   const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
@@ -215,9 +205,7 @@ const HostGame = () => {
   }
 
   function handleState() {
-    console.log("press");
     updateRealTime(getUrlDocumentId, { state: nextState });
-
     if (state === "end") {
       navigate("/");
       removeRealTime(getUrlDocumentId);

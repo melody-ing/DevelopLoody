@@ -19,7 +19,8 @@ const Button = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  cursor: pointer;
+
+  ${({ $type }) => $type === "invalid" || "cursor: pointer;"};
 
   p {
     letter-spacing: 1.2rem;
@@ -32,6 +33,7 @@ const Buttons = ({ children, type, size = "default" }) => {
   // type light :#F5F2F0
   // type success :#78B159
   // type danger :#D65749
+  // type invalid
   let bg = "";
   let color = "";
   let hoverbg = "";
@@ -55,6 +57,12 @@ const Buttons = ({ children, type, size = "default" }) => {
       hoverbg = `${theme.colors.info}`;
 
       break;
+
+    case "invalid":
+      bg = `#a5a4a4`;
+      color = `${theme.colors.light}`;
+      hoverbg = `#a5a4a4`;
+      break;
     default:
       bg = `${theme.colors.secondary}`;
       color = `${theme.colors.light}`;
@@ -77,13 +85,20 @@ const Buttons = ({ children, type, size = "default" }) => {
       size = "20";
 
       break;
+
     default:
       size = "10";
       break;
   }
 
   return (
-    <Button $bg={bg} $color={color} $hoverbg={hoverbg} $size={size}>
+    <Button
+      $type={type}
+      $bg={bg}
+      $color={color}
+      $hoverbg={hoverbg}
+      $size={size}
+    >
       <p>{children}</p>
     </Button>
   );

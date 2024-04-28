@@ -142,7 +142,6 @@ const Home = () => {
     isError: isRTError,
     isLoading: isRTLoading,
   } = useGetRealTime();
-  console.log(realTime);
   function handlePart() {
     const room =
       realTime &&
@@ -175,8 +174,6 @@ const Home = () => {
           uid: auth.currentUser.uid,
           userId,
         });
-        console.log("Registered");
-        console.log(user);
         toast.warn(`初次見面${inputName}`, {
           position: "top-right",
           autoClose: 2000,
@@ -211,7 +208,6 @@ const Home = () => {
         setUserId(userData.userId);
         localStorage.setItem("userId", userData.userId);
         navigate(`/dashboard`);
-        console.log("logged in");
 
         toast.warn(`${userData.name}你好`, {
           position: "top-right",
@@ -230,7 +226,6 @@ const Home = () => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
-        // ..
       });
   }
 

@@ -7,9 +7,10 @@ import { styled } from "styled-components";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { updateRealTime } from "../../utils/reviseRealTime";
 import { QRCodeCanvas } from "qrcode.react";
-import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/utils/firebase";
+import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -103,26 +104,12 @@ const Host = () => {
     data: realTimeData,
     isError: isRTError,
     isLoading: isRTLoading,
-  } = useGetRealTime();
+  } = useGetRealTimeNavigate("/", "/dashboard");
   const eventData = realTimeData?.[getUrlDocumentId];
   const { users = {} } = eventData || {};
-  console.log(eventData);
+  const [getRealTimeData, setGetRealTimeData] = useState(null);
 
-  useEffect(() => {
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        console.log("User is signed in");
-      } else {
-        console.log("User is not signed in");
-        navigate("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  useOnAuthStateChange();
 
   useEffect(() => {
     if (eventData) {
