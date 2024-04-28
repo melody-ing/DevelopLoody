@@ -10,6 +10,7 @@ import { pushRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../utils/firebase";
 import { serverTimestamp } from "firebase/firestore";
+import { useGetRealTimeNavigate } from "@/utils/hook/useGetRealTime";
 
 const WrapPart = styled(PrimaryBg)`
   display: flex;
@@ -84,6 +85,11 @@ const Part = () => {
   useEffect(() => {
     setDocumentId(getUrlDocumentId);
   }, [getUrlDocumentId]);
+  const {
+    data: realTimeData,
+    isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTimeNavigate("/", "/");
 
   const navigate = useNavigate();
 

@@ -18,13 +18,12 @@ const WrapMedia = styled.div`
   animation: ${fadeIn} 0.1s 0.3s forwards;
 
   img {
-    max-height: 40rem;
+    max-height: calc(100vh - 39rem);
     object-fit: contain;
   }
 `;
 
 const Media = ({ questions }) => {
-  console.log(questions.media);
   return (
     <WrapMedia>
       <img src={questions.media} alt="" />

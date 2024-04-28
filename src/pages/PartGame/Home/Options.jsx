@@ -6,40 +6,48 @@ import { useGameStore } from "../../../utils/hook/useGameStore";
 import Buttons from "@/components/Buttons";
 import { serverTimestamp } from "firebase/firestore";
 
-const WrapOptions = styled.div`
-  position: absolute;
-  width: 99%;
-  bottom: 6rem;
+const WrapOptions = styled.div``;
 
-  left: 0;
+const WrapChooseOptions = styled.div`
+  position: fixed;
+  width: 60%;
+  left: 50%;
+  bottom: 6rem;
+  transform: translateX(-50%);
   display: grid;
   grid-template-columns: 50% 50%;
   gap: 10px;
-
-  button {
-    cursor: pointer;
-    max-width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 8rem;
-    font-size: larger;
-    background-color: ${theme.colors.light};
-    border: none;
-  }
+  margin: 0 auto;
 
   ${theme.breakpoints.sm} {
-    bottom: 4rem;
+    width: 90%;
+  }
+`;
 
-    width: 100vw;
-    height: 90vh;
-    top: 0;
+const OptionsButton = styled.button`
+  cursor: pointer;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 8rem;
+  font-size: larger;
 
-    padding: 2rem;
+  background: #ffffff;
+  border: 2px solid goldenrod;
+  border-radius: 4px;
+  color: #a77e17;
+  font-weight: bold;
+  transition: 0.5s;
 
-    button {
-      height: 100%;
-    }
+  &:hover {
+    color: goldenrod;
+    border: 1px solid;
+    box-shadow: inset 0 0 20px #ac99396e, 0 0 20px #ac99396e;
+    outline: 1px solid !important;
+    outline-color: rgba(225, 51, 45, 0) !important;
+    outline-offset: 15px;
+    text-shadow: 0.5px 0.5px 1px #ac9939;
   }
 `;
 
@@ -63,15 +71,6 @@ const WrapShortAnswerInput = styled.div`
   position: absolute;
   bottom: 10rem;
   background-color: #fff;
-
-  ${theme.breakpoints.sm} {
-    width: 100%;
-
-    position: static;
-    margin-top: 50%;
-    margin-bottom: 3rem;
-    height: 6rem;
-  }
 `;
 
 const ShortAnswerInput = styled.input`
@@ -108,7 +107,7 @@ const Options = ({ questions, addScore, user }) => {
   return isAnswer ? (
     <p>等一下別人喔</p>
   ) : (
-    <>
+    <WrapOptions>
       {questions.type === "sa" && (
         <WrapShortAnswer>
           <WrapShortAnswerInput>
@@ -126,19 +125,23 @@ const Options = ({ questions, addScore, user }) => {
       )}
       {(questions.type === "mc" || questions.type === "tf") && (
         <>
-          <WrapOptions>
+          <WrapChooseOptions>
             {" "}
             {questions.options.map((item, index) => {
               return (
-                <button key={index} onClick={handleAnswer} value={index}>
+                <OptionsButton key={index} onClick={handleAnswer} value={index}>
                   {item}
-                </button>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </OptionsButton>
               );
             })}
-          </WrapOptions>
+          </WrapChooseOptions>
         </>
       )}
-    </>
+    </WrapOptions>
   );
 };
 

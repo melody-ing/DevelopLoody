@@ -35,7 +35,7 @@ const Attenance = styled.div`
   }
 `;
 
-const Home = ({ questions, users, documentId }) => {
+const Home = ({ questions, users, getUrlDocumentId }) => {
   const { reply, setReply } = useGameStore();
   const [count, setCount] = useState(questions.timeLimit);
 
@@ -48,14 +48,14 @@ const Home = ({ questions, users, documentId }) => {
 
   useEffect(() => {
     if (reply === 0)
-      updateRealTime(`${documentId}`, { time: serverTimestamp() });
+      updateRealTime(`${getUrlDocumentId}`, { time: serverTimestamp() });
   }, [reply]);
 
   useEffect(() => {
     const countDown = setInterval(() => {
       setCount(count - 1);
       if (count <= 0) {
-        updateRealTime(`${documentId}`, { state: "timeout" });
+        updateRealTime(`${getUrlDocumentId}`, { state: "timeout" });
       }
     }, 1000);
 

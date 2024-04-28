@@ -6,26 +6,19 @@ import { useGameStore } from "../../../utils/hook/useGameStore";
 
 const User = styled.div`
   position: fixed;
-  bottom: 0;
-  left: 0;
+  top: 0;
+  right: 0;
   width: 100%;
-  height: 5rem;
-  background-color: ${theme.colors.secondary};
+  height: 3.4rem;
+  background-color: #7a8f6e;
   color: ${theme.colors.light};
   display: flex;
   justify-content: space-around;
   align-items: center;
 
   p {
-    font-size: x-large;
-  }
-
-  ${theme.breakpoints.sm} {
-    height: 5rem;
-
-    p {
-      font-size: 12.4;
-    }
+    font-size: 3rem;
+    line-height: 3rem;
   }
 `;
 

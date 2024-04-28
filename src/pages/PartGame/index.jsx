@@ -8,31 +8,40 @@ import Rank from "./Rank";
 import End from "./End";
 import Lobby from "./Lobby";
 import Score from "./Score";
+import CountDown from "./CountDown";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
-import { useGetRealTime } from "../../utils/hook/useGetRealTime";
+import {
+  useGetRealTime,
+  useGetRealTimeNavigate,
+} from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate, useParams } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/utils/firebase";
 import Media from "./Home/Media";
 import ReactLoading from "react-loading";
+import DynamicBG from "@/components/tool/DynamicBG";
 
-const WrapGame = styled(PrimaryBg)`
-  width: 100%;
+const WrapGame = styled.div`
+  background-color: #ebdb86;
+  width: 100vw;
   height: 100vh;
   position: relative;
+  padding-top: 4rem;
 `;
 
 const Question = styled.h2`
-  width: auto;
+  font-size: 3.6rem;
+  width: 60%;
   height: auto;
-  padding: 1rem;
+  margin: 0 auto;
+  margin-bottom: 2rem;
   background-color: ${theme.colors.light};
 
   ${theme.breakpoints.sm} {
-    display: none;
+    width: 90%;
   }
 `;
 
@@ -56,7 +65,7 @@ const PartGame = () => {
     data: realTimeData,
     isError: isRTError,
     isLoading: isRTLoading,
-  } = useGetRealTime();
+  } = useGetRealTimeNavigate("/", "/");
   const realTime = realTimeData?.[getUrlDocumentId];
   const users = realTime?.users;
   const user = realTime?.users?.[userId];
@@ -129,7 +138,6 @@ const PartGame = () => {
         title = questions.title;
         content = (
           <>
-            <Home questions={questions} />
             <Media questions={questions} />
 
             <Options
@@ -140,6 +148,7 @@ const PartGame = () => {
             />
 
             <Score user={user} />
+            <CountDown questions={questions} />
           </>
         );
         nextState = "timeout";

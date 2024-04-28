@@ -31,6 +31,8 @@ import { updateRealTime } from "@/utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app, db } from "@/utils/firebase";
 import ReactLoading from "react-loading";
+import * as HoverCard from "@radix-ui/react-hover-card";
+import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 
 const WrapDashBoard = styled.div`
   width: 70%;
@@ -76,7 +78,7 @@ const WrapQBankInfo = styled.div`
   gap: 1rem;
 `;
 
-const QBankName = styled.input`
+const QBankName = styled.div`
   font-size: 2rem;
   border-radius: 5px;
   border: none;
@@ -91,6 +93,17 @@ const QBankTime = styled.p`
 const WrapQBankButtons = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const WrapHoverCardContent = styled(HoverCard.Content)`
+  border: 1px solid black;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 5px;
+`;
+
+const WrapHoverCardArrow = styled(HoverCard.Arrow)`
+  color: #fff;
 `;
 
 const WrapContextMenuContent = styled(ContextMenuContent)`
@@ -204,24 +217,10 @@ const DashBoard = () => {
     };
     fetchData();
   }, [qbanks]);
-  console.log(qbanks);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        console.log("User is signed in");
-      } else {
-        console.log("User is not signed in");
-        navigate("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  useOnAuthStateChange();
 
   async function handleAddQBank() {
-    console.log(userId);
     const uuid = uuidv4();
     setFireStore(`users/${uid}/qbanks`, uuid, { id: uuid });
     setFireStore("qbank", uuid, {
@@ -245,7 +244,6 @@ const DashBoard = () => {
   }
 
   function handleDelete(id) {
-    console.log(uid, id);
     deleteFireStore(`users/${uid}/qbanks`, id);
     deleteFireStore("qbank", id);
     setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
@@ -254,8 +252,6 @@ const DashBoard = () => {
     updateFireStore("qbank", id, { name: e.target.value });
   }
   function handleAddImg(e, id) {
-    console.log(chooseQBankId.current);
-    e.preventDefault();
     if (e) {
       const file = e.target.files[0];
       const fileType = file.type;
@@ -338,10 +334,10 @@ const DashBoard = () => {
                             <QBankImg src={item.mainImg} />
                           </WrapQBankImg>
                           <WrapQBankInfo>
-                            <QBankName
-                              value={item.name}
-                              onChange={(e) => handleRename(e, item.id)}
-                            />
+                            <QBankName>
+                              {item.name.slice(0, 9) +
+                                `${item.name.length > 16 ? "..." : ""}`}
+                            </QBankName>
 
                             <QBankTime>
                               上次編輯：
@@ -353,17 +349,39 @@ const DashBoard = () => {
                                 )
                                 .format("YYYY-MM-DD")}
                             </QBankTime>
+
                             <WrapQBankButtons>
                               <div onClick={() => handleEdit(item.id)}>
                                 <Buttons type="light" size="small">
                                   編輯
                                 </Buttons>
                               </div>
-                              <div onClick={() => handleHost(item.id)}>
-                                <Buttons type="success" size="small">
-                                  主持
-                                </Buttons>
-                              </div>
+
+                              <HoverCard.Root>
+                                <HoverCard.Trigger>
+                                  {" "}
+                                  <div
+                                    onClick={() =>
+                                      item.isDone && handleHost(item.id)
+                                    }
+                                  >
+                                    <Buttons
+                                      type={item.isDone ? "success" : "invalid"}
+                                      size="small"
+                                    >
+                                      主持
+                                    </Buttons>
+                                  </div>
+                                </HoverCard.Trigger>
+                                {item.isDone || (
+                                  <HoverCard.Portal>
+                                    <WrapHoverCardContent>
+                                      尚未編輯完成
+                                      <WrapHoverCardArrow />
+                                    </WrapHoverCardContent>
+                                  </HoverCard.Portal>
+                                )}
+                              </HoverCard.Root>
                             </WrapQBankButtons>
                           </WrapQBankInfo>
                         </WrapQuestionBank>

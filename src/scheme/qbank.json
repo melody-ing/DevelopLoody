@@ -7,6 +7,7 @@
       "owner": "icecube0816",
       "questions": [
         {
+          "isDone": true,
           "answer": 1,
           "id": 222875,
           "media": "",
@@ -16,6 +17,7 @@
           "type": "mc"
         },
         {
+          "isDone": true,
           "answer": 0,
           "id": 313653,
           "media": "",

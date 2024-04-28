@@ -15,6 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Buttons from "../Buttons";
+import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 
 const auth = getAuth(app);
 
@@ -78,22 +79,12 @@ const Header = ({ children }) => {
     isLoading,
     isError,
   } = useGetFireStore("users", uid);
-  console.log(getUserData);
+
+  const userUid = useOnAuthStateChange();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        setUid(uid);
-        console.log("User is signed in");
-      } else {
-        console.log("User is not signed in");
-        navigate("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+    setUid(userUid);
+  }, [userUid]);
 
   const navigate = useNavigate();
   function handleHome() {

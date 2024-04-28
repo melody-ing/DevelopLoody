@@ -37,20 +37,26 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import { Slide, toast } from "react-toastify";
 import ReactLoading from "react-loading";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 
-const HeaderInput = styled.p`
-  width: 100%;
-  padding: 1rem;
-  border-radius: 5px;
-  font-size: 1.6rem;
-  border: 1px solid #ddd;
-`;
-
-const QBankNameInput = styled.input`
+const QBankNameInput = styled(TextField)`
   width: 100%;
   outline: none;
   border: none;
-  font-size: 2rem;
+
+  & .MuiOutlinedInput-root {
+    font-size: 2rem;
+    width: 100%;
+  }
+
+  & .MuiOutlinedInput-input {
+  }
+
+  & .MuiFormLabel-root {
+    font-size: 2rem;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -96,11 +102,15 @@ const SingleButton = styled.div`
   align-items: center;
 `;
 
+const WrapWrapQuestion = styled.div`
+  width: 24.9rem;
+  padding: 0.6rem 0rem;
+  padding-left: 0.5rem;
+`;
+
 const WrapQuestion = styled.div`
-  background-color: ${({ $editNum }) => $editNum && "rgb(238, 238, 238)"};
-  margin: 3px;
-  margin-top: 1rem;
-  margin-bottom: 1.6rem;
+  background-color: ${({ $editNum }) => $editNum && "rgb(227, 227, 227)"};
+
   width: 96%;
   height: auto;
   display: flex;
@@ -110,6 +120,8 @@ const WrapQuestion = styled.div`
 
   text-align: left;
   box-shadow: 0px 0px 4px 0px #33333369;
+  ${({ $isDone }) =>
+    $isDone === false && `border : 1.2px solid ${theme.colors.danger}`};
   padding: 5px;
   border-radius: 5px;
 
@@ -123,10 +135,13 @@ const WrapQuestion = styled.div`
 const FlexTop = styled.div`
   display: flex;
   gap: 1.5rem;
+  width: 100%;
 `;
 
-const Title = styled.p`
+const Title = styled.div`
   font-size: 16px;
+  width: 73%;
+  overflow-wrap: break-word;
 `;
 
 const Information = styled.div`
@@ -143,32 +158,29 @@ const EditAreaWrapper = styled.div`
   position: relative;
 `;
 
-const QuestionP = styled.p`
-  margin-top: 2rem;
+const QuestionInput = styled(TextField)`
   width: 96%;
-  height: auto;
-  border-radius: 5px;
-  border: none;
-  box-shadow: 0px 0px 4px 0px #33333369;
-  padding: 10px;
-  font-size: 26px;
-  color: ${theme.colors.info};
-  line-height: 3.6rem;
-  text-align: center;
-  display: flex;
-  align-items: center;
-`;
 
-const QuestionInput = styled.input`
-  width: 100%;
-  outline: none;
-  text-align: center;
-  border: none;
-  font-size: 3rem;
+  & .MuiOutlinedInput-root {
+    box-shadow: 0px 0px 4px 0px #33333369;
+    font-size: 2.6rem;
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  & .MuiOutlinedInput-input {
+    text-align: center;
+  }
+
+  & .MuiFormLabel-root {
+    font-size: 2rem;
+    margin-top: 2rem;
+  }
 `;
 
 const WrapAnswer = styled.div`
   width: 94%;
+  justify-content: center;
   display: grid;
   grid-template-columns: repeat(2, 50%);
   gap: 2rem;
@@ -178,6 +190,7 @@ const WrapAnswer = styled.div`
 `;
 
 const WrapAnswerInput = styled.div`
+  ${({ $isFill }) => $isFill || "border: 1px solid red"};
   width: 100%;
   height: 10rem;
   display: flex;
@@ -196,7 +209,28 @@ const WrapAnswerInput = styled.div`
   }
 `;
 
+const TextAreaInput = styled(TextField)`
+  & .MuiOutlinedInput-root {
+    font-size: 2.6rem;
+    width: 100%;
+  }
+
+  & .MuiOutlinedInput-input {
+  }
+
+  & .MuiFormLabel-root {
+    font-size: 2rem;
+    margin-top: 0.6rem;
+  }
+
+  & .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+`;
+
 const WrapShortAnswerInput = styled.div`
+  ${({ $isFill }) => $isFill || "border: 1px solid red"};
+
   width: 80%;
   height: 10rem;
   display: flex;
@@ -210,15 +244,33 @@ const WrapShortAnswerInput = styled.div`
   bottom: 10rem;
 `;
 
-const ShortAnswerInput = styled.input`
+const ShortAnswerInput = styled(TextField)`
   width: 100%;
   outline: none;
   border: none;
   font-size: 2.6rem;
   text-align: center;
+
+  & .MuiOutlinedInput-root {
+    font-size: 2.6rem;
+    width: 100%;
+  }
+
+  & .MuiOutlinedInput-input {
+    text-align: center;
+  }
+
+  & .MuiFormLabel-root {
+    font-size: 2rem;
+    margin-top: 0.6rem;
+  }
+
+  & .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
 `;
 
-const TextAreaWrapper = styled.p`
+const TextAreaWrapper = styled.div`
   width: 100%;
   max-width: 34rem;
   height: 5.4rem;
@@ -226,13 +278,6 @@ const TextAreaWrapper = styled.p`
   color: ${theme.colors.info};
   display: flex;
   align-items: center;
-`;
-
-const TextAreaInput = styled.input`
-  width: 100%;
-  outline: none;
-  border: none;
-  font-size: 2.6rem;
 `;
 
 const FileInput = styled.input`
@@ -257,7 +302,9 @@ const FileLabel = styled.label`
   align-items: center;
 
   img {
-    max-height: 30rem;
+    max-height: calc(100vh - 47rem);
+    max-width: calc(100vw - 50rem);
+
     object-fit: contain;
   }
 `;
@@ -278,7 +325,7 @@ const RulesWrapper = styled(ScrollArea)`
   box-shadow: inset 10px 0 6px -10px rgba(0, 0, 0, 0.2);
 `;
 
-const InputTitle = styled.p`
+const InputTitle = styled.div`
   margin-top: 2rem;
   margin-bottom: 1rem;
 `;
@@ -339,44 +386,39 @@ const Create = () => {
     isLoading,
   } = useGetFireStore("qbank", getUrlDocumentId);
   const [editNum, setEditNum] = useState(0);
-  // const qBankNameRef = useRef(null);
-  // const titleRef = useRef(null);
-  // const answerRefs = useRef([]);
+  const [isChanging, setIsChanging] = useState(false);
   const question = getQbankData?.questions[editNum];
   const [answerRadio, setAnswerRadio] = useState(0);
-  const [questionType, setQuestionType] = useState(null);
+  const [questionType, setQuestionType] = useState("");
   const [timeLimit, setTimeLimit] = useState(null);
   const [stateQuestions, setStateQuestions] = useState(null);
-  const [mediaUrl, setMediaUrl] = useState(null);
+  const [mediaUrl, setMediaUrl] = useState("");
   const [title, setTitle] = useState("");
-  const [options, setOptions] = useState([]);
+  const [inputOptions, setInputOptions] = useState(["", "", "", ""]);
   const [qBankName, setQBankName] = useState("");
+  const [isTitleFill, setIsTitleFill] = useState(true);
+  const [isOptionsFill, setIsOptionsFill] = useState([true, true, true, true]);
+  const [isQBankNameFill, setIsQBankNameFill] = useState(true);
+
+  useOnAuthStateChange();
 
   useEffect(() => {
-    const auth = getAuth();
+    if (isChanging === true) return;
+    if (getQbankData) setFireStore("qbank", getUrlDocumentId, getQbankData);
+  }, [isChanging]);
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const uid = user.uid;
-        console.log("User is signed in");
-      } else {
-        console.log("User is not signed in");
-        navigate("/");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  function debounce(fn, delay = 100) {
-    let timer = null;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
+  function handleIsChange() {
+    setIsChanging(true);
+    const setInputTimeout = setTimeout(() => {
+      setIsChanging(false);
+    }, 5000);
+    return () => {
+      clearTimeout(setInputTimeout);
     };
   }
 
   useEffect(() => {
+    if (isChanging === true) return;
     if (getQbankData) {
       setStateQuestions(getQbankData.questions);
       setQBankName(getQbankData.name);
@@ -388,7 +430,7 @@ const Create = () => {
       setTimeLimit(question.timeLimit);
       setMediaUrl(question.media);
       setTitle(question.title);
-      setOptions(question.options);
+      setInputOptions(question.options);
     }
   }, [getQbankData, editNum]);
 
@@ -409,34 +451,40 @@ const Create = () => {
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   };
 
-  function handlePickQuestion(index) {
-    setEditNum(index);
-
-    // if (editNum !== index) {
-    //   clearTextContent();
-    // }
+  function setIsDone() {
+    const isOptionsIncomplete = inputOptions.some((option) => option === "");
+    if (!title || isOptionsIncomplete) {
+      getQbankData.questions[editNum].isDone = false;
+      setFireStore("qbank", getUrlDocumentId, getQbankData);
+    } else {
+      getQbankData.questions[editNum].isDone = true;
+      setFireStore("qbank", getUrlDocumentId, getQbankData);
+    }
   }
 
-  // function clearTextContent() {
-  //   if (titleRef.current.textContent) {
-  //     titleRef.current.textContent = "";
-  //   }
+  function handlePickQuestion(index) {
+    setIsDone();
+    setEditNum(index);
+    setTitle(getQbankData.questions[index].title);
+    setInputOptions(getQbankData.questions[index].options);
+  }
 
-  //   if (answerRefs.current.textContent) {
-  //     for (let i = 0; i < answerRefs.current.length; i++) {
-  //       answerRefs.current[i].textContent = "";
-  //     }
-  //   }
-  // }
+  useEffect(() => {
+    if (question?.isDone === undefined) {
+      setIsTitleFill(true);
+      setIsOptionsFill([true, true, true, true]);
+      return;
+    }
+    title ? setIsTitleFill(true) : setIsTitleFill(false);
+    qBankName ? setIsQBankNameFill(true) : setIsQBankNameFill(false);
+    const newIsOptionsFill = inputOptions.map((option) => option !== "");
+    setIsOptionsFill(newIsOptionsFill);
+  }, [title, inputOptions, qBankName]);
 
-  // const editTitle = debounce((title) => {
-  //   getQbankData.questions[editNum].title = title;
-  //   setFireStore("qbank", getUrlDocumentId, getQbankData);
-  // });
   function handleTitleInput(e) {
     setTitle(e.target.value);
     getQbankData.questions[editNum].title = e.target.value;
-    setFireStore("qbank", getUrlDocumentId, getQbankData);
+    handleIsChange();
   }
 
   function handleAnswerRadio(e) {
@@ -451,39 +499,30 @@ const Create = () => {
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
-  // const editAnswers = debounce((index) => {
-  //   getQbankData.questions[editNum].options[index] =
-  //     answerRefs.current[index].textContent;
-  //   setFireStore("qbank", getUrlDocumentId, getQbankData);
-  // });
   function handleAnswerInput(e, index) {
-    setOptions((options) => {
-      const newArray = [...options];
+    setInputOptions((inputOptions) => {
+      const newArray = [...inputOptions];
       newArray[index] = e.target.value;
       return newArray;
     });
     getQbankData.questions[editNum].options[index] = e.target.value;
-    setFireStore("qbank", getUrlDocumentId, getQbankData);
+    handleIsChange();
   }
 
-  // const editQBankName = debounce(() => {
-  //   getQbankData.name = qBankNameRef.current.textContent;
-  //   setFireStore("qbank", getUrlDocumentId, getQbankData);
-  // });
   function handleQBankName(e) {
     setQBankName(e.target.value);
-    // editQBankName();
     getQbankData.name = e.target.value;
-    setFireStore("qbank", getUrlDocumentId, getQbankData);
+    handleIsChange();
   }
 
   function handleQuestionType(e) {
     setQuestionType(e);
     getQbankData.questions[editNum].type = e;
 
-    if (e === "mc") getQbankData.questions[editNum].options = ["", "", "", ""];
-    if (e === "tf") getQbankData.questions[editNum].options = ["是", "否"];
-    if (e === "sa") getQbankData.questions[editNum].options = [""];
+    if (e === "mc")
+      getQbankData.questions[editNum].inputOptions = ["", "", "", ""];
+    if (e === "tf") getQbankData.questions[editNum].inputOptions = ["是", "否"];
+    if (e === "sa") getQbankData.questions[editNum].inputOptions = [""];
 
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
@@ -495,6 +534,8 @@ const Create = () => {
   }
 
   function handleAddQuestion(type) {
+    setIsDone();
+
     setEditNum(getQbankData.questions.length);
     let options = [];
     switch (type) {
@@ -523,7 +564,10 @@ const Create = () => {
 
   function handleClone(index, e) {
     e.stopPropagation();
-    getQbankData.questions.splice(index, 0, getQbankData.questions[index]);
+    const originalQuestion = getQbankData.questions[index];
+    const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
+    newQuestion.id = uuidv4();
+    getQbankData.questions.splice(index, 0, newQuestion);
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
@@ -542,7 +586,6 @@ const Create = () => {
   }
 
   function handleFileInput(e) {
-    e.preventDefault();
     if (e) {
       const file = e.target.files[0];
       const fileType = file.type;
@@ -581,14 +624,22 @@ const Create = () => {
   }
 
   function handleDeleteMedia(e) {
-    e.preventDefault();
-
     setMediaUrl("");
     getQbankData.questions[editNum].media = "";
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
   function handleComplete() {
+    setIsDone();
+    const allIsDone = getQbankData.questions.every(
+      (question) => question.isDone === true
+    );
+    if (allIsDone && isQBankNameFill) {
+      getQbankData.isDone = true;
+    } else {
+      getQbankData.isDone = false;
+    }
+
     toast.warn("編輯完成", {
       position: "top-right",
       autoClose: 2000,
@@ -672,34 +723,48 @@ const Create = () => {
                                   {...provided.dragHandleProps}
                                 >
                                   {
-                                    <WrapQuestion
-                                      key={question.id}
-                                      $editNum={editNum === index}
-                                      onClick={() => handlePickQuestion(index)}
-                                    >
-                                      <FlexTop>
-                                        <img
-                                          src={`/icon/${question.type}.png`}
-                                          alt=""
-                                        />
-                                        <Title>{question.title}</Title>
-                                      </FlexTop>
-                                      <Information>
-                                        <div
-                                          onClick={(e) => handleClone(index, e)}
-                                        >
-                                          <Clone />
-                                        </div>
-                                        <p>{index + 1}</p>
-                                        <div
-                                          onClick={(e) =>
-                                            handleDelete(index, e)
-                                          }
-                                        >
-                                          <Delete />
-                                        </div>
-                                      </Information>
-                                    </WrapQuestion>
+                                    <WrapWrapQuestion>
+                                      <WrapQuestion
+                                        key={question.id}
+                                        $editNum={editNum === index}
+                                        onClick={() =>
+                                          handlePickQuestion(index)
+                                        }
+                                        $isDone={question.isDone}
+                                      >
+                                        <FlexTop>
+                                          <img
+                                            src={`/icon/${question.type}.png`}
+                                            alt=""
+                                          />
+                                          <Title>
+                                            {question.title.slice(0, 18) +
+                                              `${
+                                                question.title.length > 16
+                                                  ? "..."
+                                                  : ""
+                                              }`}
+                                          </Title>
+                                        </FlexTop>
+                                        <Information>
+                                          <div
+                                            onClick={(e) =>
+                                              handleClone(index, e)
+                                            }
+                                          >
+                                            <Clone />
+                                          </div>
+                                          <p>{index + 1}</p>
+                                          <div
+                                            onClick={(e) =>
+                                              handleDelete(index, e)
+                                            }
+                                          >
+                                            <Delete />
+                                          </div>
+                                        </Information>
+                                      </WrapQuestion>
+                                    </WrapWrapQuestion>
                                   }
                                 </div>
                               )}
@@ -714,9 +779,13 @@ const Create = () => {
               </QuestionsWrapper>
             </QuestionsPositions>
             <EditAreaWrapper>
-              <QuestionP>
-                <QuestionInput value={title} onChange={handleTitleInput} />
-              </QuestionP>
+              <QuestionInput
+                error={!isTitleFill}
+                id="outlined-error"
+                label={isTitleFill ? null : "尚未輸入"}
+                value={title}
+                onChange={handleTitleInput}
+              />
               <FileLabel htmlFor="fileInput">
                 {mediaUrl === "" ? (
                   <p>輸入圖片</p>
@@ -729,6 +798,7 @@ const Create = () => {
                   </>
                 )}
               </FileLabel>
+
               <FileInput
                 type="file"
                 id="fileInput"
@@ -738,7 +808,7 @@ const Create = () => {
               {(question.type === "mc" || question.type === "tf") && (
                 <WrapAnswer>
                   {question?.options.map((option, index) => (
-                    <WrapAnswerInput key={index}>
+                    <WrapAnswerInput key={index} $isFill={isOptionsFill[index]}>
                       <input
                         type="radio"
                         name="answer"
@@ -749,7 +819,9 @@ const Create = () => {
                       />
                       <TextAreaWrapper>
                         <TextAreaInput
-                          value={option}
+                          error={!isOptionsFill[index]}
+                          label={isOptionsFill[index] ? null : "尚未輸入"}
+                          value={inputOptions[index]}
                           onChange={(e) => handleAnswerInput(e, index)}
                         />
                       </TextAreaWrapper>
@@ -759,10 +831,15 @@ const Create = () => {
               )}
               {question.type === "sa" &&
                 question?.options.map((option, index) => (
-                  <WrapShortAnswerInput key={index}>
+                  <WrapShortAnswerInput
+                    key={index}
+                    $isFill={isOptionsFill[index]}
+                  >
                     <ShortAnswerInput
+                      error={!isOptionsFill[index]}
+                      label={isOptionsFill[index] ? null : "尚未輸入"}
                       type="text"
-                      value={option}
+                      value={inputOptions[index]}
                       onChange={(e) => {
                         handleAnswerRadio(e);
                         handleAnswerInput(e, index);
@@ -774,9 +851,12 @@ const Create = () => {
             <RulesWrapper>
               <InputTitle>題庫名稱</InputTitle>
 
-              <HeaderInput>
-                <QBankNameInput value={qBankName} onChange={handleQBankName} />
-              </HeaderInput>
+              <QBankNameInput
+                value={qBankName}
+                onChange={handleQBankName}
+                error={!isQBankNameFill}
+                label={isQBankNameFill ? null : "尚未輸入"}
+              />
               <InputTitle>題型</InputTitle>
               <WrapSelect
                 value={questionType}
