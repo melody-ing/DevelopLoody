@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import Home from "./Home";
 import theme from "../../components/css/theme";
@@ -23,6 +23,7 @@ import { app } from "@/utils/firebase";
 import Media from "./Home/Media";
 import ReactLoading from "react-loading";
 import DynamicBG from "@/components/tool/DynamicBG";
+import { Timestamp } from "firebase/firestore";
 
 const WrapGame = styled.div`
   background-color: #ebdb86;
@@ -52,7 +53,7 @@ const Loading = styled.div`
 `;
 
 const PartGame = () => {
-  const { userId } = useGameStore();
+  const userId = localStorage.getItem("partId");
   const navigate = useNavigate();
   const { documentId: getUrlDocumentId } = useParams();
 
@@ -65,13 +66,16 @@ const PartGame = () => {
     data: realTimeData,
     isError: isRTError,
     isLoading: isRTLoading,
-  } = useGetRealTimeNavigate("/", "/");
-  const realTime = realTimeData?.[getUrlDocumentId];
+  } = useGetRealTimeNavigate(getUrlDocumentId, "/");
+  const realTime = realTimeData;
   const users = realTime?.users;
   const user = realTime?.users?.[userId];
   const qNumber = realTime?.question?.id;
   const state = realTime?.state;
   const qTime = realTime?.time;
+  const question = realTime?.question;
+  const questions = qbank?.questions?.[qNumber];
+  const [timeoutSec, setTimeoutSec] = useState(null);
 
   function setScore(time, userTime) {
     if (userTime & time) {
@@ -86,30 +90,17 @@ const PartGame = () => {
   }
 
   window.onpopstate = () => {
-    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
-    navigate(null, "", "/part/game");
-    if (confirmLeave) {
-      removeRealTime(`${getUrlDocumentId}/users/${userId}`);
-      navigate("/");
-    }
+    navigate("/");
   };
 
   useEffect(() => {
-    function handleBeforeUnload(e) {
-      e.preventDefault();
-    }
-
-    function handleUnload() {
-      removeRealTime(`${getUrlDocumentId}/users/${userId}`);
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, []);
+    const timeLimit = questions?.timeLimit;
+    const nowTime = Timestamp.now().seconds;
+    const timeoutTime = qTime?.seconds + timeLimit;
+    setTimeoutSec(timeoutTime - nowTime - 1);
+    // 因為fetch會延遲所以我把秒數減少一點
+    console.log(qTime?.seconds, nowTime, timeoutTime, timeLimit, timeoutSec);
+  }, [question, questions]);
 
   let title = "";
   let content = null;
@@ -125,8 +116,6 @@ const PartGame = () => {
   }, [userId, navigate]);
 
   if (qbank && user && qNumber !== null && users && state) {
-    const questions = qbank.questions[qNumber];
-
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
@@ -148,7 +137,7 @@ const PartGame = () => {
             />
 
             <Score user={user} />
-            <CountDown questions={questions} />
+            <CountDown questions={questions} timeoutSec={timeoutSec} />
           </>
         );
         nextState = "timeout";

@@ -248,9 +248,7 @@ const DashBoard = () => {
     deleteFireStore("qbank", id);
     setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
   }
-  function handleRename(e, id) {
-    updateFireStore("qbank", id, { name: e.target.value });
-  }
+
   function handleAddImg(e, id) {
     if (e) {
       const file = e.target.files[0];
