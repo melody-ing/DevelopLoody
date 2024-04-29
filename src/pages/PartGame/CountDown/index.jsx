@@ -94,7 +94,6 @@ const ProgressbarComplete = styled.div`
 `;
 
 const CountDown = ({ questions, timeoutSec }) => {
-  console.log(questions, timeoutSec);
   return (
     <Container className="container">
       <div className="progressbar-container">

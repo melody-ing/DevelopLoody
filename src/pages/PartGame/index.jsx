@@ -78,12 +78,15 @@ const PartGame = () => {
   const [timeoutSec, setTimeoutSec] = useState(null);
 
   function setScore(time, userTime) {
-    if (userTime & time) {
-      const delayTime = parseInt((userTime - time) / 1000);
-      const addScore = delayTime <= 10 ? 1000 - delayTime * 79 : 210;
+    if (userTime !== null && time !== null) {
+      time = time.seconds;
+      userTime = userTime.seconds;
+      const delayTime = parseInt(
+        ((userTime - time) / questions.timeLimit) * 100
+      );
+      const addScore = delayTime <= 80 ? 1000 - delayTime * 9 : 280;
       if (user.selected !== undefined)
         updateRealTime(`${getUrlDocumentId}/users/${userId}`, { addScore });
-
       return addScore;
     }
     updateRealTime(`${getUrlDocumentId}/users/${userId}`, { addScore: 0 });
@@ -99,7 +102,6 @@ const PartGame = () => {
     const timeoutTime = qTime?.seconds + timeLimit;
     setTimeoutSec(timeoutTime - nowTime - 1);
     // 因為fetch會延遲所以我把秒數減少一點
-    console.log(qTime?.seconds, nowTime, timeoutTime, timeLimit, timeoutSec);
   }, [question, questions]);
 
   let title = "";
@@ -167,9 +169,10 @@ const PartGame = () => {
           </>
         );
         nextState = "rank";
-        updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
-          selected: null,
-        });
+        // updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
+        //   selected: null,
+        // });
+        console.log(getUrlDocumentId, userId);
         break;
 
       case "end":
