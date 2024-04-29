@@ -76,6 +76,7 @@ const PartGame = () => {
   const question = realTime?.question;
   const questions = qbank?.questions?.[qNumber];
   const [timeoutSec, setTimeoutSec] = useState(null);
+  const [isAnswer, setIsAnswer] = useState(false);
 
   function setScore(time, userTime) {
     if (userTime !== null && time !== null) {
@@ -136,10 +137,14 @@ const PartGame = () => {
               user={user}
               qTime={qTime}
               addScore={addScore}
+              isAnswer={isAnswer}
+              setIsAnswer={setIsAnswer}
             />
 
             <Score user={user} />
-            <CountDown questions={questions} timeoutSec={timeoutSec} />
+            {isAnswer || (
+              <CountDown questions={questions} timeoutSec={timeoutSec} />
+            )}
           </>
         );
         nextState = "timeout";

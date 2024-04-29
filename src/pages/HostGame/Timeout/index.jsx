@@ -73,9 +73,23 @@ class CustomizedContent extends PureComponent {
 }
 
 const WrapTimeout = styled.div`
-  width: 60rem;
+  width: 100%;
   height: 30rem;
   margin: 3rem auto;
+`;
+
+const WrapShortAnswer = styled.div`
+  margin: 0 auto;
+  margin-top: 3rem;
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  ${({ $isCorrect }) => $isCorrect && `background-color: #fbeb8f`};
+
+  font-size: 3rem;
+  box-shadow: ${theme.shadow};
+  padding: 2rem;
+  border-radius: 10px;
 `;
 
 const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
@@ -106,7 +120,7 @@ const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
   return (
     <WrapTimeout>
       {(questions?.type === "mc" || questions?.type === "tf") && (
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="60%" height="100%">
           <Treemap
             width={400}
             height={200}
@@ -122,16 +136,26 @@ const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
       )}
       {questions?.type === "sa" && (
         <>
-          {Object.values(users).map(
-            (user, index) =>
-              user.selected === questions.answer && (
-                <p key={index}>{user.selected}</p>
-              )
-          )}
+          {Object.values(users)
+            .sort((a, b) => b.addScore - a.addScore)
+            .map(
+              (user, index) =>
+                user.selected === questions.answer && (
+                  <WrapShortAnswer $isCorrect={true} key={index}>
+                    <div>{user.name}</div>
+                    <div>{user.selected}</div>
+                    <div>{user.addScore}</div>
+                  </WrapShortAnswer>
+                )
+            )}
           {Object.values(users).map(
             (user, index) =>
               user.selected !== questions.answer && (
-                <p key={index}>{user.selected}</p>
+                <WrapShortAnswer $isCorrect={false} key={index}>
+                  <div>{user.name}</div>
+                  <div>{user.selected}</div>
+                  <div>{user.addScore}</div>
+                </WrapShortAnswer>
               )
           )}
         </>
