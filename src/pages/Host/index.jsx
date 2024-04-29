@@ -5,7 +5,7 @@ import Buttons from "../../components/Buttons";
 import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { useGameStore } from "../../utils/hook/useGameStore";
-import { updateRealTime } from "../../utils/reviseRealTime";
+import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { QRCodeCanvas } from "qrcode.react";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -110,6 +110,16 @@ const Host = () => {
   const { users = {} } = eventData || {};
 
   useOnAuthStateChange();
+
+  window.onpopstate = () => {
+    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    if (confirmLeave) {
+      removeRealTime(getUrlDocumentId);
+      navigate("/dashboard");
+    } else {
+      navigate(`/host/game/${getUrlDocumentId}`);
+    }
+  };
 
   useEffect(() => {
     if (eventData) {

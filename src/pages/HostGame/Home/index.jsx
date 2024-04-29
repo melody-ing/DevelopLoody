@@ -4,7 +4,6 @@ import Buttons from "../../../components/Buttons";
 import { styled } from "styled-components";
 import { useGameStore } from "../../../utils/hook/useGameStore";
 import { updateRealTime } from "../../../utils/reviseRealTime";
-import { Timestamp, serverTimestamp } from "firebase/firestore";
 
 const TimeLimit = styled.div`
   position: absolute;

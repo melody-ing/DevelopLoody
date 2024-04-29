@@ -87,9 +87,7 @@ const HostGame = () => {
     const nowTime = Timestamp.now().seconds;
     const timeoutTime = time?.seconds + timeLimit;
     setTimeoutSec(timeoutTime - nowTime - 1);
-    console.log(time?.seconds, nowTime, timeoutTime, timeLimit, timeoutSec);
   }, [question, questions]);
-  console.log(timeoutSec);
 
   let title = "";
   let button = "";
@@ -123,15 +121,14 @@ const HostGame = () => {
         button = "排名";
         content = (
           <>
-            {questions.type === "sa" || (
-              <Timeout
-                questions={questions}
-                users={users}
-                setReply={setReply}
-                qbank={qbank}
-                qNumber={qNumber}
-              />
-            )}
+            <Timeout
+              questions={questions}
+              users={users}
+              setReply={setReply}
+              qbank={qbank}
+              qNumber={qNumber}
+            />
+
             <SetReply />
             <Options questions={questions} answer={answer} />
           </>
@@ -182,6 +179,22 @@ const HostGame = () => {
 
   function handleState() {
     updateRealTime(getUrlDocumentId, { state: nextState });
+
+    if (state === "timeout") {
+      const newUsers = Object.fromEntries(
+        Object.entries(users).map(([key, value]) => [
+          key,
+          {
+            addScore: value.addScore,
+            name: value.name,
+            score: value.score,
+            time: value.time,
+          },
+        ])
+      );
+
+      updateRealTime(`${getUrlDocumentId}`, { users: newUsers });
+    }
 
     if (state === "rank") {
       updateRealTime(`${getUrlDocumentId}`, { time: Timestamp.now() });

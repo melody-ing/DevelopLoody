@@ -90,31 +90,52 @@ const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
   const answers = { mc: ["A", "B", "C", "D"], tf: ["T", "F"] };
 
   const usersAnswer = [];
-  answers[qType].forEach((ans, index) => {
-    peopleNum(index) &&
-      data.push({
-        name: peopleNum(index),
-        // size: (index + 1) * 2,
-        size: peopleNum(index),
-      }) &&
-      usersAnswer.push(answers[qType][index]);
-  });
+
+  if (questions?.type === "mc" || questions?.type === "tf") {
+    answers[qType].forEach((ans, index) => {
+      peopleNum(index) &&
+        data.push({
+          name: peopleNum(index),
+          // size: (index + 1) * 2,
+          size: peopleNum(index),
+        }) &&
+        usersAnswer.push(answers[qType][index]);
+    });
+  }
 
   return (
     <WrapTimeout>
-      <ResponsiveContainer width="100%" height="100%">
-        <Treemap
-          width={400}
-          height={200}
-          data={data}
-          dataKey="size"
-          stroke="#fff"
-          fill="#8884d8"
-          content={
-            <CustomizedContent colors={COLORS} usersAnswer={usersAnswer} />
-          }
-        />
-      </ResponsiveContainer>
+      {(questions?.type === "mc" || questions?.type === "tf") && (
+        <ResponsiveContainer width="100%" height="100%">
+          <Treemap
+            width={400}
+            height={200}
+            data={data}
+            dataKey="size"
+            stroke="#fff"
+            fill="#8884d8"
+            content={
+              <CustomizedContent colors={COLORS} usersAnswer={usersAnswer} />
+            }
+          />
+        </ResponsiveContainer>
+      )}
+      {questions?.type === "sa" && (
+        <>
+          {Object.values(users).map(
+            (user, index) =>
+              user.selected === questions.answer && (
+                <p key={index}>{user.selected}</p>
+              )
+          )}
+          {Object.values(users).map(
+            (user, index) =>
+              user.selected !== questions.answer && (
+                <p key={index}>{user.selected}</p>
+              )
+          )}
+        </>
+      )}
     </WrapTimeout>
   );
 };

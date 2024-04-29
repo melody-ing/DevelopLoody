@@ -452,6 +452,7 @@ const Create = () => {
   };
 
   function setIsDone() {
+    console.log("setIsDone");
     const isOptionsIncomplete = inputOptions.some((option) => option === "");
     if (!title || isOptionsIncomplete) {
       getQbankData.questions[editNum].isDone = false;
@@ -496,7 +497,7 @@ const Create = () => {
       setAnswerRadio(e.target.value);
       getQbankData.questions[editNum].answer = e.target.value;
     }
-    setFireStore("qbank", getUrlDocumentId, getQbankData);
+    handleIsChange();
   }
 
   function handleAnswerInput(e, index) {
@@ -506,6 +507,7 @@ const Create = () => {
       return newArray;
     });
     getQbankData.questions[editNum].options[index] = e.target.value;
+    console.log(getQbankData);
     handleIsChange();
   }
 
@@ -519,10 +521,18 @@ const Create = () => {
     setQuestionType(e);
     getQbankData.questions[editNum].type = e;
 
-    if (e === "mc")
-      getQbankData.questions[editNum].inputOptions = ["", "", "", ""];
-    if (e === "tf") getQbankData.questions[editNum].inputOptions = ["是", "否"];
-    if (e === "sa") getQbankData.questions[editNum].inputOptions = [""];
+    if (e === "mc") {
+      getQbankData.questions[editNum].options = ["", "", "", ""];
+      setInputOptions(["", "", "", ""]);
+    }
+    if (e === "tf") {
+      getQbankData.questions[editNum].options = ["是", "否"];
+      setInputOptions(["是", "否"]);
+    }
+    if (e === "sa") {
+      getQbankData.questions[editNum].options = [""];
+      setInputOptions([""]);
+    }
 
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
@@ -564,6 +574,8 @@ const Create = () => {
 
   function handleClone(index, e) {
     e.stopPropagation();
+    setIsDone();
+
     const originalQuestion = getQbankData.questions[index];
     const newQuestion = JSON.parse(JSON.stringify(originalQuestion));
     newQuestion.id = uuidv4();
