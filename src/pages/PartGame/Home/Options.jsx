@@ -59,7 +59,7 @@ const WrapShortAnswer = styled.div`
 `;
 
 const WrapShortAnswerInput = styled.div`
-  width: 80%;
+  width: 60%;
   height: 10rem;
   display: flex;
   align-items: center;
@@ -81,11 +81,10 @@ const ShortAnswerInput = styled.input`
   text-align: center;
 `;
 
-const Options = ({ questions, addScore, user }) => {
+const Options = ({ questions, addScore, user, isAnswer, setIsAnswer }) => {
   const [shortAnswer, setShortAnswer] = useState("");
   const { userId, documentId } = useGameStore();
 
-  const [isAnswer, setIsAnswer] = useState(false);
   function handleAnswer(e) {
     if (questions.type === "mc" || questions.type === "tf") {
       updateRealTime(`${documentId}/users/${userId}`, {
