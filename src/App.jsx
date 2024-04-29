@@ -35,24 +35,6 @@ const App = () => {
     });
   }, [userUid]);
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       const uid = user.uid;
-  //       const userData = getFireStore("users", uid);
-  //       userData.then((data) => {
-  //         setUserId(data.userId);
-  //       });
-  //       console.log(userData);
-  //       console.log("User is signed in");
-  //     } else {
-  //       console.log("User is not signed in");
-  //     }
-  //   });
-
-  //   return () => unsubscribe();
-  // }, []);
-
   useEffect(() => {
     if (getQbankData) {
       setQbankData(getQbankData);

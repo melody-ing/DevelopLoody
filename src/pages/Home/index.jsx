@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
@@ -127,15 +127,20 @@ const WrapDialogContent = styled(DialogContent)`
   border: none;
 `;
 
+const AccountError = styled.p`
+  color: ${theme.colors.danger};
+  height: 1rem;
+`;
+
 const Home = () => {
   const navigate = useNavigate();
   const { setDocumentId, setUserId } = useGameStore();
-
   const [inputEmail, setInputEmail] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [inputName, setInputName] = useState("");
-
   const [inputPin, setInputPin] = useState("");
+  const [isLoginError, setIsLoginError] = useState(false);
+  const [isRegisterError, setIsRegisterError] = useState(false);
 
   const {
     data: realTime,
@@ -165,6 +170,7 @@ const Home = () => {
         // Signed up
         const userId = uuidv4();
         const user = userCredential.user;
+
         updateProfile(user, {
           displayName: inputName,
         });
@@ -191,9 +197,11 @@ const Home = () => {
         const errorCode = error.code;
         const errorMessage = error.message;
         // ..
+        console.log(errorCode, errorMessage);
+        if (errorCode === "auth/email-already-in-use") {
+          setIsRegisterError(true);
+        }
       });
-
-    handleEmptyInput();
   }
 
   async function handleLogin() {
@@ -202,6 +210,7 @@ const Home = () => {
         // Signed up
         const user = userCredential.user;
         const userData = getFireStore("users", user.uid);
+        setIsLoginError(false);
         return userData;
       })
       .then((userData) => {
@@ -226,6 +235,7 @@ const Home = () => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
+        setIsLoginError(true);
       });
   }
 
@@ -241,6 +251,24 @@ const Home = () => {
     });
   }
 
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      e.preventDefault();
+      console.log("beforeUnload");
+    }
+
+    function handleUnload() {
+      console.log("unload");
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
+
   return (
     <WrapHome>
       <Logo src="logo.png" alt="" />
@@ -254,7 +282,14 @@ const Home = () => {
           <p>進入</p>
         </WrapButton>
       </Entry>
-      <WrapDialog>
+      <WrapDialog
+        onOpenChange={(e) => {
+          if (e === true) return;
+          setIsLoginError(false);
+          setIsRegisterError(false);
+          handleEmptyInput();
+        }}
+      >
         <DialogTrigger>
           {" "}
           <Login onClick={handleAuthState}>製作自己的Loody</Login>
@@ -276,11 +311,14 @@ const Home = () => {
             <TabsContent value="login">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-[3.2rem] my-20">
+                  <CardTitle className="text-[3.2rem] my-10">
                     已經有帳號了嗎?
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-10">
+                  <AccountError>
+                    {isLoginError && "帳號或密碼輸入錯誤"}
+                  </AccountError>
                   <div className="space-y-2">
                     <Label className=" text-[1.6rem]" htmlFor="email">
                       電子信箱
@@ -318,60 +356,70 @@ const Home = () => {
               </Card>
             </TabsContent>
             <TabsContent value="register">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-[3.2rem] my-20">
-                    感謝你的註冊呦
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-10">
-                  <div className="space-y-2">
-                    <Label className=" text-[1.6rem]" htmlFor="email">
-                      電子信箱
-                    </Label>
-                    <Input
-                      className="text-[1.6rem] h-[5rem]"
-                      id="email"
-                      type="email"
-                      value={inputEmail}
-                      onChange={(e) => setInputEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className=" text-[1.6rem]" htmlFor="password">
-                      密碼
-                    </Label>
-                    <Input
-                      className="text-[1.6rem] h-[5rem] "
-                      id="password"
-                      value={inputPassword}
-                      onChange={(e) => setInputPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className=" text-[1.6rem]" htmlFor="name">
-                      使用者名稱
-                    </Label>
-                    <Input
-                      className="text-[1.6rem] h-[5rem] "
-                      id="name"
-                      value={inputName}
-                      onChange={(e) => setInputName(e.target.value)}
-                      required
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className="text-[2.4rem] h-[5rem] w-[100%] mt-20"
-                    onClick={handleRegister}
-                  >
-                    註冊
-                  </Button>
-                </CardFooter>
-              </Card>
+              <form action="" onSubmit={(e) => e.preventDefault()}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-[3.2rem] my-10">
+                      感謝你的註冊呦
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-10">
+                    <AccountError>
+                      {isRegisterError && "此帳號已註冊"}
+                    </AccountError>
+                    <div className="space-y-2">
+                      <Label className=" text-[1.6rem]" htmlFor="email">
+                        電子信箱
+                      </Label>
+                      <Input
+                        className="text-[1.6rem] h-[5rem]"
+                        id="email"
+                        type="email"
+                        value={inputEmail}
+                        onChange={(e) => setInputEmail(e.target.value)}
+                        title="email不符合格式"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className=" text-[1.6rem]" htmlFor="password">
+                        密碼
+                      </Label>
+                      <Input
+                        className="text-[1.6rem] h-[5rem] "
+                        id="password"
+                        value={inputPassword}
+                        onChange={(e) => setInputPassword(e.target.value)}
+                        pattern="^[\da-zA-Z]{6,}$"
+                        title="密碼必須大於6位且只能包含數字和英文字母"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className=" text-[1.6rem]" htmlFor="name">
+                        使用者名稱
+                      </Label>
+                      <Input
+                        className="text-[1.6rem] h-[5rem] "
+                        id="name"
+                        value={inputName}
+                        onChange={(e) => setInputName(e.target.value)}
+                        pattern="^.{2,}$"
+                        title="使用者名稱必須大於2個字"
+                        required
+                      />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      className="text-[2.4rem] h-[5rem] w-[100%] mt-20"
+                      onClick={handleRegister}
+                    >
+                      註冊
+                    </Button>
+                  </CardFooter>
+                </Card>{" "}
+              </form>
             </TabsContent>
           </Tabs>
         </WrapDialogContent>

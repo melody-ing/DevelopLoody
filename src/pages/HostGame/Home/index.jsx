@@ -4,7 +4,7 @@ import Buttons from "../../../components/Buttons";
 import { styled } from "styled-components";
 import { useGameStore } from "../../../utils/hook/useGameStore";
 import { updateRealTime } from "../../../utils/reviseRealTime";
-import { serverTimestamp } from "firebase/firestore";
+import { Timestamp, serverTimestamp } from "firebase/firestore";
 
 const TimeLimit = styled.div`
   position: absolute;
@@ -35,9 +35,13 @@ const Attenance = styled.div`
   }
 `;
 
-const Home = ({ questions, users, getUrlDocumentId }) => {
+const Home = ({ questions, users, getUrlDocumentId, timeoutSec }) => {
   const { reply, setReply } = useGameStore();
-  const [count, setCount] = useState(questions.timeLimit);
+  const [count, setCount] = useState(timeoutSec);
+
+  useEffect(() => {
+    setCount(timeoutSec);
+  }, [timeoutSec]);
 
   useEffect(() => {
     const num = Object.values(users).filter(
@@ -47,14 +51,10 @@ const Home = ({ questions, users, getUrlDocumentId }) => {
   }, [users]);
 
   useEffect(() => {
-    if (reply === 0)
-      updateRealTime(`${getUrlDocumentId}`, { time: serverTimestamp() });
-  }, [reply]);
-
-  useEffect(() => {
     const countDown = setInterval(() => {
       setCount(count - 1);
       if (count <= 0) {
+        setCount(0);
         updateRealTime(`${getUrlDocumentId}`, { state: "timeout" });
       }
     }, 1000);

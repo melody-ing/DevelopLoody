@@ -11,6 +11,7 @@ import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/utils/firebase";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
+import { Timestamp } from "firebase/firestore";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -104,10 +105,9 @@ const Host = () => {
     data: realTimeData,
     isError: isRTError,
     isLoading: isRTLoading,
-  } = useGetRealTimeNavigate("/", "/dashboard");
-  const eventData = realTimeData?.[getUrlDocumentId];
+  } = useGetRealTimeNavigate(getUrlDocumentId, "/dashboard");
+  const eventData = realTimeData;
   const { users = {} } = eventData || {};
-  const [getRealTimeData, setGetRealTimeData] = useState(null);
 
   useOnAuthStateChange();
 
@@ -118,7 +118,7 @@ const Host = () => {
   }, [eventData]);
 
   function handleState() {
-    updateRealTime(getUrlDocumentId, { state: "game" });
+    updateRealTime(getUrlDocumentId, { state: "game", time: Timestamp.now() });
     navigate(`/host/game/${getUrlDocumentId}`);
   }
 

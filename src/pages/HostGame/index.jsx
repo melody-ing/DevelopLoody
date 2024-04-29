@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
@@ -20,6 +20,7 @@ import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ReactLoading from "react-loading";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
+import { Timestamp } from "firebase/firestore";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -58,70 +59,44 @@ const HostGame = () => {
     data: realTimeData,
     isError: isRTError,
     isLoading: isRTLoading,
-  } = useGetRealTimeNavigate("/", "/dashboard");
-  const qNumber = realTimeData?.[getUrlDocumentId]?.question.id;
-  const state = realTimeData?.[getUrlDocumentId]?.state;
-  const users = realTimeData?.[getUrlDocumentId]?.users;
-  const time = realTimeData?.[getUrlDocumentId]?.time;
+  } = useGetRealTimeNavigate(getUrlDocumentId, "/dashboard");
+  const qNumber = realTimeData?.question.id;
+  const state = realTimeData?.state;
+  const users = realTimeData?.users;
+  const time = realTimeData?.time;
+  const question = realTimeData?.question;
+  const questions = qbank?.questions[qNumber];
+  const [timeoutSec, setTimeoutSec] = useState(null);
 
   const navigate = useNavigate();
-  const prevUsersRef = useRef();
 
   useOnAuthStateChange();
 
-  // window.onpopstate = () => {
-  //   const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
-  //   if (confirmLeave) {
-  //     navigate("/");
-  //     updateRealTime(getUrlDocumentId, { state: "home" });
-  //     removeRealTime(getUrlDocumentId);
-  //     return;
-  //   }
-  //   navigate(`/host/game/${getUrlDocumentId}`);
-  // };
-
-  // window.close = () => {
-  //   navigate("/");
-  //   updateRealTime(getUrlDocumentId, { state: "home" });
-  //   removeRealTime(getUrlDocumentId);
-  // };
+  window.onpopstate = () => {
+    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    if (confirmLeave) {
+      removeRealTime(getUrlDocumentId);
+      navigate("/dashboard");
+    } else {
+      navigate(`/host/game/${getUrlDocumentId}`);
+    }
+  };
 
   useEffect(() => {
-    function handleBeforeUnload(e) {
-      e.preventDefault();
-    }
-
-    function handleUnload() {
-      updateRealTime(getUrlDocumentId, { state: "home" });
-      removeRealTime(getUrlDocumentId);
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleUnload);
-    };
-  });
+    const timeLimit = questions?.timeLimit;
+    const nowTime = Timestamp.now().seconds;
+    const timeoutTime = time?.seconds + timeLimit;
+    setTimeoutSec(timeoutTime - nowTime - 1);
+    console.log(time?.seconds, nowTime, timeoutTime, timeLimit, timeoutSec);
+  }, [question, questions]);
+  console.log(timeoutSec);
 
   let title = "";
   let button = "";
   let content = null;
   let nextState = "";
 
-  // useEffect(() => {
-  //   if (users === null && prevUsersRef.current !== (null && undefined)) {
-  //     console.log("nulll");
-  //     navigate("/host");
-  //     updateRealTime(getUrlDocumentId, { state: "lobby" });
-  //     removeRealTime(getUrlDocumentId);
-  //   }
-  //   console.log(users);
-  //   prevUsersRef.current = users;
-  // }, [users]);
-
   if (qbank && qNumber !== null && users) {
-    const questions = qbank.questions[qNumber];
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "game":
@@ -131,6 +106,7 @@ const HostGame = () => {
           <>
             <Home
               questions={questions}
+              timeoutSec={timeoutSec}
               users={users}
               getUrlDocumentId={getUrlDocumentId}
             />
@@ -206,6 +182,10 @@ const HostGame = () => {
 
   function handleState() {
     updateRealTime(getUrlDocumentId, { state: nextState });
+
+    if (state === "rank") {
+      updateRealTime(`${getUrlDocumentId}`, { time: Timestamp.now() });
+    }
     if (state === "end") {
       navigate("/");
       removeRealTime(getUrlDocumentId);

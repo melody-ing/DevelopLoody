@@ -102,6 +102,7 @@ const Part = () => {
         time: serverTimestamp(),
       });
       setUserId(userId);
+      localStorage.setItem("partId", userId);
       navigate(`/part/game/${getUrlDocumentId}`);
     }
   }

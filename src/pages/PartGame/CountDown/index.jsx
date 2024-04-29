@@ -24,9 +24,12 @@ from {
 }
 `;
 
-const progressbarWidth = keyframes` 
+const progressbarWidth = (transSecond, second) => keyframes` 
 from{
-  width: 100%;
+      width: ${(transSecond / second) * 100}%;
+      
+
+  /* width: 60%; */
 }
 to{
   width: 0%;
@@ -72,7 +75,8 @@ const ProgressbarComplete = styled.div`
   border-radius: 10px;
   animation: ${bgColor} 2500ms infinite ease-in-out;
   z-index: 2;
-  animation-name: ${progressbarWidth};
+  animation-name: ${({ $transSecond, $second }) =>
+    progressbarWidth($transSecond, $second)};
   animation-duration: ${({ $second }) => $second}s;
   animation-iteration-count: 1;
   .progressbar-liquid {
@@ -89,11 +93,15 @@ const ProgressbarComplete = styled.div`
   }
 `;
 
-const CountDown = ({ questions }) => {
+const CountDown = ({ questions, timeoutSec }) => {
+  console.log(questions, timeoutSec);
   return (
     <Container className="container">
       <div className="progressbar-container">
-        <ProgressbarComplete $second={questions.timeLimit}>
+        <ProgressbarComplete
+          $second={questions.timeLimit}
+          $transSecond={timeoutSec}
+        >
           <div className="progressbar-liquid"></div>
         </ProgressbarComplete>
       </div>
