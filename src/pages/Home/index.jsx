@@ -1,24 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
-import { updateRealTime } from "../../utils/reviseRealTime";
-import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -33,16 +23,12 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut,
   updateProfile,
 } from "firebase/auth";
-import { collection, query, where } from "firebase/firestore";
-
-import { app, db } from "@/utils/firebase";
+import { app } from "@/utils/firebase";
 import { v4 as uuidv4 } from "uuid";
-import { firebaseAuthState } from "@/utils/firebaseAuth";
 import { Slide, toast } from "react-toastify";
-
+import { Password } from "primereact/password";
 const auth = getAuth(app);
 
 const WrapHome = styled(PrimaryBg)`
@@ -54,6 +40,10 @@ const Logo = styled.img`
   margin-top: 12rem;
   width: auto;
   height: 7rem;
+
+  ${theme.breakpoints.sm} {
+    height: 6rem;
+  }
 `;
 
 const Entry = styled.div`
@@ -64,6 +54,10 @@ const Entry = styled.div`
   width: 30rem;
   margin-bottom: 1.2rem;
   border-radius: 10px;
+
+  ${theme.breakpoints.sm} {
+    width: 26rem;
+  }
 `;
 
 const InputPin = styled.input`
@@ -85,10 +79,6 @@ const InputPin = styled.input`
   }
   &::placeholder {
     color: #a9a7a7;
-  }
-
-  ${theme.breakpoints.md} {
-    height: 3rem;
   }
 `;
 
@@ -116,6 +106,25 @@ const Login = styled.p`
   cursor: pointer;
 `;
 
+const WrapPassword = styled(Password)`
+  border: 1px solid rgb(226, 232, 240);
+  outline: none;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  padding: 0 1rem;
+
+  input {
+    border: none;
+    letter-spacing: 0.2px;
+
+    &:focus {
+      border: none;
+      outline: none;
+    }
+  }
+`;
+
 const WrapDialog = styled(Dialog)``;
 
 const WrapDialogContent = styled(DialogContent)`
@@ -125,6 +134,10 @@ const WrapDialogContent = styled(DialogContent)`
   justify-content: center;
   background-color: #ffffff00;
   border: none;
+
+  ${theme.breakpoints.sm} {
+    width: 32rem;
+  }
 `;
 
 const AccountError = styled.p`
@@ -134,7 +147,6 @@ const AccountError = styled.p`
 
 const Home = () => {
   const navigate = useNavigate();
-  const { setDocumentId, setUserId } = useGameStore();
   const [inputEmail, setInputEmail] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [inputName, setInputName] = useState("");
@@ -153,7 +165,6 @@ const Home = () => {
       Object.values(realTime).filter((data) => data.pin === `${inputPin}`);
 
     if (room.length > 0) {
-      setDocumentId(room[0].id);
       navigate(`/part/${room[0].id}/${inputPin} `);
     }
   }
@@ -214,8 +225,6 @@ const Home = () => {
         return userData;
       })
       .then((userData) => {
-        setUserId(userData.userId);
-        localStorage.setItem("userId", userData.userId);
         navigate(`/dashboard`);
 
         toast.warn(`${userData.name}你好`, {
@@ -251,24 +260,6 @@ const Home = () => {
     });
   }
 
-  useEffect(() => {
-    function handleBeforeUnload(e) {
-      e.preventDefault();
-      console.log("beforeUnload");
-    }
-
-    function handleUnload() {
-      console.log("unload");
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleUnload);
-    };
-  }, []);
-
   return (
     <WrapHome>
       <Logo src="logo.png" alt="" />
@@ -300,55 +291,69 @@ const Home = () => {
             className="w-[500px]"
             onValueChange={handleEmptyInput}
           >
-            <TabsList className="grid w-full grid-cols-2 h-[5.6rem]">
-              <TabsTrigger className="h-[5rem] text-4xl" value="login">
+            <TabsList className="grid w-full grid-cols-2 h-[5.6rem] ">
+              <TabsTrigger
+                className="h-[5rem] text-4xl small:text-3xl"
+                value="login"
+              >
                 登入
               </TabsTrigger>
-              <TabsTrigger className="h-[5rem] text-4xl" value="register">
+              <TabsTrigger
+                className="h-[5rem] text-4xl small:text-3xl"
+                value="register"
+              >
                 註冊
               </TabsTrigger>
             </TabsList>
             <TabsContent value="login">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-[3.2rem] my-10">
+                  <CardTitle className="text-[3.2rem] my-10  small:text-[2.4rem] small:my-2">
                     已經有帳號了嗎?
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-10">
+                <CardContent className="space-y-10 small:space-y-5">
                   <AccountError>
                     {isLoginError && "帳號或密碼輸入錯誤"}
                   </AccountError>
-                  <div className="space-y-2">
-                    <Label className=" text-[1.6rem]" htmlFor="email">
+                  <div className="space-y-2 ">
+                    <Label
+                      className=" text-[1.6rem] small:text-[1.4rem]"
+                      htmlFor="email"
+                    >
                       電子信箱
                     </Label>
                     <Input
                       type="email"
-                      className="text-[1.6rem] h-[5rem]"
+                      className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
                       id="email"
                       value={inputEmail}
                       onChange={(e) => setInputEmail(e.target.value)}
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label className=" text-[1.6rem]" htmlFor="password">
+                  <div className="space-y-2 flex flex-col">
+                    <Label
+                      className=" text-[1.6rem] small:text-[1.4rem]"
+                      htmlFor="password"
+                    >
                       密碼
                     </Label>
-                    <Input
-                      className="text-[1.6rem] h-[5rem] "
+                    <WrapPassword
+                      className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem] "
                       id="password"
                       value={inputPassword}
                       onChange={(e) => setInputPassword(e.target.value)}
                       required
+                      feedback={false}
+                      tabIndex={1}
                     />
                   </div>
                 </CardContent>
                 <CardFooter>
                   <Button
                     onClick={handleLogin}
-                    className="text-[2.4rem] h-[5rem] w-[100%] mt-20"
+                    className="text-[2.4rem] h-[5rem] w-[100%] mt-20 small:mt-10 small:h-[4rem] small:text-[2rem]"
                   >
                     登入
                   </Button>
@@ -359,20 +364,23 @@ const Home = () => {
               <form action="" onSubmit={(e) => e.preventDefault()}>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-[3.2rem] my-10">
+                    <CardTitle className="text-[3.2rem] my-10 small:text-[2.4rem] small:my-0 ">
                       感謝你的註冊呦
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-10">
+                  <CardContent className="space-y-10 small:space-y-6">
                     <AccountError>
                       {isRegisterError && "此帳號已註冊"}
                     </AccountError>
                     <div className="space-y-2">
-                      <Label className=" text-[1.6rem]" htmlFor="email">
+                      <Label
+                        className=" text-[1.6rem] small:text-[1.4rem]"
+                        htmlFor="email"
+                      >
                         電子信箱
                       </Label>
                       <Input
-                        className="text-[1.6rem] h-[5rem]"
+                        className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
                         id="email"
                         type="email"
                         value={inputEmail}
@@ -382,25 +390,33 @@ const Home = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className=" text-[1.6rem]" htmlFor="password">
+                      <Label
+                        className=" text-[1.6rem] small:text-[1.4rem]"
+                        htmlFor="password"
+                      >
                         密碼
                       </Label>
-                      <Input
-                        className="text-[1.6rem] h-[5rem] "
+                      <WrapPassword
+                        className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem] "
                         id="password"
                         value={inputPassword}
                         onChange={(e) => setInputPassword(e.target.value)}
                         pattern="^[\da-zA-Z]{6,}$"
                         title="密碼必須大於6位且只能包含數字和英文字母"
                         required
+                        feedback={false}
+                        tabIndex={1}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className=" text-[1.6rem]" htmlFor="name">
+                      <Label
+                        className=" text-[1.6rem] small:text-[1.4rem]"
+                        htmlFor="name"
+                      >
                         使用者名稱
                       </Label>
                       <Input
-                        className="text-[1.6rem] h-[5rem] "
+                        className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
                         id="name"
                         value={inputName}
                         onChange={(e) => setInputName(e.target.value)}
@@ -412,7 +428,7 @@ const Home = () => {
                   </CardContent>
                   <CardFooter>
                     <Button
-                      className="text-[2.4rem] h-[5rem] w-[100%] mt-20"
+                      className="text-[2.4rem] h-[5rem] w-[100%] mt-20  small:mt-10 small:h-[4rem] small:text-[2rem]"
                       onClick={handleRegister}
                     >
                       註冊

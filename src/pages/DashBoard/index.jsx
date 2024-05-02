@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import Header from "../../components/Header";
-import { useGameStore } from "../../utils/hook/useGameStore";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import theme from "@/components/css/theme";
@@ -16,9 +15,7 @@ import Delete from "./Delete";
 import Image from "./Image";
 import Plus from "./Plus";
 import {
-  addFireStore,
   deleteFireStore,
-  getFireStore,
   setFireStore,
   updateFireStore,
 } from "@/utils/reviseFireStore";
@@ -28,7 +25,7 @@ import moment from "moment";
 import { useGetFireStores } from "@/utils/hook/useGetFireStore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateRealTime } from "@/utils/reviseRealTime";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { app, db } from "@/utils/firebase";
 import ReactLoading from "react-loading";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -38,22 +35,34 @@ const WrapDashBoard = styled.div`
   width: 70%;
   margin: 0 auto;
   text-align: left;
+
   margin-top: 2rem;
+
+  ${theme.breakpoints.md} {
+    width: 90%;
+    h2 {
+      font-size: 3rem;
+    }
+  }
 `;
 
 const WrapQuestionBanks = styled.div`
   margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  justify-content: center;
   gap: 2rem;
 
   ${theme.breakpoints.md} {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+  }
+  ${theme.breakpoints.sm} {
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 
 const WrapQuestionBank = styled.div`
-  width: auto;
+  width: 100%;
   height: 30rem;
   box-shadow: ${theme.shadow};
   border-radius: 5px;
@@ -76,18 +85,34 @@ const WrapQBankInfo = styled.div`
   justify-content: flex-start;
   text-align: left;
   gap: 1rem;
+
+  ${theme.breakpoints.sm} {
+    margin: 1rem 1rem;
+  }
 `;
 
 const QBankName = styled.div`
   font-size: 2rem;
+  height: 4.2rem;
   border-radius: 5px;
   border: none;
   /* padding: 0 10px; */
+
+  ${theme.breakpoints.md} {
+    font-size: 1.8rem;
+  }
+  ${theme.breakpoints.sm} {
+    font-size: 1.6rem;
+  }
 `;
 
 const QBankTime = styled.p`
   font-size: 1.4rem;
   color: #adadad;
+
+  ${theme.breakpoints.sm} {
+    font-size: 1.2rem;
+  }
 `;
 
 const WrapQBankButtons = styled.div`
@@ -107,7 +132,7 @@ const WrapHoverCardArrow = styled(HoverCard.Arrow)`
 `;
 
 const WrapContextMenuContent = styled(ContextMenuContent)`
-  width: 10;
+  /* width: 10; */
 `;
 
 const WrapContextMenuItem = styled(ContextMenuItem)`
@@ -146,6 +171,15 @@ const AddQBankButton = styled.div`
   border-radius: 50%;
   padding: 0.5rem;
   box-shadow: 0px 3px 8px 0px #3333337a;
+  background-color: #fbf7eb;
+
+  ${theme.breakpoints.sm} {
+    right: 2rem;
+    bottom: 2rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    padding: 0.5rem;
+  }
 `;
 
 const HoverCardContent = styled.div`
@@ -178,7 +212,6 @@ const DashBoard = () => {
 
   const navigate = useNavigate();
 
-  const { userId, setDocumentId } = useGameStore();
   const [isHover, setIsHover] = useState(false);
   const [data, setData] = useState([]);
   const chooseQBankId = useRef("");
@@ -225,7 +258,7 @@ const DashBoard = () => {
     setFireStore(`users/${uid}/qbanks`, uuid, { id: uuid });
     setFireStore("qbank", uuid, {
       editTime: serverTimestamp(),
-      name: `${moment().format("YYYY/MM/D h:mm:ss")}`,
+      name: `${moment().format("YYYY/MM/D h:mm")}`,
       owner: "icecube0816",
       id: uuid,
       mainImg: "",
@@ -258,7 +291,7 @@ const DashBoard = () => {
 
       if (validImageTypes.includes(fileType)) {
         const storage = getStorage();
-        const imagesRef = ref(storage, `${serverTimestamp()}`);
+        const imagesRef = ref(storage, `${Date.now()}`);
         uploadBytes(imagesRef, file)
           .then((snapshot) => {
             getDownloadURL(snapshot.ref)
@@ -287,13 +320,12 @@ const DashBoard = () => {
   function handleHost(id) {
     const pin = Math.floor(Math.random() * 900000) + 100000;
 
-    setDocumentId(id);
-
     updateRealTime(id, {
       id,
       pin: pin.toString(),
       question: { answer: 1, id: 0 },
       state: "lobby",
+      users: {},
     });
     navigate(`/host/${id}/${pin}`);
   }
@@ -333,8 +365,8 @@ const DashBoard = () => {
                           </WrapQBankImg>
                           <WrapQBankInfo>
                             <QBankName>
-                              {item.name.slice(0, 9) +
-                                `${item.name.length > 16 ? "..." : ""}`}
+                              {item.name.slice(0, 15) +
+                                `${item.name.length > 15 ? "..." : ""}`}
                             </QBankName>
 
                             <QBankTime>

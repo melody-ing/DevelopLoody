@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-const Timeout = ({ user, answer }) => {
+const Timeout = ({ user, answer, setIsAnswer }) => {
+  useEffect(() => {
+    setIsAnswer(false);
+  }, []);
+
   return (
     <div>
       <div>時間到</div>

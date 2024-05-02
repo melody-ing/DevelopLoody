@@ -26,9 +26,28 @@ const Button = styled.div`
     letter-spacing: 1.2rem;
     transform: translate(0.6rem);
   }
+
+  ${theme.breakpoints.md} {
+    ${({ $bg, $color, $hoverbg, $size }) =>
+      `
+    width: ${$size * 0.9}rem; 
+    box-shadow: 0 3.4px 0px 0 ${$hoverbg};
+    font-size: ${(($size * 2) / 10) * 0.95}rem;
+    height: ${($size / 2.4) * 0.9}rem;
+     `};
+  }
+  ${theme.breakpoints.sm} {
+    ${({ $bg, $color, $hoverbg, $size }) =>
+      `
+    width: ${$size * 0.7}rem; 
+    box-shadow: 0 3.4px 0px 0 ${$hoverbg};
+    font-size: ${(($size * 2) / 10) * 0.9}rem;
+    height: ${$size / 2.4}rem;
+     `};
+  }
 `;
 
-const Buttons = ({ children, type, size = "default" }) => {
+const Buttons = ({ children, type, size = "default", style }) => {
   // type secondary :#996484
   // type light :#F5F2F0
   // type success :#78B159
@@ -63,6 +82,7 @@ const Buttons = ({ children, type, size = "default" }) => {
       color = `${theme.colors.light}`;
       hoverbg = `#a5a4a4`;
       break;
+
     default:
       bg = `${theme.colors.secondary}`;
       color = `${theme.colors.light}`;
@@ -82,8 +102,12 @@ const Buttons = ({ children, type, size = "default" }) => {
       break;
 
     case "large":
-      size = "20";
+      size = "14";
 
+      break;
+
+    case "sound":
+      size = "15";
       break;
 
     default:
@@ -98,6 +122,7 @@ const Buttons = ({ children, type, size = "default" }) => {
       $color={color}
       $hoverbg={hoverbg}
       $size={size}
+      style={style}
     >
       <p>{children}</p>
     </Button>

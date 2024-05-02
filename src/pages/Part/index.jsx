@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { database } from "../../utils/firebase";
-import { ref, push, set } from "firebase/database";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGameStore } from "../../utils/hook/useGameStore";
-import { pushRealTime, updateRealTime } from "../../utils/reviseRealTime";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "../../utils/firebase";
+import { pushRealTime } from "../../utils/reviseRealTime";
 import { Timestamp } from "firebase/firestore";
 import { useGetRealTimeNavigate } from "@/utils/hook/useGetRealTime";
 
@@ -56,7 +51,7 @@ const InputName = styled.input`
   }
 
   ${theme.breakpoints.md} {
-    height: 3rem;
+    height: 6rem;
   }
 `;
 
@@ -80,11 +75,8 @@ const Button = styled.button`
 
 const Part = () => {
   const [userName, setUserName] = useState("");
-  const { setUserId, setDocumentId } = useGameStore();
   const { documentId: getUrlDocumentId } = useParams();
-  useEffect(() => {
-    setDocumentId(getUrlDocumentId);
-  }, [getUrlDocumentId]);
+
   const {
     data: realTimeData,
     isError: isRTError,
@@ -101,8 +93,7 @@ const Part = () => {
         score: 0,
         time: Timestamp.now(),
       });
-      setUserId(userId);
-      localStorage.setItem("partId", userId);
+      localStorage.setItem("userId", userId);
       navigate(`/part/game/${getUrlDocumentId}`);
     }
   }

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const WrapRank = styled.div`
   display: flex;
@@ -8,30 +9,40 @@ const WrapRank = styled.div`
   align-items: center;
 `;
 
-const UsersRank = styled.div`
-  margin-top: 3rem;
+const WrapUsersRank = styled(ScrollArea)`
+  width: 60%;
+
+  height: calc(100vh - 20rem);
+`;
+
+const UserRank = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 60%;
+  width: 70%;
+  margin: 2rem auto;
   font-size: 3rem;
   box-shadow: ${theme.shadow};
   padding: 2rem;
   border-radius: 10px;
+  background-color: #fff;
 `;
 
-const Rank = ({ users }) => {
+const Rank = ({ users, audioRef }) => {
   return (
     <WrapRank>
-      {Object.values(users)
-        .sort((a, b) => b.score - a.score)
-        .map((user, index) => {
-          return (
-            <UsersRank key={index}>
-              <div>{user.name}</div>
-              <div>{user.score}</div>
-            </UsersRank>
-          );
-        })}
+      <WrapUsersRank>
+        {Object.values(users)
+          .sort((a, b) => b.score - a.score)
+          .map((user, index) => {
+            return (
+              <UserRank key={index}>
+                <div>{user.name}</div>
+                <div>{user.score}</div>
+              </UserRank>
+            );
+          })}
+      </WrapUsersRank>
+      <audio src="/bgm/rank.mp3" ref={audioRef} />
     </WrapRank>
   );
 };

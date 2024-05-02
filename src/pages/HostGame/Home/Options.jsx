@@ -2,14 +2,22 @@ import React from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 
+const Wrapper = styled.div`
+  position: fixed;
+  width: 100%;
+  bottom: 6rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const WrapOptions = styled.div`
-  position: absolute;
-  width: 99%;
-  bottom: 0;
-  left: 0;
+  width: 80%;
+
   display: grid;
   grid-template-columns: 50% 50%;
-  gap: 10px;
+  gap: 20px;
 
   h3 {
     max-width: 100%;
@@ -17,15 +25,15 @@ const WrapOptions = styled.div`
     justify-content: center;
     align-items: center;
     height: 8rem;
-    background-color: ${theme.colors.light};
+    font-size: 3rem;
+    background-color: #e6eaea;
+    border-radius: 5px;
+    box-shadow: 0px 6px 0px 0 #4e5a56;
   }
 `;
 
 const WrapShortAnswer = styled.div`
-  position: absolute;
   width: 100%;
-  bottom: 5rem;
-  left: 0;
 
   h3 {
     margin: 0 auto;
@@ -35,7 +43,9 @@ const WrapShortAnswer = styled.div`
     align-items: center;
     height: 10rem;
     font-size: 5rem;
-    background-color: ${theme.colors.light};
+    background-color: #e0e7e5;
+    border-radius: 5px;
+    box-shadow: 0px 8px 0px 0 #4e5a56;
   }
 `;
 
@@ -45,36 +55,42 @@ const Correct = styled.svg`
   color: ${theme.colors.danger};
 `;
 
-const Options = ({ questions, answer }) => {
+const Options = ({ questions, answer, state }) => {
   return (
-    <>
-      {(questions.type === "mc" || questions.type === "tf") && (
-        <WrapOptions>
-          {questions.options.map((item, index) => {
-            return (
-              <h3 key={index}>
-                {answer === index && (
-                  <Correct
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m4.5 12.75 6 6 9-13.5"
-                    />
-                  </Correct>
-                )}
-                {item}
-              </h3>
-            );
-          })}
-        </WrapOptions>
-      )}
+    <Wrapper>
+      {state === "game" &&
+        (questions.type === "mc" || questions.type === "tf") && (
+          <WrapOptions>
+            {questions.options.map((item, index) => {
+              return <h3 key={index}>{item}</h3>;
+            })}
+          </WrapOptions>
+        )}
+      {state === "timeout" &&
+        (questions.type === "mc" || questions.type === "tf") && (
+          <WrapOptions>
+            {questions.options.map((item, index) => {
+              return (
+                <h3
+                  key={index}
+                  style={
+                    answer === index
+                      ? {
+                          backgroundColor: "#fff384",
+                          boxShadow: "0px 6px 0px 0 #506960",
+                        }
+                      : {
+                          backgroundColor: "#eee",
+                          boxShadow: "none",
+                        }
+                  }
+                >
+                  {item}
+                </h3>
+              );
+            })}
+          </WrapOptions>
+        )}
       {questions.type === "sa" && (
         <WrapShortAnswer>
           {questions.options.map((item, index) => {
@@ -102,7 +118,7 @@ const Options = ({ questions, answer }) => {
           })}
         </WrapShortAnswer>
       )}
-    </>
+    </Wrapper>
   );
 };
 

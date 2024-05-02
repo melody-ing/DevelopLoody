@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import Buttons from "../../components/Buttons";
 import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
-import { useGameStore } from "../../utils/hook/useGameStore";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { QRCodeCanvas } from "qrcode.react";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "@/utils/firebase";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { Timestamp } from "firebase/firestore";
 
@@ -44,6 +41,10 @@ const JoinCode = styled.div`
     width: 8rem;
     height: 8rem;
   }
+
+  ${theme.breakpoints.sm} {
+    flex-direction: column;
+  }
 `;
 
 const WrapCode = styled.div`
@@ -58,6 +59,18 @@ const WrapCode = styled.div`
   p {
     padding: 0 2rem;
     font-size: 6rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    width: auto;
+    div {
+      padding: 0 2rem;
+      height: 3.6rem;
+    }
+    p {
+      padding: 0 2rem;
+      font-size: 5rem;
+    }
   }
 `;
 
@@ -98,7 +111,6 @@ const StartBtn = styled.div`
 
 const Host = () => {
   const navigate = useNavigate();
-  const { setEventData, setQbankData } = useGameStore();
 
   const { pin: getUrlPin, documentId: getUrlDocumentId } = useParams();
   const {
@@ -117,15 +129,9 @@ const Host = () => {
       removeRealTime(getUrlDocumentId);
       navigate("/dashboard");
     } else {
-      navigate(`/host/game/${getUrlDocumentId}`);
+      navigate(`/host/${getUrlDocumentId}/${getUrlPin}`);
     }
   };
-
-  useEffect(() => {
-    if (eventData) {
-      setEventData(eventData);
-    }
-  }, [eventData]);
 
   function handleState() {
     updateRealTime(getUrlDocumentId, { state: "game", time: Timestamp.now() });
@@ -147,7 +153,7 @@ const Host = () => {
             bgColor={`${theme.colors.primary}`}
             fgColor={`${theme.colors.tertiary}`}
             level={"L"}
-            size={150}
+            size={window.innerWidth < 940 ? 130 : 150}
           />
         </JoinCode>
         <Participants>
