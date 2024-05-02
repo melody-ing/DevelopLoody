@@ -1,3 +1,4 @@
+import theme from "@/components/css/theme";
 import React from "react";
 import styled from "styled-components";
 
@@ -8,6 +9,16 @@ const WrapMedia = styled.div`
   img {
     max-height: 40rem;
     object-fit: contain;
+  }
+
+  ${theme.breakpoints.sm} {
+    position: absolute;
+    left: calc(100vw - 45rem);
+
+    img {
+      max-height: 40rem;
+      object-fit: contain;
+    }
   }
 `;
 

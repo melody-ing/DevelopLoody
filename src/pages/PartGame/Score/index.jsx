@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { updateRealTime } from "../../../utils/reviseRealTime";
-import { useGameStore } from "../../../utils/hook/useGameStore";
 
 const User = styled.div`
   position: fixed;
@@ -10,7 +9,7 @@ const User = styled.div`
   right: 0;
   width: 100%;
   height: 3.4rem;
-  background-color: #7a8f6e;
+  background-color: #4c5845;
   color: ${theme.colors.light};
   display: flex;
   justify-content: space-around;
@@ -22,13 +21,12 @@ const User = styled.div`
   }
 `;
 
-const Score = ({ user, isRank }) => {
-  const { userId, documentId } = useGameStore();
+const Score = ({ user, isRank, getUrlDocumentId, userId }) => {
   const totalScore = user.score + user.addScore;
 
   useEffect(() => {
     if (isRank)
-      updateRealTime(`${documentId}/users/${userId}`, {
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         score: totalScore,
       });
   }, [isRank]);

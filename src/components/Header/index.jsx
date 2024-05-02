@@ -52,17 +52,33 @@ const WrapSheetContent = styled(SheetContent)`
   text-align: left;
   display: flex;
   flex-direction: column;
+
+  ${theme.breakpoints.sm} {
+    max-width: 24rem;
+  }
 `;
 
 const SheetUserImg = styled(WrapAvatar)`
   height: 6rem;
   width: 6rem;
+  ${theme.breakpoints.sm} {
+    height: 5rem;
+    width: 5rem;
+  }
 `;
 
-const SheetName = styled.h3``;
+const SheetName = styled.h3`
+  ${theme.breakpoints.sm} {
+    font-size: 2rem;
+  }
+`;
 const SheetEmail = styled.p`
   color: #7d7a70;
   line-height: 0.5rem;
+
+  ${theme.breakpoints.sm} {
+    font-size: 1.4rem;
+  }
 `;
 const SheetHr = styled.hr`
   border: none;
@@ -130,12 +146,10 @@ const Header = ({ children }) => {
           <SheetEmail>{getUserData?.email}</SheetEmail>
           <SheetHr />
           <Logout onClick={handleLogout}>
-            <Buttons>登出</Buttons>
+            <Buttons size="small">登出</Buttons>
           </Logout>
         </WrapSheetContent>
       </Sheet>
-
-      {/* {isLogoutBtn && <Logout onClick={handleLogout}>登出</Logout>} */}
     </WarpHeader>
   );
 };

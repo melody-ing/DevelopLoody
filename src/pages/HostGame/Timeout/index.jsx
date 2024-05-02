@@ -2,6 +2,7 @@ import React, { PureComponent, useEffect } from "react";
 import { Treemap, ResponsiveContainer } from "recharts";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const COLORS = [
   `#808F7C`,
@@ -73,26 +74,36 @@ class CustomizedContent extends PureComponent {
 }
 
 const WrapTimeout = styled.div`
-  width: 100%;
-  height: 30rem;
+  width: 60%;
+  height: 50%;
   margin: 3rem auto;
+  display: flex;
+  justify-content: center;
+`;
+
+const WrapShortAnswers = styled(ScrollArea)`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 32rem);
 `;
 
 const WrapShortAnswer = styled.div`
-  margin: 0 auto;
-  margin-top: 3rem;
+  margin: 2rem auto;
   display: flex;
   justify-content: space-between;
-  width: 70%;
+  width: 90%;
+  height: 6.5rem;
   ${({ $isCorrect }) => $isCorrect && `background-color: #fbeb8f`};
 
   font-size: 3rem;
   box-shadow: ${theme.shadow};
   padding: 2rem;
   border-radius: 10px;
+  background-color: #fff;
 `;
 
-const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
+const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
   const qType = qbank.questions[qNumber].type;
 
   const peopleNum = (ans) =>
@@ -135,7 +146,7 @@ const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
         </ResponsiveContainer>
       )}
       {questions?.type === "sa" && (
-        <>
+        <WrapShortAnswers>
           {Object.values(users)
             .sort((a, b) => b.addScore - a.addScore)
             .map(
@@ -158,8 +169,9 @@ const Timeout = ({ setReply, users, qbank, qNumber, questions }) => {
                 </WrapShortAnswer>
               )
           )}
-        </>
+        </WrapShortAnswers>
       )}
+      <audio src="/bgm/timeout.mp3" ref={audioRef} />
     </WrapTimeout>
   );
 };

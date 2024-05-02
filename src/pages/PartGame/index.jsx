@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import Home from "./Home";
 import theme from "../../components/css/theme";
 import Options from "./Home/Options";
 import Timeout from "./Timeout";
@@ -9,28 +8,25 @@ import End from "./End";
 import Lobby from "./Lobby";
 import Score from "./Score";
 import CountDown from "./CountDown";
-import PrimaryBg from "../../components/css/PrimaryBg";
-import { useGameStore } from "../../utils/hook/useGameStore";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
-import {
-  useGetRealTime,
-  useGetRealTimeNavigate,
-} from "../../utils/hook/useGetRealTime";
-import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
+import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
+import { updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate, useParams } from "react-router-dom";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { app } from "@/utils/firebase";
 import Media from "./Home/Media";
 import ReactLoading from "react-loading";
-import DynamicBG from "@/components/tool/DynamicBG";
 import { Timestamp } from "firebase/firestore";
+import GameAniBg from "@/components/css/GameAniBg";
 
 const WrapGame = styled.div`
-  background-color: #ebdb86;
   width: 100vw;
   height: 100vh;
   position: relative;
-  padding-top: 4rem;
+  overflow: hidden;
+`;
+
+const WrapQuestion = styled.div`
+  display: flex;
+  width: 100%;
 `;
 
 const Question = styled.h2`
@@ -40,9 +36,12 @@ const Question = styled.h2`
   margin: 0 auto;
   margin-bottom: 2rem;
   background-color: ${theme.colors.light};
+  margin-top: 4rem;
 
   ${theme.breakpoints.sm} {
     width: 90%;
+    font-size: 2rem;
+    line-height: 3.5rem;
   }
 `;
 
@@ -53,7 +52,7 @@ const Loading = styled.div`
 `;
 
 const PartGame = () => {
-  const userId = localStorage.getItem("partId");
+  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
   const { documentId: getUrlDocumentId } = useParams();
 
@@ -117,8 +116,10 @@ const PartGame = () => {
       }, 0);
     }
   }, [userId, navigate]);
+  console.log(user);
 
   if (qbank && user && qNumber !== null && users && state) {
+    if (!user) navigate("/");
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
@@ -134,14 +135,19 @@ const PartGame = () => {
 
             <Options
               questions={questions}
-              user={user}
               qTime={qTime}
               addScore={addScore}
               isAnswer={isAnswer}
               setIsAnswer={setIsAnswer}
+              getUrlDocumentId={getUrlDocumentId}
+              userId={userId}
             />
 
-            <Score user={user} />
+            <Score
+              user={user}
+              userId={userId}
+              getUrlDocumentId={getUrlDocumentId}
+            />
             {isAnswer || (
               <CountDown questions={questions} timeoutSec={timeoutSec} />
             )}
@@ -158,8 +164,18 @@ const PartGame = () => {
         title = questions.title;
         content = (
           <>
-            <Timeout user={user} questions={questions} answer={answer} />
-            <Score user={user} isRank={true} />
+            <Timeout
+              user={user}
+              questions={questions}
+              answer={answer}
+              setIsAnswer={setIsAnswer}
+            />
+            <Score
+              user={user}
+              isRank={true}
+              getUrlDocumentId={getUrlDocumentId}
+              userId={userId}
+            />
           </>
         );
         nextState = "rank";
@@ -174,9 +190,7 @@ const PartGame = () => {
           </>
         );
         nextState = "rank";
-        // updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
-        //   selected: null,
-        // });
+
         console.log(getUrlDocumentId, userId);
         break;
 
@@ -196,6 +210,7 @@ const PartGame = () => {
 
   return (
     <WrapGame>
+      <GameAniBg />
       {isLoading || isRTLoading ? (
         <Loading>
           <ReactLoading
@@ -206,11 +221,16 @@ const PartGame = () => {
           />
         </Loading>
       ) : (
-        <>
-          {state !== "lobby" && <Question>{title}</Question>}
+        <div>
+          {state !== "lobby" && (
+            <WrapQuestion>
+              {" "}
+              <Question>{title}</Question>
+            </WrapQuestion>
+          )}
 
           {content}
-        </>
+        </div>
       )}
     </WrapGame>
   );

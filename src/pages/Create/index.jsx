@@ -33,43 +33,33 @@ import { serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { v4 as uuidv4 } from "uuid";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import { Slide, toast } from "react-toastify";
 import ReactLoading from "react-loading";
-import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 
-const QBankNameInput = styled(TextField)`
-  width: 100%;
-  outline: none;
-  border: none;
-
-  & .MuiOutlinedInput-root {
-    font-size: 2rem;
-    width: 100%;
-  }
-
-  & .MuiOutlinedInput-input {
-  }
-
-  & .MuiFormLabel-root {
-    font-size: 2rem;
-  }
-`;
-
 const Wrapper = styled.div`
-  height: 100vh;
+  max-height: 100vh;
   width: 100%;
   display: flex;
   height: calc(100vh - 6rem);
+
+  ${theme.breakpoints.sm} {
+    flex-direction: column;
+  }
 `;
 
 const QuestionsPositions = styled.div`
   position: relative;
-  width: 40rem;
+  width: 30rem;
   height: 100%;
+
+  ${theme.breakpoints.sm} {
+    height: auto;
+    width: 100%;
+    box-shadow: 0px 1px 4px 0px #33333369;
+  }
 `;
 
 const QuestionsWrapper = styled(ScrollArea)`
@@ -79,15 +69,36 @@ const QuestionsWrapper = styled(ScrollArea)`
   box-shadow: inset -10px 0 6px -10px rgba(0, 0, 0, 0.2);
   position: relative;
   padding-bottom: 7rem;
+
+  ${theme.breakpoints.sm} {
+    padding-bottom: 0rem;
+  }
+`;
+
+const WrapDroppableDiv = styled.div`
+  ${theme.breakpoints.sm} {
+    display: flex;
+    justify-content: center;
+  }
 `;
 
 const WrapButton = styled.div`
   width: 100%;
   z-index: 100;
+
   position: absolute;
   bottom: 2rem;
   left: 50%;
   transform: translate(-50%, 0);
+
+  ${theme.breakpoints.sm} {
+    flex-direction: column;
+    right: -2rem;
+    top: 2rem;
+    left: auto;
+    /* transform: translate(-5rem); */
+    width: 6rem;
+  }
 `;
 
 const DropImg = styled.img`
@@ -102,10 +113,20 @@ const SingleButton = styled.div`
   align-items: center;
 `;
 
+const WrapDropdownMenuContent = styled(DropdownMenuContent)`
+  ${theme.breakpoints.sm} {
+    transform: translate(-18%);
+  }
+`;
+
 const WrapWrapQuestion = styled.div`
-  width: 24.9rem;
+  width: 22rem;
   padding: 0.6rem 0rem;
   padding-left: 0.5rem;
+
+  ${theme.breakpoints.sm} {
+    width: 10rem;
+  }
 `;
 
 const WrapQuestion = styled.div`
@@ -130,18 +151,39 @@ const WrapQuestion = styled.div`
     width: 4rem;
     height: 4rem;
   }
+
+  ${theme.breakpoints.sm} {
+    img {
+      margin-top: 0.4rem;
+      width: 3rem;
+      height: 3rem;
+    }
+  }
 `;
 
 const FlexTop = styled.div`
   display: flex;
   gap: 1.5rem;
   width: 100%;
+
+  ${theme.breakpoints.sm} {
+    img {
+      display: none;
+    }
+  }
 `;
 
 const Title = styled.div`
-  font-size: 16px;
+  font-size: 1.6rem;
   width: 73%;
   overflow-wrap: break-word;
+  height: 1.6rem;
+
+  ${theme.breakpoints.sm} {
+    width: 100%;
+    font-size: 1.2rem;
+    height: 2.6rem;
+  }
 `;
 
 const Information = styled.div`
@@ -156,27 +198,70 @@ const EditAreaWrapper = styled.div`
   align-items: center;
   width: 100%;
   position: relative;
+
+  ${theme.breakpoints.sm} {
+    margin-top: 1rem;
+    height: 250%;
+  }
 `;
 
-const QuestionInput = styled(TextField)`
+const QuestionInput = styled.textarea`
   width: 96%;
+  box-shadow: 0px 0px 4px 0px #33333369;
+  /* border: 1px solid black; */
+  border-radius: 5px;
+  min-height: 6rem;
 
-  & .MuiOutlinedInput-root {
-    box-shadow: 0px 0px 4px 0px #33333369;
-    font-size: 2.6rem;
-    width: 100%;
-    margin-top: 2rem;
-  }
-
-  & .MuiOutlinedInput-input {
-    text-align: center;
-  }
-
-  & .MuiFormLabel-root {
-    font-size: 2rem;
-    margin-top: 2rem;
-  }
+  margin-top: 2rem;
+  font-size: 2.6rem;
+  text-align: center;
+  padding: 1.5rem;
+  line-height: 3.6rem;
+  resize: vertical;
+  max-height: 50rem;
+  outline: none;
 `;
+// const QuestionInput = styled(TextField)`
+//   width: 96%;
+
+//   & .MuiOutlinedInput-root {
+//     box-shadow: 0px 0px 4px 0px #33333369;
+//     font-size: 2.6rem;
+//     width: 100%;
+//     margin-top: 2rem;
+//   }
+
+//   & .MuiOutlinedInput-input {
+//     text-align: center;
+//   }
+
+//   & .MuiFormLabel-root {
+//     font-size: 2rem;
+//     margin-top: 2rem;
+//   }
+
+//   ${theme.breakpoints.sm} {
+//     width: 90%;
+
+//     & .MuiOutlinedInput-root {
+//       box-shadow: 0px 0px 4px 0px #33333369;
+//       font-size: 2.2rem;
+//       width: 100%;
+//       margin-top: 0rem;
+//       padding: 0;
+//     }
+
+//     & .MuiOutlinedInput-input {
+//       text-align: center;
+//       padding: 1rem;
+//     }
+
+//     & .MuiFormLabel-root {
+//       font-size: 1.4rem;
+//       margin-top: 0rem;
+//     }
+//   }
+// `;
 
 const WrapAnswer = styled.div`
   width: 94%;
@@ -187,6 +272,11 @@ const WrapAnswer = styled.div`
   margin-top: 4rem;
   position: absolute;
   bottom: 2rem;
+
+  ${theme.breakpoints.sm} {
+    width: 90%;
+    gap: 1rem;
+  }
 `;
 
 const WrapAnswerInput = styled.div`
@@ -207,6 +297,15 @@ const WrapAnswerInput = styled.div`
     color: ${theme.colors.secondary};
     accent-color: ${theme.colors.tertiary};
   }
+
+  ${theme.breakpoints.sm} {
+    height: 5.4rem;
+    padding-left: 1rem;
+
+    input[type="radio"] {
+      width: 3rem;
+    }
+  }
 `;
 
 const TextAreaInput = styled(TextField)`
@@ -226,6 +325,25 @@ const TextAreaInput = styled(TextField)`
   & .MuiOutlinedInput-notchedOutline {
     border: none;
   }
+
+  ${theme.breakpoints.sm} {
+    & .MuiOutlinedInput-root {
+      font-size: 1.6rem;
+      width: 100%;
+    }
+
+    & .MuiOutlinedInput-input {
+    }
+
+    & .MuiFormLabel-root {
+      font-size: 1.2rem;
+      margin-top: 0.4rem;
+    }
+
+    & .MuiOutlinedInput-notchedOutline {
+      border: none;
+    }
+  }
 `;
 
 const WrapShortAnswerInput = styled.div`
@@ -241,7 +359,12 @@ const WrapShortAnswerInput = styled.div`
   padding-left: 2rem;
   border-radius: 5px;
   position: absolute;
-  bottom: 10rem;
+  bottom: 12rem;
+
+  ${theme.breakpoints.sm} {
+    height: 4rem;
+    bottom: 2rem;
+  }
 `;
 
 const ShortAnswerInput = styled(TextField)`
@@ -307,6 +430,17 @@ const FileLabel = styled.label`
 
     object-fit: contain;
   }
+
+  ${theme.breakpoints.sm} {
+    font-size: 1.2rem;
+    margin-top: 1.6rem;
+    img {
+      max-height: calc(100vh - 54rem);
+      max-width: 70vw;
+
+      object-fit: contain;
+    }
+  }
 `;
 
 const InputMediaDelete = styled.div`
@@ -317,17 +451,82 @@ const InputMediaDelete = styled.div`
   background-color: #ffffffb5;
 `;
 
-const RulesWrapper = styled(ScrollArea)`
+const RulesAreaWrapper = styled(ScrollArea)`
   width: 40rem;
   height: 100%;
   padding: 1rem;
   text-align: left;
   box-shadow: inset 10px 0 6px -10px rgba(0, 0, 0, 0.2);
+
+  ${theme.breakpoints.sm} {
+    width: 100%;
+    height: 45rem;
+    box-shadow: 0px -2px 4px 0px #3333333b;
+  }
 `;
 
 const InputTitle = styled.div`
   margin-top: 2rem;
   margin-bottom: 1rem;
+
+  ${theme.breakpoints.sm} {
+    display: none;
+  }
+`;
+
+const WrapQBankNameInput = styled.div`
+  ${theme.breakpoints.sm} {
+    position: absolute;
+    bottom: 2rem;
+    left: 1rem;
+    width: 100%;
+  }
+`;
+
+const WrapSelected = styled.div`
+  ${theme.breakpoints.sm} {
+    position: absolute;
+    width: 95%;
+    bottom: 8rem;
+    left: 1rem;
+    display: flex;
+    gap: 1rem;
+  }
+`;
+
+const QBankNameInput = styled(TextField)`
+  width: 100%;
+  outline: none;
+  border: none;
+
+  & .MuiOutlinedInput-root {
+    font-size: 2rem;
+    width: 100%;
+  }
+
+  & .MuiOutlinedInput-input {
+  }
+
+  & .MuiFormLabel-root {
+    font-size: 2rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    width: 70%;
+
+    & .MuiOutlinedInput-root {
+      font-size: 1.6rem;
+      width: 100%;
+    }
+
+    & .MuiOutlinedInput-input {
+      height: 1.6rem;
+    }
+
+    & .MuiFormLabel-root {
+      font-size: 1.4rem;
+    }
+  }
 `;
 
 const WrapSelect = styled(Select)`
@@ -337,16 +536,25 @@ const WrapSelect = styled(Select)`
 `;
 
 const WrapSelectTrigger = styled(SelectTrigger)`
-  height: 5rem;
+  height: 4rem;
 
   font-size: 1.6rem;
   line-height: 2rem;
+
+  ${theme.breakpoints.sm} {
+    font-size: 1.4rem;
+  }
 `;
 
 const WrapSelectContent = styled(SelectContent)`
   width: 100%;
   height: 100%;
   cursor: pointer;
+
+  ${theme.breakpoints.sm} {
+    font-size: 1.4rem;
+    width: auto;
+  }
 `;
 
 const WrapSelectItem = styled(SelectItem)`
@@ -360,6 +568,9 @@ const WrapSelectItem = styled(SelectItem)`
   &:hover {
     height: 100%;
   }
+  ${theme.breakpoints.sm} {
+    font-size: 1.4rem;
+  }
 `;
 
 const SaveButton = styled.div`
@@ -370,6 +581,13 @@ const SaveButton = styled.div`
   bottom: 2rem;
   left: 0;
   width: 100%;
+
+  ${theme.breakpoints.sm} {
+    right: 1rem;
+    left: auto;
+    width: auto;
+    bottom: 2.6rem;
+  }
 `;
 const Loading = styled.div`
   display: flex;
@@ -468,6 +686,9 @@ const Create = () => {
     setEditNum(index);
     setTitle(getQbankData.questions[index].title);
     setInputOptions(getQbankData.questions[index].options);
+    setQuestionType(getQbankData.questions[index].type);
+    setTimeLimit(getQbankData.questions[index].timeLimit);
+    setStateQuestions(getQbankData.questions);
   }
 
   useEffect(() => {
@@ -523,10 +744,13 @@ const Create = () => {
 
     if (e === "mc") {
       getQbankData.questions[editNum].options = ["", "", "", ""];
+      getQbankData.questions[editNum].answer = 0;
       setInputOptions(["", "", "", ""]);
     }
     if (e === "tf") {
       getQbankData.questions[editNum].options = ["是", "否"];
+      getQbankData.questions[editNum].answer = 0;
+
       setInputOptions(["是", "否"]);
     }
     if (e === "sa") {
@@ -559,6 +783,8 @@ const Create = () => {
         options = [""];
         break;
     }
+    setInputOptions(options);
+    setTitle("");
 
     getQbankData.questions.push({
       answer: 0,
@@ -596,8 +822,10 @@ const Create = () => {
     getQbankData.questions.splice(index, 1);
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
+  console.log(mediaUrl === "");
 
   function handleFileInput(e) {
+    console.log("onchange");
     if (e) {
       const file = e.target.files[0];
       const fileType = file.type;
@@ -612,13 +840,15 @@ const Create = () => {
         validAudioTypes.includes(fileType)
       ) {
         const storage = getStorage();
-        const imagesRef = ref(storage, `${serverTimestamp()}`);
+        const imagesRef = ref(storage, `${Date.now()}`);
         uploadBytes(imagesRef, file)
           .then((snapshot) => {
             getDownloadURL(snapshot.ref)
               .then((url) => {
                 setMediaUrl(url);
                 getQbankData.questions[editNum].media = url;
+                console.log(getQbankData);
+                console.log(editNum);
                 setFireStore("qbank", getUrlDocumentId, getQbankData);
               })
               .catch((error) => {
@@ -636,6 +866,7 @@ const Create = () => {
   }
 
   function handleDeleteMedia(e) {
+    e.stopPropagation();
     setMediaUrl("");
     getQbankData.questions[editNum].media = "";
     setFireStore("qbank", getUrlDocumentId, getQbankData);
@@ -689,10 +920,14 @@ const Create = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="outline-none">
                     <SingleButton>
-                      <Buttons>新增</Buttons>
+                      <Buttons
+                        size={window.innerWidth < 940 ? "small" : "medium"}
+                      >
+                        新增
+                      </Buttons>
                     </SingleButton>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="border-4">
+                  <WrapDropdownMenuContent className="border-4">
                     <DropdownMenuLabel className="text-2xl ">
                       題目種類
                     </DropdownMenuLabel>
@@ -713,14 +948,23 @@ const Create = () => {
                         </DropdownMenuItem>
                       );
                     })}
-                  </DropdownMenuContent>
+                  </WrapDropdownMenuContent>
                 </DropdownMenu>
               </WrapButton>
               <QuestionsWrapper>
                 <DragDropContext onDragEnd={onDragEnd}>
-                  <Droppable droppableId="123">
+                  <Droppable
+                    WrapDroppable
+                    droppableId="123"
+                    direction={
+                      window.innerWidth < 940 ? "horizontal" : "vertical"
+                    }
+                  >
                     {(provided, snapshot) => (
-                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                      <WrapDroppableDiv
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                      >
                         {stateQuestions?.map((question, index) => (
                           <div key={question.id}>
                             <Draggable
@@ -750,9 +994,15 @@ const Create = () => {
                                             alt=""
                                           />
                                           <Title>
-                                            {question.title.slice(0, 18) +
+                                            {question.title.slice(
+                                              0,
+                                              window.innerWidth < 940 ? 5 : 16
+                                            ) +
                                               `${
-                                                question.title.length > 16
+                                                question.title.length >
+                                                (window.innerWidth < 940
+                                                  ? 5
+                                                  : 16)
                                                   ? "..."
                                                   : ""
                                               }`}
@@ -784,7 +1034,7 @@ const Create = () => {
                           </div>
                         ))}
                         {provided.placeholder}
-                      </div>
+                      </WrapDroppableDiv>
                     )}
                   </Droppable>
                 </DragDropContext>
@@ -805,7 +1055,7 @@ const Create = () => {
                   <>
                     <img src={mediaUrl} />
                     <InputMediaDelete onClick={handleDeleteMedia}>
-                      <Delete size={4.4} />
+                      <Delete size={window.innerWidth < 940 ? 3 : 4.4} />
                     </InputMediaDelete>
                   </>
                 )}
@@ -860,52 +1110,55 @@ const Create = () => {
                   </WrapShortAnswerInput>
                 ))}
             </EditAreaWrapper>
-            <RulesWrapper>
+            <RulesAreaWrapper>
               <InputTitle>題庫名稱</InputTitle>
+              <WrapQBankNameInput>
+                <QBankNameInput
+                  value={qBankName}
+                  onChange={handleQBankName}
+                  error={!isQBankNameFill}
+                  label={isQBankNameFill ? null : "尚未輸入"}
+                />
+              </WrapQBankNameInput>
+              <WrapSelected>
+                <InputTitle>題型</InputTitle>
+                <WrapSelect
+                  value={questionType}
+                  onValueChange={handleQuestionType}
+                >
+                  <WrapSelectTrigger>
+                    <SelectValue placeholder="請選擇" />
+                  </WrapSelectTrigger>
+                  <WrapSelectContent>
+                    <WrapSelectItem value="mc">選擇題</WrapSelectItem>
+                    <WrapSelectItem value="tf">是非題</WrapSelectItem>
+                    <WrapSelectItem value="sa">簡答題</WrapSelectItem>
+                  </WrapSelectContent>
+                </WrapSelect>
 
-              <QBankNameInput
-                value={qBankName}
-                onChange={handleQBankName}
-                error={!isQBankNameFill}
-                label={isQBankNameFill ? null : "尚未輸入"}
-              />
-              <InputTitle>題型</InputTitle>
-              <WrapSelect
-                value={questionType}
-                onValueChange={handleQuestionType}
-              >
-                <WrapSelectTrigger>
-                  <SelectValue placeholder="請選擇" />
-                </WrapSelectTrigger>
-                <WrapSelectContent>
-                  <WrapSelectItem value="mc">選擇題</WrapSelectItem>
-                  <WrapSelectItem value="tf">是非題</WrapSelectItem>
-                  <WrapSelectItem value="sa">簡答題</WrapSelectItem>
-                </WrapSelectContent>
-              </WrapSelect>
-
-              <InputTitle>每題時間</InputTitle>
-              <WrapSelect value={timeLimit} onValueChange={handleTimeLimit}>
-                <WrapSelectTrigger>
-                  <SelectValue placeholder="請選擇" />
-                </WrapSelectTrigger>
-                <WrapSelectContent>
-                  <WrapSelectItem value={10}>10秒</WrapSelectItem>
-                  <WrapSelectItem value={20}>20秒</WrapSelectItem>
-                  <WrapSelectItem value={30}>30秒</WrapSelectItem>
-                  <WrapSelectItem value={60}>1分鐘</WrapSelectItem>
-                  <WrapSelectItem value={90}>1分鐘30秒</WrapSelectItem>
-                  <WrapSelectItem value={120}>2分鐘</WrapSelectItem>
-                  <WrapSelectItem value={180}>3分鐘</WrapSelectItem>
-                </WrapSelectContent>
-              </WrapSelect>
+                <InputTitle>每題時間</InputTitle>
+                <WrapSelect value={timeLimit} onValueChange={handleTimeLimit}>
+                  <WrapSelectTrigger>
+                    <SelectValue placeholder="請選擇" />
+                  </WrapSelectTrigger>
+                  <WrapSelectContent>
+                    <WrapSelectItem value={10}>10秒</WrapSelectItem>
+                    <WrapSelectItem value={20}>20秒</WrapSelectItem>
+                    <WrapSelectItem value={30}>30秒</WrapSelectItem>
+                    <WrapSelectItem value={60}>1分鐘</WrapSelectItem>
+                    <WrapSelectItem value={90}>1分鐘30秒</WrapSelectItem>
+                    <WrapSelectItem value={120}>2分鐘</WrapSelectItem>
+                    <WrapSelectItem value={180}>3分鐘</WrapSelectItem>
+                  </WrapSelectContent>
+                </WrapSelect>
+              </WrapSelected>
 
               <SaveButton>
                 <div onClick={handleComplete}>
                   <Buttons type="success">完成</Buttons>
                 </div>
               </SaveButton>
-            </RulesWrapper>
+            </RulesAreaWrapper>
           </Wrapper>
         )}
       </>

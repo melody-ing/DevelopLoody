@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { updateRealTime } from "../../../utils/reviseRealTime";
-import { useGameStore } from "../../../utils/hook/useGameStore";
 import Buttons from "@/components/Buttons";
 import { Timestamp, serverTimestamp } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 
 const WrapOptions = styled.div``;
 
@@ -56,6 +56,10 @@ const WrapShortAnswer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  position: absolute;
+  gap: 2rem;
+  bottom: 10rem;
+  width: 100%;
 `;
 
 const WrapShortAnswerInput = styled.div`
@@ -68,8 +72,7 @@ const WrapShortAnswerInput = styled.div`
   padding: 1rem;
   padding-left: 2rem;
   border-radius: 5px;
-  position: absolute;
-  bottom: 10rem;
+
   background-color: #fff;
 `;
 
@@ -81,20 +84,35 @@ const ShortAnswerInput = styled.input`
   text-align: center;
 `;
 
-const Options = ({ questions, addScore, user, isAnswer, setIsAnswer }) => {
+const ShortAnswerBtn = styled.div``;
+
+const Options = ({
+  questions,
+  addScore,
+  isAnswer,
+  setIsAnswer,
+  getUrlDocumentId,
+  userId,
+}) => {
   const [shortAnswer, setShortAnswer] = useState("");
-  const { userId, documentId } = useGameStore();
+
+  const { documentId } = useParams();
+  console.log(documentId);
 
   function handleAnswer(e) {
+    if (getUrlDocumentId === undefined) return;
+
     if (questions.type === "mc" || questions.type === "tf") {
-      updateRealTime(`${documentId}/users/${userId}`, {
+      console.log(`${getUrlDocumentId}/users/${userId}`);
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         selected: +e.target.value,
         addScore,
+
         time: Timestamp.now(),
       });
     }
     if (questions.type === "sa") {
-      updateRealTime(`${documentId}/users/${userId}`, {
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         selected: shortAnswer,
         addScore,
         time: Timestamp.now(),
@@ -109,6 +127,11 @@ const Options = ({ questions, addScore, user, isAnswer, setIsAnswer }) => {
     <WrapOptions>
       {questions.type === "sa" && (
         <WrapShortAnswer>
+          <ShortAnswerBtn onClick={handleAnswer}>
+            <Buttons size={window.innerWidth < 940 ? "medium" : "large"}>
+              送出
+            </Buttons>
+          </ShortAnswerBtn>
           <WrapShortAnswerInput>
             <ShortAnswerInput
               value={shortAnswer}
@@ -117,9 +140,6 @@ const Options = ({ questions, addScore, user, isAnswer, setIsAnswer }) => {
               placeholder="請輸入答案"
             />
           </WrapShortAnswerInput>
-          <div onClick={handleAnswer}>
-            <Buttons>送出</Buttons>
-          </div>
         </WrapShortAnswer>
       )}
       {(questions.type === "mc" || questions.type === "tf") && (

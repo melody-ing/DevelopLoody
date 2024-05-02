@@ -19,7 +19,7 @@ const UsersRank = styled.div`
   border-radius: 10px;
 `;
 
-const End = ({ users }) => {
+const End = ({ users, audioRef }) => {
   return (
     <WrapRank>
       {Object.values(users)
@@ -33,6 +33,7 @@ const End = ({ users }) => {
             </UsersRank>
           );
         })}
+      <audio src="/bgm/end.mp3" ref={audioRef} />
     </WrapRank>
   );
 };

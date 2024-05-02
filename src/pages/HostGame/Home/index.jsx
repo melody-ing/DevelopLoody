@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from "react";
 import theme from "../../../components/css/theme";
-import Buttons from "../../../components/Buttons";
 import { styled } from "styled-components";
-import { useGameStore } from "../../../utils/hook/useGameStore";
 import { updateRealTime } from "../../../utils/reviseRealTime";
+
+const WrapHome = styled.div`
+  ${theme.breakpoints.sm} {
+    background-color: ${theme.colors.secondary}66;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    position: absolute;
+    right: 0;
+    width: 30%;
+  }
+`;
 
 const TimeLimit = styled.div`
   position: absolute;
@@ -15,11 +26,16 @@ const TimeLimit = styled.div`
   width: auto;
   height: 8rem;
   line-height: 4rem;
+
+  ${theme.breakpoints.sm} {
+    position: static;
+    background-color: #ffffff00;
+  }
 `;
 
 const Attenance = styled.div`
   position: absolute;
-  bottom: 50%;
+  bottom: 60%;
   padding: 2rem;
   right: 0;
   background-color: ${theme.colors.secondary}66;
@@ -32,10 +48,21 @@ const Attenance = styled.div`
   p {
     font-size: 5rem;
   }
+
+  ${theme.breakpoints.sm} {
+    position: static;
+    background-color: #ffffff00;
+  }
 `;
 
-const Home = ({ questions, users, getUrlDocumentId, timeoutSec }) => {
-  const { reply, setReply } = useGameStore();
+const Home = ({
+  users,
+  getUrlDocumentId,
+  timeoutSec,
+  audioRef,
+  reply,
+  setReply,
+}) => {
   const [count, setCount] = useState(timeoutSec);
 
   useEffect(() => {
@@ -62,13 +89,13 @@ const Home = ({ questions, users, getUrlDocumentId, timeoutSec }) => {
   }, [count]);
 
   return (
-    <>
+    <WrapHome>
       <TimeLimit>{count}</TimeLimit>
-
       <Attenance>
         作答人數： <p>{reply}</p>
-      </Attenance>
-    </>
+      </Attenance>{" "}
+      <audio loop src="/bgm/game.mp3" ref={audioRef} />
+    </WrapHome>
   );
 };
 

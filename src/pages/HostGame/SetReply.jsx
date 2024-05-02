@@ -1,9 +1,6 @@
-import { useGameStore } from "@/utils/hook/useGameStore";
 import React, { useEffect } from "react";
 
-const SetReply = () => {
-  const { setReply } = useGameStore();
-
+const SetReply = ({ setReply }) => {
   useEffect(() => {
     setReply(0);
   }, []);
