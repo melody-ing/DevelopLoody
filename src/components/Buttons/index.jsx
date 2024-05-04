@@ -47,7 +47,7 @@ const Button = styled.div`
   }
 `;
 
-const Buttons = ({ children, type, size = "default", style }) => {
+const Buttons = ({ children, type, size = "default", style, onClick }) => {
   // type secondary :#996484
   // type light :#F5F2F0
   // type success :#78B159
@@ -67,7 +67,7 @@ const Buttons = ({ children, type, size = "default", style }) => {
     case "success":
       bg = `${theme.colors.success}`;
       color = `${theme.colors.light}`;
-      hoverbg = `${theme.colors.info}`;
+      hoverbg = "#33432b";
 
       break;
     case "danger":
@@ -123,6 +123,7 @@ const Buttons = ({ children, type, size = "default", style }) => {
       $hoverbg={hoverbg}
       $size={size}
       style={style}
+      onClick={onClick}
     >
       <p>{children}</p>
     </Button>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import BaseGlobalStyle from "./components/css/BaseGlobalStyle";
 import { ToastContainer } from "react-toastify";

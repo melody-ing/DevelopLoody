@@ -179,7 +179,7 @@ const Home = () => {
     createUserWithEmailAndPassword(auth, inputEmail, inputPassword)
       .then((userCredential) => {
         // Signed up
-        const userId = uuidv4();
+        const userId = Math.floor(Math.random() * 90000000) + 10000000;
         const user = userCredential.user;
 
         updateProfile(user, {

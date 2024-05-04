@@ -20,13 +20,18 @@ import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 const auth = getAuth(app);
 
 const WarpHeader = styled.div`
+  z-index: 300;
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
   background-color: ${theme.colors.primary};
 
   height: 6rem;
-  justify-content: space-between;
   padding: 0 3rem;
+  justify-content: center;
+  position: relative;
+  position: sticky;
 `;
 
 const Logo = styled.img`
@@ -44,6 +49,9 @@ const Logout = styled.div`
 const WrapAvatar = styled(Avatar)`
   width: 4rem;
   height: 4rem;
+  position: absolute;
+  right: 2rem;
+  top: 1rem;
 `;
 
 const WrapSheetContent = styled(SheetContent)`
@@ -53,14 +61,23 @@ const WrapSheetContent = styled(SheetContent)`
   display: flex;
   flex-direction: column;
 
+  z-index: 400;
+
   ${theme.breakpoints.sm} {
     max-width: 24rem;
   }
 `;
 
+const WrapInfo = styled.div`
+  margin-top: 6rem;
+`;
+
 const SheetUserImg = styled(WrapAvatar)`
+  margin-top: 6rem;
+
   height: 6rem;
   width: 6rem;
+
   ${theme.breakpoints.sm} {
     height: 5rem;
     width: 5rem;
@@ -75,11 +92,18 @@ const SheetName = styled.h3`
 const SheetEmail = styled.p`
   color: #7d7a70;
   line-height: 0.5rem;
+  margin-top: 1rem;
 
   ${theme.breakpoints.sm} {
     font-size: 1.4rem;
   }
 `;
+
+const SheetId = styled.p`
+  font-size: 1.4rem;
+  margin-top: 2rem;
+`;
+
 const SheetHr = styled.hr`
   border: none;
   height: 1px;
@@ -138,13 +162,16 @@ const Header = ({ children }) => {
           </WrapAvatar>
         </SheetTrigger>
         <WrapSheetContent>
-          <SheetUserImg onClick={handleUserBtn}>
-            <AvatarImage src="" />
-            <AvatarFallback>{getUserData?.name.slice(0, 2)}</AvatarFallback>
-          </SheetUserImg>
-          <SheetName>{getUserData?.name}</SheetName>
-          <SheetEmail>{getUserData?.email}</SheetEmail>
-          <SheetHr />
+          <WrapInfo>
+            <SheetUserImg onClick={handleUserBtn}>
+              <AvatarImage src="" />
+              <AvatarFallback>{getUserData?.name.slice(0, 2)}</AvatarFallback>
+            </SheetUserImg>
+            <SheetName>{getUserData?.name}</SheetName>
+            <SheetEmail>{getUserData?.email}</SheetEmail>
+            <SheetId>ID：{getUserData?.userId}</SheetId>
+            <SheetHr />
+          </WrapInfo>
           <Logout onClick={handleLogout}>
             <Buttons size="small">登出</Buttons>
           </Logout>

@@ -17,6 +17,7 @@ import ReactLoading from "react-loading";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { Timestamp } from "firebase/firestore";
 import GameAniBg from "@/components/css/GameAniBg";
+import { useBgm } from "@/utils/hook/useBgm";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -80,7 +81,7 @@ const HostGame = () => {
   const question = realTimeData?.question;
   const questions = qbank?.questions[qNumber];
   const [timeoutSec, setTimeoutSec] = useState(null);
-  const [isPlayBgm, setIsPlayBgm] = useState(true);
+  const { isPlayBgm, setIsPlayBgm } = useBgm();
   const [reply, setReply] = useState(0);
   const audioRef = useRef(null);
 
@@ -107,12 +108,14 @@ const HostGame = () => {
   }, [question, questions]);
 
   useEffect(() => {
-    if (audioRef.current !== null && isPlayBgm) audioRef.current.play();
+    if (audioRef.current !== null && isPlayBgm) audioRef.current.muted = false;
   }, [audioRef.current]);
 
   useEffect(() => {
     if (audioRef.current !== null) {
-      isPlayBgm ? audioRef.current.play() : audioRef.current.pause();
+      isPlayBgm
+        ? (audioRef.current.muted = false)
+        : (audioRef.current.muted = true);
     }
   }, [isPlayBgm, audioRef, state]);
 
@@ -243,6 +246,7 @@ const HostGame = () => {
       setReply(0);
     }
   }
+  console.log(isPlayBgm);
 
   return (
     <WrapGame>
@@ -262,7 +266,7 @@ const HostGame = () => {
           <WrapBtns>
             <SoundButton
               type="sound"
-              onClick={() => setIsPlayBgm(!isPlayBgm)}
+              onClick={setIsPlayBgm}
               $isPlayBgm={isPlayBgm}
             >
               {isPlayBgm ? (
