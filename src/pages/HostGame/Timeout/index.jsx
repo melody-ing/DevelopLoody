@@ -171,7 +171,7 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
           )}
         </WrapShortAnswers>
       )}
-      <audio src="/bgm/timeout.mp3" ref={audioRef} />
+      <audio autoPlay src="/bgm/timeout.mp3" ref={audioRef} />
     </WrapTimeout>
   );
 };

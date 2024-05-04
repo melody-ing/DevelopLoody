@@ -94,7 +94,7 @@ const Home = ({
       <Attenance>
         作答人數： <p>{reply}</p>
       </Attenance>{" "}
-      <audio loop src="/bgm/game.mp3" ref={audioRef} />
+      <audio autoPlay loop src="/bgm/game.mp3" ref={audioRef} />
     </WrapHome>
   );
 };

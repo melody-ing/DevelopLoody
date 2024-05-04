@@ -42,7 +42,7 @@ const Rank = ({ users, audioRef }) => {
             );
           })}
       </WrapUsersRank>
-      <audio src="/bgm/rank.mp3" ref={audioRef} />
+      <audio autoPlay src="/bgm/rank.mp3" ref={audioRef} />
     </WrapRank>
   );
 };

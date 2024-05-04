@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import theme from "@/components/css/theme";
 import Buttons from "@/components/Buttons";
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -19,7 +20,15 @@ import {
   setFireStore,
   updateFireStore,
 } from "@/utils/reviseFireStore";
-import { doc, onSnapshot, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  serverTimestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import { useGetFireStores } from "@/utils/hook/useGetFireStore";
@@ -30,20 +39,44 @@ import { app, db } from "@/utils/firebase";
 import ReactLoading from "react-loading";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
+import Profile from "./Profile";
+import Share from "./Share";
+import { Slide, toast } from "react-toastify";
+
+const WrapProfile = styled.div`
+  position: fixed;
+  left: 0;
+  bottom: 0;
+`;
 
 const WrapDashBoard = styled.div`
   width: 70%;
-  margin: 0 auto;
+  margin: 2rem auto 4rem;
+  margin-left: 34rem;
   text-align: left;
 
-  margin-top: 2rem;
-
   ${theme.breakpoints.md} {
-    width: 90%;
+    width: 55%;
     h2 {
       font-size: 3rem;
     }
   }
+
+  ${theme.breakpoints.sm} {
+    margin: 0 auto;
+    width: 90%;
+  }
+`;
+
+const WrapQbanks = styled.div``;
+
+const DashBoardTitle = styled.h3`
+  display: inline-block;
+`;
+
+const QbankNum = styled.p`
+  display: inline-block;
+  margin-left: 3rem;
 `;
 
 const WrapQuestionBanks = styled.div`
@@ -54,7 +87,7 @@ const WrapQuestionBanks = styled.div`
   gap: 2rem;
 
   ${theme.breakpoints.md} {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
   ${theme.breakpoints.sm} {
     grid-template-columns: repeat(2, 1fr);
@@ -71,6 +104,17 @@ const WrapQBankImg = styled.div`
   height: 16rem;
   display: flex;
   justify-content: center;
+  position: relative;
+`;
+
+const QuestionsQuantity = styled.p`
+  position: absolute;
+  font-size: 1.4rem;
+  right: 0.5rem;
+  bottom: 1rem;
+  background-color: #cccccc85;
+  border-radius: 5px;
+  padding: 0rem 0.5rem;
 `;
 
 const QBankImg = styled.img`
@@ -158,6 +202,50 @@ const FileInput = styled.input`
   display: none;
 `;
 
+const CloseShareDialog = styled.div`
+  display: ${({ $isShareOpen }) => ($isShareOpen ? "block" : "none")};
+
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: #22222296;
+
+  top: 0;
+  left: 0;
+`;
+
+const WrapShareDialog = styled.div`
+  display: ${({ $isShareOpen }) => ($isShareOpen ? "block" : "none")};
+
+  z-index: 300;
+`;
+
+const ShareDialog = styled.div`
+  position: absolute;
+  left: 50vw;
+  top: 50vh;
+  width: 50rem;
+  height: 18rem;
+  background-color: #fff;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  padding: 3rem;
+  text-align: start;
+`;
+const WrapTrans = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+`;
+
+const ShareTitle = styled.h3``;
+
+const ShareInput = styled.input`
+  margin: 2rem 0;
+  border-radius: 5px;
+  padding: 0 1rem;
+`;
+
 const AddQBankButton = styled.div`
   position: fixed;
   right: 4rem;
@@ -171,7 +259,7 @@ const AddQBankButton = styled.div`
   border-radius: 50%;
   padding: 0.5rem;
   box-shadow: 0px 3px 8px 0px #3333337a;
-  background-color: #fbf7eb;
+  background: linear-gradient(to top, #f7e8f1, #fff);
 
   ${theme.breakpoints.sm} {
     right: 2rem;
@@ -206,14 +294,19 @@ const DashBoard = () => {
   const auth = getAuth(app);
   const user = auth.currentUser;
   let uid = null;
+  let ownerName = null;
   if (user) {
     uid = user.uid;
+    ownerName = user.displayName;
   }
 
   const navigate = useNavigate();
 
   const [isHover, setIsHover] = useState(false);
   const [data, setData] = useState([]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shareQBankId, setShareQBankId] = useState(null);
+  const [shareToUserId, setShareToUserId] = useState("");
   const chooseQBankId = useRef("");
 
   const {
@@ -259,9 +352,11 @@ const DashBoard = () => {
     setFireStore("qbank", uuid, {
       editTime: serverTimestamp(),
       name: `${moment().format("YYYY/MM/D h:mm")}`,
-      owner: "icecube0816",
+      owner: uid,
+      ownerName,
       id: uuid,
-      mainImg: "",
+      mainImg:
+        "https://firebasestorage.googleapis.com/v0/b/loody-ing.appspot.com/o/1714835814726?alt=media&token=1b589a8e-8b0e-49c3-b4a1-4c496085e70b",
       questions: [
         {
           answer: 0,
@@ -276,10 +371,65 @@ const DashBoard = () => {
     });
   }
 
+  console.log(shareQBankId);
+  async function handleShare() {
+    const q = query(
+      collection(db, "users"),
+      where("userId", "==", shareToUserId)
+    );
+
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.docs.length > 0) {
+      console.log(querySnapshot.docs.length);
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        setFireStore(
+          `users/${doc.id}/share`,
+          shareQBankId,
+          {
+            id: shareQBankId,
+          },
+          { merge: true }
+        );
+      });
+
+      toast.warn("分享成功", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        icon: false,
+        transition: Slide,
+      });
+    } else {
+      console.log("no have");
+      toast.error("無此使用者", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        icon: false,
+        transition: Slide,
+      });
+    }
+    setShareToUserId("");
+    setIsShareOpen(false);
+  }
+
   function handleDelete(id) {
     deleteFireStore(`users/${uid}/qbanks`, id);
     deleteFireStore("qbank", id);
     setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
+
+    const q = query(collection(db, "users"), where("capital", "==", true));
   }
 
   function handleAddImg(e, id) {
@@ -329,7 +479,6 @@ const DashBoard = () => {
     });
     navigate(`/host/${id}/${pin}`);
   }
-
   return (
     <>
       {" "}
@@ -345,99 +494,151 @@ const DashBoard = () => {
         </Loading>
       ) : (
         <>
+          <WrapProfile>
+            <Profile />
+          </WrapProfile>
           <WrapDashBoard>
-            <h2>題庫</h2>
-            <WrapQuestionBanks>
-              {data &&
-                data?.map((item) => (
-                  <div key={item.id}>
-                    <FileInput
-                      type="file"
-                      id="fileInput"
-                      accept="image/*"
-                      onChange={(e) => handleAddImg(e, item.id)}
-                    />
-                    <ContextMenu key={item.id}>
-                      <ContextMenuTrigger>
-                        <WrapQuestionBank>
-                          <WrapQBankImg>
-                            <QBankImg src={item.mainImg} />
-                          </WrapQBankImg>
-                          <WrapQBankInfo>
-                            <QBankName>
-                              {item.name.slice(0, 15) +
-                                `${item.name.length > 15 ? "..." : ""}`}
-                            </QBankName>
+            <WrapQbanks>
+              <DashBoardTitle>所有Loody</DashBoardTitle>
+              <QbankNum>題庫數量：{data && data.length}</QbankNum>
+              <WrapQuestionBanks>
+                {data &&
+                  data?.map((item) => (
+                    <div key={item.id}>
+                      <FileInput
+                        type="file"
+                        id="fileInput"
+                        accept="image/*"
+                        onChange={(e) => handleAddImg(e, item.id)}
+                      />
+                      <ContextMenu key={item.id}>
+                        <ContextMenuTrigger>
+                          <WrapQuestionBank>
+                            <WrapQBankImg>
+                              <QBankImg
+                                src={
+                                  item.mainImg ? item.mainImg : "/bankImg.jpg"
+                                }
+                              />
+                              <QuestionsQuantity>
+                                {item.questions.length}題
+                              </QuestionsQuantity>
+                            </WrapQBankImg>
+                            <WrapQBankInfo>
+                              <QBankName>
+                                {item.name.slice(0, 15) +
+                                  `${item.name.length > 15 ? "..." : ""}`}
+                              </QBankName>
 
-                            <QBankTime>
-                              上次編輯：
-                              {moment
-                                .unix(item?.editTime?.seconds)
-                                .add(
-                                  item?.editTime?.nanoseconds / 1e9,
-                                  "seconds"
-                                )
-                                .format("YYYY-MM-DD")}
-                            </QBankTime>
+                              <QBankTime>
+                                上次編輯：
+                                {moment
+                                  .unix(item?.editTime?.seconds)
+                                  .add(
+                                    item?.editTime?.nanoseconds / 1e9,
+                                    "seconds"
+                                  )
+                                  .format("YYYY-MM-DD")}
+                              </QBankTime>
 
-                            <WrapQBankButtons>
-                              <div onClick={() => handleEdit(item.id)}>
-                                <Buttons type="light" size="small">
-                                  編輯
-                                </Buttons>
-                              </div>
+                              <WrapQBankButtons>
+                                <div onClick={() => handleEdit(item.id)}>
+                                  <Buttons type="light" size="small">
+                                    編輯
+                                  </Buttons>
+                                </div>
 
-                              <HoverCard.Root>
-                                <HoverCard.Trigger>
-                                  {" "}
-                                  <div
-                                    onClick={() =>
-                                      item.isDone && handleHost(item.id)
-                                    }
-                                  >
-                                    <Buttons
-                                      type={item.isDone ? "success" : "invalid"}
-                                      size="small"
+                                <HoverCard.Root>
+                                  <HoverCard.Trigger>
+                                    {" "}
+                                    <div
+                                      onClick={() =>
+                                        item.isDone && handleHost(item.id)
+                                      }
                                     >
-                                      主持
-                                    </Buttons>
-                                  </div>
-                                </HoverCard.Trigger>
-                                {item.isDone || (
-                                  <HoverCard.Portal>
-                                    <WrapHoverCardContent>
-                                      尚未編輯完成
-                                      <WrapHoverCardArrow />
-                                    </WrapHoverCardContent>
-                                  </HoverCard.Portal>
-                                )}
-                              </HoverCard.Root>
-                            </WrapQBankButtons>
-                          </WrapQBankInfo>
-                        </WrapQuestionBank>
-                      </ContextMenuTrigger>
+                                      <Buttons
+                                        type={
+                                          item.isDone ? "success" : "invalid"
+                                        }
+                                        size="small"
+                                      >
+                                        主持
+                                      </Buttons>
+                                    </div>
+                                  </HoverCard.Trigger>
+                                  {item.isDone || (
+                                    <HoverCard.Portal>
+                                      <WrapHoverCardContent>
+                                        尚未編輯完成
+                                        <WrapHoverCardArrow />
+                                      </WrapHoverCardContent>
+                                    </HoverCard.Portal>
+                                  )}
+                                </HoverCard.Root>
+                              </WrapQBankButtons>
+                            </WrapQBankInfo>
+                          </WrapQuestionBank>
+                        </ContextMenuTrigger>
 
-                      <WrapContextMenuContent>
-                        <WrapContextMenuItem
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <Delete size={12} />
-                          <p>刪除</p>
-                        </WrapContextMenuItem>
+                        <WrapContextMenuContent>
+                          <WrapContextMenuItem
+                            onClick={() => {
+                              setIsShareOpen(true);
+                              setShareQBankId(item.id);
+                            }}
+                          >
+                            <Share size={12} />
+                            <p>分享</p>
+                          </WrapContextMenuItem>
 
-                        <WrapContextMenuItem
-                          onClick={() => (chooseQBankId.current = item.id)}
-                        >
-                          <FileLabel htmlFor="fileInput">
-                            <Image size={12} /> <p>新增首圖</p>
-                          </FileLabel>
-                        </WrapContextMenuItem>
-                      </WrapContextMenuContent>
-                    </ContextMenu>
-                  </div>
-                ))}
-            </WrapQuestionBanks>
+                          <WrapContextMenuItem
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <Delete size={12} />
+                            <p>刪除</p>
+                          </WrapContextMenuItem>
+
+                          <WrapContextMenuItem
+                            onClick={() => (chooseQBankId.current = item.id)}
+                          >
+                            <FileLabel htmlFor="fileInput">
+                              <Image size={12} /> <p>新增首圖</p>
+                            </FileLabel>
+                          </WrapContextMenuItem>
+                        </WrapContextMenuContent>
+                      </ContextMenu>
+                    </div>
+                  ))}
+              </WrapQuestionBanks>
+            </WrapQbanks>
           </WrapDashBoard>
+          <CloseShareDialog
+            $isShareOpen={isShareOpen}
+            onClick={() => {
+              setIsShareOpen(false);
+              setShareToUserId("");
+            }}
+          >
+            {" "}
+          </CloseShareDialog>
+          <WrapShareDialog $isShareOpen={isShareOpen}>
+            <ShareDialog>
+              <ShareTitle>要分享給誰？</ShareTitle>
+              <WrapTrans>
+                <ShareInput
+                  placeholder="請輸入使用者ID"
+                  value={shareToUserId}
+                  onChange={(e) => setShareToUserId(e.target.value)}
+                ></ShareInput>
+                <div onClick={() => handleShare()}>
+                  <Buttons style={{ width: "8rem", height: "3.6rem" }}>
+                    分享
+                  </Buttons>
+                </div>
+              </WrapTrans>
+            </ShareDialog>
+          </WrapShareDialog>
+
           <AddQBankButton onClick={handleAddQBank}>
             <div
               onMouseEnter={() => setIsHover(true)}

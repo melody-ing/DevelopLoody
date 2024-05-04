@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import Header from "../../components/Header";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
 import {
   Select,
   SelectContent,
@@ -38,6 +39,8 @@ import { Slide, toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import TextField from "@mui/material/TextField";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
+import Mryellow from "@/components/css/animation/Mryellow";
+import Mrpurple from "@/components/css/animation/Mrpurple";
 
 const Wrapper = styled.div`
   max-height: 100vh;
@@ -50,10 +53,11 @@ const Wrapper = styled.div`
   }
 `;
 
-const QuestionsPositions = styled.div`
+const QuestionsAreaWrapper = styled.div`
   position: relative;
   width: 30rem;
   height: 100%;
+  background-color: ${theme.colors.dark};
 
   ${theme.breakpoints.sm} {
     height: auto;
@@ -73,6 +77,10 @@ const QuestionsWrapper = styled(ScrollArea)`
   ${theme.breakpoints.sm} {
     padding-bottom: 0rem;
   }
+`;
+
+const WrapDragDropContext = styled(DragDropContext)`
+  width: 1000rem;
 `;
 
 const WrapDroppableDiv = styled.div`
@@ -130,7 +138,7 @@ const WrapWrapQuestion = styled.div`
 `;
 
 const WrapQuestion = styled.div`
-  background-color: ${({ $editNum }) => $editNum && "rgb(227, 227, 227)"};
+  background-color: ${({ $editNum }) => ($editNum ? `#bbb` : `#fff`)};
 
   width: 96%;
   height: auto;
@@ -138,11 +146,10 @@ const WrapQuestion = styled.div`
   flex-direction: column;
   gap: 1rem;
   cursor: pointer;
-
   text-align: left;
   box-shadow: 0px 0px 4px 0px #33333369;
   ${({ $isDone }) =>
-    $isDone === false && `border : 1.2px solid ${theme.colors.danger}`};
+    $isDone === false && `border : 2px solid ${theme.colors.danger}`};
   padding: 5px;
   border-radius: 5px;
 
@@ -174,7 +181,7 @@ const FlexTop = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   width: 73%;
   overflow-wrap: break-word;
   height: 1.6rem;
@@ -198,6 +205,9 @@ const EditAreaWrapper = styled.div`
   align-items: center;
   width: 100%;
   position: relative;
+  padding-top: 2rem;
+  height: calc(100vh - 6rem);
+  overflow: hidden;
 
   ${theme.breakpoints.sm} {
     margin-top: 1rem;
@@ -205,63 +215,61 @@ const EditAreaWrapper = styled.div`
   }
 `;
 
-const QuestionInput = styled.textarea`
-  width: 96%;
-  box-shadow: 0px 0px 4px 0px #33333369;
-  /* border: 1px solid black; */
-  border-radius: 5px;
-  min-height: 6rem;
-
-  margin-top: 2rem;
-  font-size: 2.6rem;
-  text-align: center;
-  padding: 1.5rem;
-  line-height: 3.6rem;
-  resize: vertical;
-  max-height: 50rem;
-  outline: none;
+const WrapMryellow = styled.div`
+  position: absolute;
+  bottom: -60%;
+  right: -60%;
+  z-index: -1;
 `;
-// const QuestionInput = styled(TextField)`
-//   width: 96%;
 
-//   & .MuiOutlinedInput-root {
-//     box-shadow: 0px 0px 4px 0px #33333369;
-//     font-size: 2.6rem;
-//     width: 100%;
-//     margin-top: 2rem;
-//   }
+const WrapMrpurple = styled.div`
+  position: absolute;
+  top: -70%;
+  left: -60%;
+  z-index: -1;
+`;
 
-//   & .MuiOutlinedInput-input {
-//     text-align: center;
-//   }
+const QuestionInput = styled(TextField)`
+  width: 96%;
 
-//   & .MuiFormLabel-root {
-//     font-size: 2rem;
-//     margin-top: 2rem;
-//   }
+  & .MuiOutlinedInput-root {
+    box-shadow: 0px 0px 4px 0px #33333369;
+    font-size: 2.2rem;
+    width: 100%;
+    background-color: #fff;
+  }
 
-//   ${theme.breakpoints.sm} {
-//     width: 90%;
+  & .MuiOutlinedInput-input {
+    text-align: center;
+  }
 
-//     & .MuiOutlinedInput-root {
-//       box-shadow: 0px 0px 4px 0px #33333369;
-//       font-size: 2.2rem;
-//       width: 100%;
-//       margin-top: 0rem;
-//       padding: 0;
-//     }
+  & .MuiFormLabel-root {
+    font-size: 2rem;
+    margin-top: 2rem;
+  }
 
-//     & .MuiOutlinedInput-input {
-//       text-align: center;
-//       padding: 1rem;
-//     }
+  ${theme.breakpoints.sm} {
+    width: 90%;
 
-//     & .MuiFormLabel-root {
-//       font-size: 1.4rem;
-//       margin-top: 0rem;
-//     }
-//   }
-// `;
+    & .MuiOutlinedInput-root {
+      box-shadow: 0px 0px 4px 0px #33333369;
+      font-size: 2.2rem;
+      width: 100%;
+      margin-top: 0rem;
+      padding: 0;
+    }
+
+    & .MuiOutlinedInput-input {
+      text-align: center;
+      padding: 1rem;
+    }
+
+    & .MuiFormLabel-root {
+      font-size: 1.4rem;
+      margin-top: 0rem;
+    }
+  }
+`;
 
 const WrapAnswer = styled.div`
   width: 94%;
@@ -282,7 +290,7 @@ const WrapAnswer = styled.div`
 const WrapAnswerInput = styled.div`
   ${({ $isFill }) => $isFill || "border: 1px solid red"};
   width: 100%;
-  height: 10rem;
+  height: 8rem;
   display: flex;
   align-items: center;
   box-shadow: 0px 0px 4px 0px #33333369;
@@ -290,10 +298,10 @@ const WrapAnswerInput = styled.div`
   padding: 1rem;
   padding-left: 2rem;
   border-radius: 5px;
+  background-color: #fff;
 
   input[type="radio"] {
     width: 4.4rem;
-
     color: ${theme.colors.secondary};
     accent-color: ${theme.colors.tertiary};
   }
@@ -310,7 +318,7 @@ const WrapAnswerInput = styled.div`
 
 const TextAreaInput = styled(TextField)`
   & .MuiOutlinedInput-root {
-    font-size: 2.6rem;
+    font-size: 2rem;
     width: 100%;
   }
 
@@ -350,7 +358,7 @@ const WrapShortAnswerInput = styled.div`
   ${({ $isFill }) => $isFill || "border: 1px solid red"};
 
   width: 80%;
-  height: 10rem;
+  height: 8rem;
   display: flex;
   align-items: center;
   box-shadow: 0px 0px 4px 0px #33333369;
@@ -360,6 +368,7 @@ const WrapShortAnswerInput = styled.div`
   border-radius: 5px;
   position: absolute;
   bottom: 12rem;
+  background-color: #fff;
 
   ${theme.breakpoints.sm} {
     height: 4rem;
@@ -375,7 +384,7 @@ const ShortAnswerInput = styled(TextField)`
   text-align: center;
 
   & .MuiOutlinedInput-root {
-    font-size: 2.6rem;
+    font-size: 2.4rem;
     width: 100%;
   }
 
@@ -415,7 +424,7 @@ const FileLabel = styled.label`
   border: 2px solid #ccc;
   color: #333;
   position: relative;
-
+  background-color: #fff;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 2.4rem;
@@ -424,22 +433,40 @@ const FileLabel = styled.label`
   justify-content: center;
   align-items: center;
 
-  img {
-    max-height: calc(100vh - 47rem);
-    max-width: calc(100vw - 50rem);
-
-    object-fit: contain;
+  ${theme.breakpoints.sm} {
+    font-size: 1.2rem;
+    margin-top: 1.6rem;
   }
+`;
+
+const WrapMedia = styled.div`
+  padding: 1rem;
+  max-width: 70rem;
+  height: auto;
+  border: 2px solid #ccc;
+  color: #333;
+  position: relative;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 2.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   ${theme.breakpoints.sm} {
     font-size: 1.2rem;
     margin-top: 1.6rem;
-    img {
-      max-height: calc(100vh - 54rem);
-      max-width: 70vw;
+  }
+`;
 
-      object-fit: contain;
-    }
+const ViewMedia = styled.img`
+  max-height: calc(100vh - 43rem);
+  max-width: calc(100vw - 50rem);
+  object-fit: contain;
+  ${theme.breakpoints.sm} {
+    max-height: calc(100vh - 54rem);
+    max-width: 70vw;
+    object-fit: contain;
   }
 `;
 
@@ -457,7 +484,7 @@ const RulesAreaWrapper = styled(ScrollArea)`
   padding: 1rem;
   text-align: left;
   box-shadow: inset 10px 0 6px -10px rgba(0, 0, 0, 0.2);
-
+  background-color: ${theme.colors.dark};
   ${theme.breakpoints.sm} {
     width: 100%;
     height: 45rem;
@@ -468,7 +495,7 @@ const RulesAreaWrapper = styled(ScrollArea)`
 const InputTitle = styled.div`
   margin-top: 2rem;
   margin-bottom: 1rem;
-
+  color: ${theme.colors.light};
   ${theme.breakpoints.sm} {
     display: none;
   }
@@ -500,8 +527,9 @@ const QBankNameInput = styled(TextField)`
   border: none;
 
   & .MuiOutlinedInput-root {
-    font-size: 2rem;
+    font-size: 1.8rem;
     width: 100%;
+    background-color: #fff;
   }
 
   & .MuiOutlinedInput-input {
@@ -537,7 +565,10 @@ const WrapSelect = styled(Select)`
 
 const WrapSelectTrigger = styled(SelectTrigger)`
   height: 4rem;
-
+  background-color: #4c4c4c;
+  color: ${theme.colors.light};
+  outline: none;
+  border: none;
   font-size: 1.6rem;
   line-height: 2rem;
 
@@ -550,6 +581,10 @@ const WrapSelectContent = styled(SelectContent)`
   width: 100%;
   height: 100%;
   cursor: pointer;
+  background-color: #4c4c4c;
+  color: ${theme.colors.light};
+  outline: none;
+  border: none;
 
   ${theme.breakpoints.sm} {
     font-size: 1.4rem;
@@ -822,10 +857,11 @@ const Create = () => {
     getQbankData.questions.splice(index, 1);
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
-  console.log(mediaUrl === "");
+
+  console.log(mediaUrl);
 
   function handleFileInput(e) {
-    console.log("onchange");
+    console.log(e);
     if (e) {
       const file = e.target.files[0];
       const fileType = file.type;
@@ -865,8 +901,7 @@ const Create = () => {
     }
   }
 
-  function handleDeleteMedia(e) {
-    e.stopPropagation();
+  function handleDeleteMedia() {
     setMediaUrl("");
     getQbankData.questions[editNum].media = "";
     setFireStore("qbank", getUrlDocumentId, getQbankData);
@@ -915,7 +950,7 @@ const Create = () => {
           </Loading>
         ) : (
           <Wrapper>
-            <QuestionsPositions>
+            <QuestionsAreaWrapper>
               <WrapButton>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="outline-none">
@@ -952,7 +987,7 @@ const Create = () => {
                 </DropdownMenu>
               </WrapButton>
               <QuestionsWrapper>
-                <DragDropContext onDragEnd={onDragEnd}>
+                <WrapDragDropContext onDragEnd={onDragEnd}>
                   <Droppable
                     WrapDroppable
                     droppableId="123"
@@ -1037,10 +1072,17 @@ const Create = () => {
                       </WrapDroppableDiv>
                     )}
                   </Droppable>
-                </DragDropContext>
+                </WrapDragDropContext>
+                <ScrollBar orientation="horizontal" />
               </QuestionsWrapper>
-            </QuestionsPositions>
+            </QuestionsAreaWrapper>
             <EditAreaWrapper>
+              <WrapMryellow>
+                <Mryellow />
+              </WrapMryellow>
+              <WrapMrpurple>
+                <Mrpurple />
+              </WrapMrpurple>
               <QuestionInput
                 error={!isTitleFill}
                 id="outlined-error"
@@ -1048,18 +1090,18 @@ const Create = () => {
                 value={title}
                 onChange={handleTitleInput}
               />
-              <FileLabel htmlFor="fileInput">
-                {mediaUrl === "" ? (
+              {mediaUrl === "" ? (
+                <FileLabel htmlFor={"fileInput"}>
                   <p>輸入圖片</p>
-                ) : (
-                  <>
-                    <img src={mediaUrl} />
-                    <InputMediaDelete onClick={handleDeleteMedia}>
-                      <Delete size={window.innerWidth < 940 ? 3 : 4.4} />
-                    </InputMediaDelete>
-                  </>
-                )}
-              </FileLabel>
+                </FileLabel>
+              ) : (
+                <WrapMedia>
+                  <ViewMedia src={mediaUrl} />
+                  <InputMediaDelete onClick={handleDeleteMedia}>
+                    <Delete size={window.innerWidth < 940 ? 3 : 4.4} />
+                  </InputMediaDelete>
+                </WrapMedia>
+              )}
 
               <FileInput
                 type="file"
