@@ -17,9 +17,6 @@ const Wrapper = styled.div`
   left: 0;
   right: 0;
   height: 100vh;
-  /* min-height: 170vh;
-
-  max-height: 400vh; */
   overflow: hidden;
 `;
 
@@ -168,9 +165,7 @@ const GameAniBg = () => {
         <BottomRightMryellow className="rotate">
           <Mryellow />
         </BottomRightMryellow>
-        <WrapYellowsmall>
-          <Yellowsmall />
-        </WrapYellowsmall>
+
         <TopLeftBubbles>
           <Bubbles />
         </TopLeftBubbles>

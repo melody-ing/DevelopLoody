@@ -140,6 +140,8 @@ const Host = () => {
 
   window.onpopstate = () => {
     const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    const currentUrl = window.location.href;
+
     if (confirmLeave) {
       removeRealTime(getUrlDocumentId);
       navigate("/dashboard");
@@ -162,7 +164,7 @@ const Host = () => {
 
   function handleState() {
     updateRealTime(getUrlDocumentId, { state: "game", time: Timestamp.now() });
-    navigate(`/host/game/${getUrlDocumentId}`);
+    navigate(`/hostgame/${getUrlDocumentId}`);
   }
 
   return (

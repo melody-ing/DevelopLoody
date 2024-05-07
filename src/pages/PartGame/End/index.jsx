@@ -1,7 +1,7 @@
 import React from "react";
 
 const End = () => {
-  return <div>遊戲結束</div>;
+  return <div></div>;
 };
 
 export default End;

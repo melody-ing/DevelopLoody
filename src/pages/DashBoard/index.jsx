@@ -42,6 +42,7 @@ import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import Profile from "./Profile";
 import Share from "./Share";
 import { Slide, toast } from "react-toastify";
+import HostButton from "./HostButton";
 
 const WrapProfile = styled.div`
   position: fixed;
@@ -123,7 +124,7 @@ const QBankImg = styled.img`
 `;
 
 const WrapQBankInfo = styled.div`
-  margin: 1rem 2rem;
+  margin: 0rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -136,11 +137,11 @@ const WrapQBankInfo = styled.div`
 `;
 
 const QBankName = styled.div`
-  font-size: 2rem;
-  height: 4.2rem;
+  font-size: 1.6rem;
+  height: 4.4rem;
+  line-height: 2.6rem;
   border-radius: 5px;
   border: none;
-  /* padding: 0 10px; */
 
   ${theme.breakpoints.md} {
     font-size: 1.8rem;
@@ -162,6 +163,7 @@ const QBankTime = styled.p`
 const WrapQBankButtons = styled.div`
   display: flex;
   justify-content: space-between;
+  position: relative;
 `;
 
 const WrapHoverCardContent = styled(HoverCard.Content)`
@@ -270,8 +272,28 @@ const AddQBankButton = styled.div`
   }
 `;
 
+const HoverHost = styled.div`
+  color: ${theme.colors.info};
+  background-color: #ffffff;
+  border: 2px solid #ececec;
+  position: absolute;
+  left: 8.8rem;
+  width: 10rem;
+  top: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 1.4rem;
+`;
+
 const HoverCardContent = styled.div`
   color: ${theme.colors.secondary};
+  background-color: #fff;
+
   box-shadow: ${theme.shadow};
   position: fixed;
   right: 1rem;
@@ -303,6 +325,7 @@ const DashBoard = () => {
   const navigate = useNavigate();
 
   const [isHover, setIsHover] = useState(false);
+  const [isHostHover, setIsHostHover] = useState(false);
   const [data, setData] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareQBankId, setShareQBankId] = useState(null);
@@ -425,11 +448,16 @@ const DashBoard = () => {
   }
 
   function handleDelete(id) {
-    deleteFireStore(`users/${uid}/qbanks`, id);
-    deleteFireStore("qbank", id);
-    setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
+    const confirmDelete = window.confirm(
+      "確定要刪除嗎?(會連同分享給他人的資料一起刪掉)"
+    );
+    if (confirmDelete) {
+      deleteFireStore(`users/${uid}/qbanks`, id);
+      deleteFireStore("qbank", id);
+      setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
 
-    const q = query(collection(db, "users"), where("capital", "==", true));
+      const q = query(collection(db, "users"), where("capital", "==", true));
+    }
   }
 
   function handleAddImg(e, id) {
@@ -541,41 +569,7 @@ const DashBoard = () => {
                                   .format("YYYY-MM-DD")}
                               </QBankTime>
 
-                              <WrapQBankButtons>
-                                <div onClick={() => handleEdit(item.id)}>
-                                  <Buttons type="light" size="small">
-                                    編輯
-                                  </Buttons>
-                                </div>
-
-                                <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                    {" "}
-                                    <div
-                                      onClick={() =>
-                                        item.isDone && handleHost(item.id)
-                                      }
-                                    >
-                                      <Buttons
-                                        type={
-                                          item.isDone ? "success" : "invalid"
-                                        }
-                                        size="small"
-                                      >
-                                        主持
-                                      </Buttons>
-                                    </div>
-                                  </HoverCard.Trigger>
-                                  {item.isDone || (
-                                    <HoverCard.Portal>
-                                      <WrapHoverCardContent>
-                                        尚未編輯完成
-                                        <WrapHoverCardArrow />
-                                      </WrapHoverCardContent>
-                                    </HoverCard.Portal>
-                                  )}
-                                </HoverCard.Root>
-                              </WrapQBankButtons>
+                              <HostButton item={item} />
                             </WrapQBankInfo>
                           </WrapQuestionBank>
                         </ContextMenuTrigger>

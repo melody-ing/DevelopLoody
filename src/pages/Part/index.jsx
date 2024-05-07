@@ -20,18 +20,20 @@ const UserName = styled.p`
 `;
 
 const Entry = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 15rem;
-  width: 30rem;
+  height: auto;
+  min-width: 26rem;
+  width: 22%;
   margin-bottom: 1.2rem;
   border-radius: 10px;
 `;
 
 const InputName = styled.input`
-  height: 6rem;
-  width: 85%;
+  height: 6.2rem;
+  width: 100%;
   border: 1px solid #ccc;
   margin-top: 2rem;
   border-radius: 10px;
@@ -60,7 +62,7 @@ const Button = styled.button`
   font-size: larger;
   color: ${theme.colors.light};
   margin-top: 1.6rem;
-  width: 85%;
+  width: 100%;
   height: 5rem;
   border-radius: 10px;
   box-shadow: ${theme.shadow};
@@ -71,6 +73,14 @@ const Button = styled.button`
     letter-spacing: 2rem;
     transform: translate(1rem);
   }
+`;
+
+const NameTextWarning = styled.div`
+  position: absolute;
+  color: #c7c7c7;
+  right: 0.8rem;
+  top: 5.9rem;
+  font-size: 1.4rem;
 `;
 
 const Part = () => {
@@ -94,7 +104,7 @@ const Part = () => {
         time: Timestamp.now(),
       });
       localStorage.setItem("userId", userId);
-      navigate(`/part/game/${getUrlDocumentId}`);
+      navigate(`/partgame/${getUrlDocumentId}`);
     }
   }
 
@@ -104,11 +114,15 @@ const Part = () => {
       <Entry>
         <InputName
           placeholder="暱稱"
-          onChange={(e) => setUserName(e.target.value)}
+          onChange={(e) => {
+            setUserName(e.target.value.slice(0, 10));
+          }}
+          value={userName}
         />
         <Button onClick={handleJoin} size="large">
           <p>進入</p>
         </Button>
+        <NameTextWarning>{`${userName.length}/10`}</NameTextWarning>
       </Entry>
     </WrapPart>
   );

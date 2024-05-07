@@ -1,3 +1,4 @@
+import theme from "@/components/css/theme";
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
@@ -18,8 +19,12 @@ const WrapMedia = styled.div`
   animation: ${fadeIn} 0.1s 0.3s forwards;
 
   img {
-    max-height: calc(100vh - 39rem);
+    max-height: calc(100vh - 40rem);
     object-fit: contain;
+  }
+
+  ${theme.breakpoints.sm} {
+    max-width: 90%;
   }
 `;
 

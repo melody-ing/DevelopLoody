@@ -6,9 +6,9 @@ import { updateRealTime } from "../../../utils/reviseRealTime";
 const User = styled.div`
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   width: 100%;
-  height: 3.4rem;
+  height: 5rem;
   background-color: #4c5845;
   color: ${theme.colors.light};
   display: flex;
@@ -18,6 +18,14 @@ const User = styled.div`
   p {
     font-size: 3rem;
     line-height: 3rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    height: 4rem;
+
+    p {
+      font-size: 2rem;
+    }
   }
 `;
 

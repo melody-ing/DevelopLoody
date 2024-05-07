@@ -1,8 +1,11 @@
-import React, { PureComponent, useEffect } from "react";
+import React, { PureComponent, useEffect, useState } from "react";
 import { Treemap, ResponsiveContainer } from "recharts";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useRef } from "react";
 
 const COLORS = [
   `#808F7C`,
@@ -74,9 +77,9 @@ class CustomizedContent extends PureComponent {
 }
 
 const WrapTimeout = styled.div`
-  width: 60%;
+  width: 70%;
   height: 50%;
-  margin: 3rem auto;
+  margin: 2rem auto;
   display: flex;
   justify-content: center;
 `;
@@ -89,10 +92,10 @@ const WrapShortAnswers = styled(ScrollArea)`
 `;
 
 const WrapShortAnswer = styled.div`
-  margin: 2rem auto;
+  margin: 1rem auto;
   display: flex;
   justify-content: space-between;
-  width: 90%;
+  width: 100%;
   height: 6.5rem;
   ${({ $isCorrect }) => $isCorrect && `background-color: #fbeb8f`};
 
@@ -103,8 +106,34 @@ const WrapShortAnswer = styled.div`
   background-color: #fff;
 `;
 
+const WrapMedia = styled.div`
+  max-width: 50rem;
+  margin: 0 auto;
+  z-index: 100;
+  position: absolute;
+
+  img {
+    max-height: calc(100vh - 40rem);
+    object-fit: contain;
+  }
+
+  ${theme.breakpoints.sm} {
+    position: absolute;
+    left: calc(100vw - 45rem);
+
+    img {
+      max-height: 40rem;
+      object-fit: contain;
+    }
+  }
+`;
+
+const WrapGraph = styled(ResponsiveContainer)``;
+
 const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
   const qType = qbank.questions[qNumber].type;
+  const [nameLength, setNameLength] = useState(null);
+  const [answerLength, setAnswerLength] = useState(null);
 
   const peopleNum = (ans) =>
     users &&
@@ -121,29 +150,86 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
       peopleNum(index) &&
         data.push({
           name: peopleNum(index),
-          // size: (index + 1) * 2,
           size: peopleNum(index),
         }) &&
         usersAnswer.push(answers[qType][index]);
     });
   }
 
+  const calculateNameLength = () => {
+    if (window.innerWidth < 500) {
+      return 1;
+    } else if (window.innerWidth < 940) {
+      return 3;
+    } else if (window.innerWidth < 1280) {
+      return 6;
+    }
+    return 6;
+  };
+
+  const calculateAnswerLength = () => {
+    if (window.innerWidth < 490) {
+      return 3;
+    } else if (window.innerWidth < 940) {
+      return 5;
+    } else if (window.innerWidth < 1280) {
+      return 12;
+    }
+    return 16;
+  };
+
+  const handleResize = () => {
+    setNameLength(calculateNameLength());
+    setAnswerLength(calculateAnswerLength());
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  gsap.registerPlugin(useGSAP);
+
+  useGSAP(() => {
+    const media = document.querySelector(".media");
+    const graph = document.querySelector(".graph");
+    const mediaWidth = media.offsetWidth;
+    const graphWidth = graph.offsetWidth;
+    gsap.to(".media", {
+      x: -mediaWidth / 1.9,
+      duration: 2,
+    });
+    gsap.to(".graph", {
+      x: graphWidth / 1.9,
+      duration: 2,
+    });
+  });
+
   return (
     <WrapTimeout>
       {(questions?.type === "mc" || questions?.type === "tf") && (
-        <ResponsiveContainer width="60%" height="100%">
-          <Treemap
-            width={400}
-            height={200}
-            data={data}
-            dataKey="size"
-            stroke="#fff"
-            fill="#8884d8"
-            content={
-              <CustomizedContent colors={COLORS} usersAnswer={usersAnswer} />
-            }
-          />
-        </ResponsiveContainer>
+        <>
+          <WrapMedia className="media">
+            <img src={questions.media} alt="" />
+          </WrapMedia>
+
+          <WrapGraph className="graph" width="50%" height="72%">
+            <Treemap
+              width={400}
+              height={200}
+              data={data}
+              dataKey="size"
+              fill="#8884d8"
+              content={
+                <CustomizedContent colors={COLORS} usersAnswer={usersAnswer} />
+              }
+            />
+          </WrapGraph>
+        </>
       )}
       {questions?.type === "sa" && (
         <WrapShortAnswers>
@@ -163,8 +249,18 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
             (user, index) =>
               user.selected !== questions.answer && (
                 <WrapShortAnswer $isCorrect={false} key={index}>
-                  <div>{user.name}</div>
-                  <div>{user.selected}</div>
+                  <div>
+                    {user.name.length <= 6
+                      ? user.name
+                      : user.name.slice(0, nameLength) + "..."}
+                  </div>
+                  <div>
+                    {user.selected
+                      ? user.selected.length <= 10
+                        ? user.selected
+                        : user.selected.slice(0, answerLength) + "..."
+                      : ""}
+                  </div>
                   <div>{user.addScore}</div>
                 </WrapShortAnswer>
               )

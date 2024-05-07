@@ -80,6 +80,12 @@ const InputPin = styled.input`
   &::placeholder {
     color: #a9a7a7;
   }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
 const WrapButton = styled.button`
@@ -166,7 +172,21 @@ const Home = () => {
 
     if (room.length > 0) {
       navigate(`/part/${room[0].id}/${inputPin} `);
+      return;
     }
+    setInputPin("");
+    toast.warn("無此房間", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      icon: false,
+      transition: Slide,
+    });
   }
 
   function handleEmptyInput() {
@@ -267,7 +287,8 @@ const Home = () => {
         <InputPin
           placeholder="遊戲pin碼"
           value={inputPin}
-          onChange={(e) => setInputPin(e.target.value)}
+          onChange={(e) => setInputPin(e.target.value.slice(0, 6))}
+          type="number"
         />
         <WrapButton onClick={handlePart} size="large">
           <p>進入</p>

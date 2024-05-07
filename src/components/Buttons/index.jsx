@@ -5,6 +5,7 @@ import styled from "styled-components";
 // <Buttons type="light">主持</Buttons>
 
 const Button = styled.div`
+  z-index: 400;
   ${({ $bg, $color, $hoverbg, $size }) =>
     `
     background-color: ${$bg}; 

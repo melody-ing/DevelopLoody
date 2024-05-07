@@ -3,11 +3,11 @@ import React from "react";
 import styled from "styled-components";
 
 const WrapMedia = styled.div`
-  max-width: 70rem;
+  max-width: 50rem;
   margin: 0 auto;
 
   img {
-    max-height: 40rem;
+    max-height: calc(100vh - 40rem);
     object-fit: contain;
   }
 
