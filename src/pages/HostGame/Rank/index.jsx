@@ -2,6 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import CountUp from "react-countup";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import User from "./User";
 
 const WrapRank = styled.div`
   display: flex;
@@ -10,15 +15,22 @@ const WrapRank = styled.div`
 `;
 
 const WrapUsersRank = styled(ScrollArea)`
-  width: 60%;
-
-  height: calc(100vh - 20rem);
+  width: 50%;
+  height: 41.4rem;
+  overflow: hidden;
+`;
+const UsersRank = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
 
 const UserRank = styled.div`
+  top: ${({ $lastRank }) => $lastRank * 9}rem;
+  position: absolute;
   display: flex;
   justify-content: space-between;
-  width: 70%;
+  width: 90%;
   margin: 2rem auto;
   font-size: 3rem;
   box-shadow: ${theme.shadow};
@@ -28,18 +40,19 @@ const UserRank = styled.div`
 `;
 
 const Rank = ({ users, audioRef }) => {
+  const arrayUsers = Object.values(users)
+    .sort((a, b) => b.score - a.score)
+    .map((user, index) => ({ ...user, rank: index }))
+    .sort((a, b) => b.score - b.addScore - (a.score - a.addScore))
+    .map((user, index) => ({ ...user, lastRank: index }));
+
   return (
     <WrapRank>
-      <WrapUsersRank>
-        {Object.values(users)
-          .sort((a, b) => b.score - a.score)
+      <WrapUsersRank className="try">
+        {arrayUsers
+          .sort((a, b) => b.score - b.addScore - (a.score - a.addScore))
           .map((user, index) => {
-            return (
-              <UserRank key={index}>
-                <div>{user.name}</div>
-                <div>{user.score}</div>
-              </UserRank>
-            );
+            return <User key={index} index={index} user={user} />;
           })}
       </WrapUsersRank>
       <audio autoPlay src="/bgm/rank.mp3" ref={audioRef} />

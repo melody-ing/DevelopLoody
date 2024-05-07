@@ -21,7 +21,7 @@ const TimeLimit = styled.div`
   bottom: 50%;
   padding: 2rem;
   background-color: ${theme.colors.secondary}66;
-  color: ${theme.colors.tertiary};
+  color: ${theme.colors.info};
   font-size: 5rem;
   width: auto;
   height: 8rem;
@@ -35,18 +35,18 @@ const TimeLimit = styled.div`
 
 const Attenance = styled.div`
   position: absolute;
-  bottom: 60%;
-  padding: 2rem;
+  bottom: 55%;
+  padding: 1rem;
   right: 0;
   background-color: ${theme.colors.secondary}66;
-  color: ${theme.colors.tertiary};
+  color: ${theme.colors.info};
   font-size: 2rem;
-  width: 18rem;
-  height: 14rem;
+  width: 16rem;
+  height: 11rem;
   line-height: 4rem;
 
   p {
-    font-size: 5rem;
+    font-size: 4.4rem;
   }
 
   ${theme.breakpoints.sm} {

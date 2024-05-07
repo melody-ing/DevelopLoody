@@ -5,7 +5,7 @@ import theme from "../../../components/css/theme";
 const Wrapper = styled.div`
   position: fixed;
   width: 100%;
-  bottom: 6rem;
+  bottom: 2rem;
 
   display: flex;
   justify-content: center;
@@ -26,9 +26,9 @@ const WrapOptions = styled.div`
     align-items: center;
     height: 8rem;
     font-size: 3rem;
-    background-color: #e6eaea;
+    background-color: #f6efe0;
     border-radius: 5px;
-    box-shadow: 0px 6px 0px 0 #4e5a56;
+    box-shadow: 0px 6px 0px 0 #7e6b3f;
   }
 `;
 
@@ -43,9 +43,9 @@ const WrapShortAnswer = styled.div`
     align-items: center;
     height: 10rem;
     font-size: 5rem;
-    background-color: #e0e7e5;
+    background-color: #f6efe0;
     border-radius: 5px;
-    box-shadow: 0px 8px 0px 0 #4e5a56;
+    box-shadow: 0px 8px 0px 0 #7e6b3f;
   }
 `;
 
@@ -77,7 +77,7 @@ const Options = ({ questions, answer, state }) => {
                     answer === index
                       ? {
                           backgroundColor: "#fff384",
-                          boxShadow: "0px 6px 0px 0 #506960",
+                          boxShadow: "0px 6px 0px 0 #7e6b3f",
                         }
                       : {
                           backgroundColor: "#eee",

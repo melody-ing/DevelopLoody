@@ -152,7 +152,6 @@ const Header = ({ children }) => {
     <WarpHeader>
       <Logo src="/logo.png" alt="" onClick={handleHome} />
       {children}
-      {/* <Buttons>登入</Buttons> */}
       <Sheet>
         <SheetTrigger>
           {" "}

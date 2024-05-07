@@ -28,19 +28,23 @@ const WrapGame = styled.div`
 
 const WrapBtns = styled.div`
   position: fixed;
-  right: 3rem;
-  top: 43%;
+  right: 1rem;
+  top: 46%;
   display: flex;
   gap: 1rem;
   flex-direction: column;
 `;
 
 const Question = styled.h2`
-  width: auto;
+  font-size: 4rem;
+  line-height: 6rem;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 2rem;
   height: auto;
   padding: 2rem;
 
-  background-color: #eeeeee61;
+  background-color: #f4f4f48d;
 `;
 
 const Loading = styled.div`
@@ -54,7 +58,7 @@ const SoundButton = styled.div`
   box-shadow: 0 3.4px 0px 0 #b69e35;
 
   width: 10rem;
-  height: 8rem;
+  height: 6rem;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -90,12 +94,12 @@ const HostGame = () => {
   useOnAuthStateChange();
 
   window.onpopstate = () => {
-    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    const confirmLeave = window.confirm("確定要結束遊戲嗎?");
     if (confirmLeave) {
       removeRealTime(getUrlDocumentId);
       navigate("/dashboard");
     } else {
-      navigate(`/host/game/${getUrlDocumentId}`);
+      navigate(`/hostgame/${getUrlDocumentId}`);
     }
   };
 
@@ -246,7 +250,6 @@ const HostGame = () => {
       setReply(0);
     }
   }
-  console.log(isPlayBgm);
 
   return (
     <WrapGame>
@@ -262,7 +265,7 @@ const HostGame = () => {
         </Loading>
       ) : (
         <>
-          <Question>{title}</Question>
+          {state === "end" || <Question>{title}</Question>}
           <WrapBtns>
             <SoundButton
               type="sound"

@@ -5,6 +5,7 @@ import { updateRealTime } from "../../../utils/reviseRealTime";
 import Buttons from "@/components/Buttons";
 import { Timestamp, serverTimestamp } from "firebase/firestore";
 import { useParams } from "react-router-dom";
+import ReactLoading from "react-loading";
 
 const WrapOptions = styled.div``;
 
@@ -12,7 +13,7 @@ const WrapChooseOptions = styled.div`
   position: fixed;
   width: 60%;
   left: 50%;
-  bottom: 6rem;
+  bottom: 4rem;
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: 50% 50%;
@@ -22,6 +23,11 @@ const WrapChooseOptions = styled.div`
   ${theme.breakpoints.sm} {
     width: 90%;
   }
+`;
+
+const WrapWord = styled.div`
+  font-size: 2rem;
+  color: #a78d50;
 `;
 
 const OptionsButton = styled.button`
@@ -64,7 +70,7 @@ const WrapShortAnswer = styled.div`
 
 const WrapShortAnswerInput = styled.div`
   width: 60%;
-  height: 10rem;
+  height: 8rem;
   display: flex;
   align-items: center;
   box-shadow: 0px 0px 4px 0px #33333369;
@@ -74,6 +80,11 @@ const WrapShortAnswerInput = styled.div`
   border-radius: 5px;
 
   background-color: #fff;
+
+  ${theme.breakpoints.sm} {
+    width: 90%;
+    height: 8rem;
+  }
 `;
 
 const ShortAnswerInput = styled.input`
@@ -84,20 +95,42 @@ const ShortAnswerInput = styled.input`
   text-align: center;
 `;
 
-const ShortAnswerBtn = styled.div``;
+const ShortAnswerBtn = styled.div`
+  width: 60%;
+  height: 2rem;
+
+  ${theme.breakpoints.sm} {
+    width: 90%;
+    height: 8rem;
+  }
+`;
+
+const Loading = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10rem;
+  align-items: center;
+  gap: 0.4rem;
+`;
+
+const NameTextWarning = styled.div`
+  position: absolute;
+  color: #c7c7c7;
+  right: 2.6rem;
+  top: 5.4rem;
+  font-size: 1.6rem;
+`;
 
 const Options = ({
   questions,
   addScore,
-  isAnswer,
-  setIsAnswer,
+
   getUrlDocumentId,
   userId,
+  user,
 }) => {
   const [shortAnswer, setShortAnswer] = useState("");
-
-  const { documentId } = useParams();
-  console.log(documentId);
 
   function handleAnswer(e) {
     if (getUrlDocumentId === undefined) return;
@@ -107,7 +140,6 @@ const Options = ({
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         selected: +e.target.value,
         addScore,
-
         time: Timestamp.now(),
       });
     }
@@ -118,28 +150,40 @@ const Options = ({
         time: Timestamp.now(),
       });
     }
-    setIsAnswer(true);
   }
 
-  return isAnswer ? (
-    <p>等一下別人喔</p>
+  return user.selected !== undefined && user.selected !== "" ? (
+    <>
+      {" "}
+      <Loading>
+        <WrapWord>答案是</WrapWord>
+        <ReactLoading type="balls" color="#a78d50" height={3} width={16} />
+      </Loading>
+    </>
   ) : (
     <WrapOptions>
       {questions.type === "sa" && (
         <WrapShortAnswer>
-          <ShortAnswerBtn onClick={handleAnswer}>
-            <Buttons size={window.innerWidth < 940 ? "medium" : "large"}>
-              送出
-            </Buttons>
-          </ShortAnswerBtn>
           <WrapShortAnswerInput>
             <ShortAnswerInput
               value={shortAnswer}
-              onChange={(e) => setShortAnswer(e.target.value)}
+              onChange={(e) =>
+                setShortAnswer(e.target.value.slice(0, 22).toUpperCase())
+              }
               type="text"
               placeholder="請輸入答案"
             />
+            <NameTextWarning>{`${shortAnswer.length}/22`}</NameTextWarning>
           </WrapShortAnswerInput>
+          <ShortAnswerBtn onClick={handleAnswer}>
+            <Buttons
+              size={window.innerWidth < 940 ? "medium" : "large"}
+              style={{ width: "100%", height: "4rem" }}
+              type="success"
+            >
+              送出
+            </Buttons>
+          </ShortAnswerBtn>
         </WrapShortAnswer>
       )}
       {(questions.type === "mc" || questions.type === "tf") && (

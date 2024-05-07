@@ -148,8 +148,7 @@ const WrapQuestion = styled.div`
   cursor: pointer;
   text-align: left;
   box-shadow: 0px 0px 4px 0px #33333369;
-  ${({ $isDone }) =>
-    $isDone === false && `border : 2px solid ${theme.colors.danger}`};
+  ${({ $isDone }) => $isDone === false && `border : 3px solid #dc4141`};
   padding: 5px;
   border-radius: 5px;
 
@@ -299,6 +298,7 @@ const WrapAnswerInput = styled.div`
   padding-left: 2rem;
   border-radius: 5px;
   background-color: #fff;
+  position: relative;
 
   input[type="radio"] {
     width: 4.4rem;
@@ -502,6 +502,7 @@ const InputTitle = styled.div`
 `;
 
 const WrapQBankNameInput = styled.div`
+  position: relative;
   ${theme.breakpoints.sm} {
     position: absolute;
     bottom: 2rem;
@@ -630,6 +631,35 @@ const Loading = styled.div`
   margin-top: 10rem;
 `;
 
+const QbankNameTextWarning = styled.div`
+  position: absolute;
+  color: #c7c7c7;
+  right: 0.6rem;
+  top: 3.6rem;
+  font-size: 1.4rem;
+`;
+
+const TitleTextWarning = styled.div`
+  position: absolute;
+  color: #c7c7c7;
+  right: 2.2rem;
+  top: 6rem;
+  font-size: 1.4rem;
+
+  ${theme.breakpoints.sm} {
+    top: 5rem;
+    right: 4.8rem;
+  }
+`;
+
+const OptionTextWarning = styled.div`
+  position: absolute;
+  color: #c7c7c7;
+  right: 0.6rem;
+  top: 5.6rem;
+  font-size: 1.4rem;
+`;
+
 const Create = () => {
   const navigate = useNavigate();
   const { documentId: getUrlDocumentId, UserId: getUrlUserId } = useParams();
@@ -739,8 +769,8 @@ const Create = () => {
   }, [title, inputOptions, qBankName]);
 
   function handleTitleInput(e) {
-    setTitle(e.target.value);
-    getQbankData.questions[editNum].title = e.target.value;
+    setTitle(e.target.value.slice(0, 40));
+    getQbankData.questions[editNum].title = e.target.value.slice(0, 40);
     handleIsChange();
   }
 
@@ -750,8 +780,8 @@ const Create = () => {
       getQbankData.questions[editNum].answer = +e.target.value;
     }
     if (question.type === "sa") {
-      setAnswerRadio(e.target.value);
-      getQbankData.questions[editNum].answer = e.target.value;
+      setAnswerRadio(e.target.value.toUpperCase());
+      getQbankData.questions[editNum].answer = e.target.value.toUpperCase();
     }
     handleIsChange();
   }
@@ -759,17 +789,18 @@ const Create = () => {
   function handleAnswerInput(e, index) {
     setInputOptions((inputOptions) => {
       const newArray = [...inputOptions];
-      newArray[index] = e.target.value;
+      newArray[index] = e.target.value.toUpperCase().slice(0, 15);
       return newArray;
     });
-    getQbankData.questions[editNum].options[index] = e.target.value;
-    console.log(getQbankData);
+    getQbankData.questions[editNum].options[index] = e.target.value
+      .toUpperCase()
+      .slice(0, 15);
     handleIsChange();
   }
 
   function handleQBankName(e) {
-    setQBankName(e.target.value);
-    getQbankData.name = e.target.value;
+    setQBankName(e.target.value.slice(0, 40));
+    getQbankData.name = e.target.value.slice(0, 40);
     handleIsChange();
   }
 
@@ -1034,7 +1065,7 @@ const Create = () => {
                                               window.innerWidth < 940 ? 5 : 16
                                             ) +
                                               `${
-                                                question.title.length >
+                                                question.title?.length >
                                                 (window.innerWidth < 940
                                                   ? 5
                                                   : 16)
@@ -1090,6 +1121,7 @@ const Create = () => {
                 value={title}
                 onChange={handleTitleInput}
               />
+              <TitleTextWarning>{title ? title.length : 0}/40</TitleTextWarning>
               {mediaUrl === "" ? (
                 <FileLabel htmlFor={"fileInput"}>
                   <p>輸入圖片</p>
@@ -1129,6 +1161,10 @@ const Create = () => {
                           onChange={(e) => handleAnswerInput(e, index)}
                         />
                       </TextAreaWrapper>
+                      <OptionTextWarning>
+                        {inputOptions[index] ? inputOptions[index].length : "0"}
+                        /15
+                      </OptionTextWarning>
                     </WrapAnswerInput>
                   ))}
                 </WrapAnswer>
@@ -1161,6 +1197,9 @@ const Create = () => {
                   error={!isQBankNameFill}
                   label={isQBankNameFill ? null : "尚未輸入"}
                 />
+                <QbankNameTextWarning>
+                  {qBankName ? qBankName.length : 0}/40
+                </QbankNameTextWarning>
               </WrapQBankNameInput>
               <WrapSelected>
                 <InputTitle>題型</InputTitle>
@@ -1196,9 +1235,9 @@ const Create = () => {
               </WrapSelected>
 
               <SaveButton>
-                <div onClick={handleComplete}>
-                  <Buttons type="success">完成</Buttons>
-                </div>
+                <Buttons onClick={handleComplete} type="success">
+                  完成
+                </Buttons>
               </SaveButton>
             </RulesAreaWrapper>
           </Wrapper>

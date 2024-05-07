@@ -30,18 +30,21 @@ const WrapQuestion = styled.div`
 `;
 
 const Question = styled.h2`
-  font-size: 3.6rem;
+  font-size: 3rem;
+  line-height: 5rem;
   width: 60%;
   height: auto;
   margin: 0 auto;
   margin-bottom: 2rem;
   background-color: ${theme.colors.light};
-  margin-top: 4rem;
+  margin-top: 5.5rem;
 
   ${theme.breakpoints.sm} {
     width: 90%;
-    font-size: 2rem;
+    font-size: 2.2rem;
     line-height: 3.5rem;
+    padding: 0.5rem;
+    margin-top: 4.4rem;
   }
 `;
 
@@ -68,14 +71,18 @@ const PartGame = () => {
   } = useGetRealTimeNavigate(getUrlDocumentId, "/");
   const realTime = realTimeData;
   const users = realTime?.users;
-  const user = realTime?.users?.[userId];
+
+  const {
+    data: user,
+    isError: isUserError,
+    isLoading: isUserLoading,
+  } = useGetRealTimeNavigate(`${getUrlDocumentId}/users/${userId}`, "/");
   const qNumber = realTime?.question?.id;
   const state = realTime?.state;
   const qTime = realTime?.time;
   const question = realTime?.question;
   const questions = qbank?.questions?.[qNumber];
   const [timeoutSec, setTimeoutSec] = useState(null);
-  const [isAnswer, setIsAnswer] = useState(false);
 
   function setScore(time, userTime) {
     if (userTime !== null && time !== null) {
@@ -109,21 +116,12 @@ const PartGame = () => {
   let addScore = 0;
   let nextState = "";
 
-  useEffect(() => {
-    if (!userId) {
-      setTimeout(() => {
-        navigate("/");
-      }, 0);
-    }
-  }, [userId, navigate]);
-  console.log(user);
-
   if (qbank && user && qNumber !== null && users && state) {
     if (!user) navigate("/");
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
-        title = questions.title;
+        title = qbank?.name;
         content = <Lobby user={user} />;
         break;
 
@@ -131,16 +129,17 @@ const PartGame = () => {
         title = questions.title;
         content = (
           <>
-            <Media questions={questions} />
+            {(user.selected === undefined || user.selected === "") && (
+              <Media questions={questions} />
+            )}
 
             <Options
               questions={questions}
               qTime={qTime}
               addScore={addScore}
-              isAnswer={isAnswer}
-              setIsAnswer={setIsAnswer}
               getUrlDocumentId={getUrlDocumentId}
               userId={userId}
+              user={user}
             />
 
             <Score
@@ -148,7 +147,7 @@ const PartGame = () => {
               userId={userId}
               getUrlDocumentId={getUrlDocumentId}
             />
-            {isAnswer || (
+            {user.selected === "" && (
               <CountDown questions={questions} timeoutSec={timeoutSec} />
             )}
           </>
@@ -164,12 +163,7 @@ const PartGame = () => {
         title = questions.title;
         content = (
           <>
-            <Timeout
-              user={user}
-              questions={questions}
-              answer={answer}
-              setIsAnswer={setIsAnswer}
-            />
+            <Timeout user={user} questions={questions} answer={answer} />
             <Score
               user={user}
               isRank={true}
@@ -195,7 +189,7 @@ const PartGame = () => {
         break;
 
       case "end":
-        title = "結束";
+        title = "遊戲結束";
         content = (
           <>
             <Rank userId={userId} user={user} users={users} />
@@ -222,9 +216,8 @@ const PartGame = () => {
         </Loading>
       ) : (
         <div>
-          {state !== "lobby" && (
+          {(user.selected === undefined || user.selected === "") && (
             <WrapQuestion>
-              {" "}
               <Question>{title}</Question>
             </WrapQuestion>
           )}
