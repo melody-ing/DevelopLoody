@@ -56,12 +56,12 @@ const Attenance = styled.div`
 `;
 
 const Home = ({
-  users,
   getUrlDocumentId,
   timeoutSec,
   audioRef,
   reply,
   setReply,
+  arrayUsers,
 }) => {
   const [count, setCount] = useState(timeoutSec);
 
@@ -70,11 +70,11 @@ const Home = ({
   }, [timeoutSec]);
 
   useEffect(() => {
-    const num = Object.values(users).filter(
+    const num = arrayUsers.filter(
       (user) => user.selected !== undefined
     )?.length;
-    users && setReply(num);
-  }, [users]);
+    arrayUsers && setReply(num);
+  }, [arrayUsers]);
 
   useEffect(() => {
     const countDown = setInterval(() => {

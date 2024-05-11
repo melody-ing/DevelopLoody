@@ -13,18 +13,30 @@ const fadeIn = keyframes`
 `;
 
 const WrapMedia = styled.div`
-  max-width: 70rem;
+  width: 100%;
   margin: 0 auto;
   opacity: 0;
   animation: ${fadeIn} 0.1s 0.3s forwards;
+  position: fixed;
+  top: 18rem;
+  left: 0;
+  display: flex;
+  justify-content: center;
 
   img {
     max-height: calc(100vh - 40rem);
     object-fit: contain;
+    max-width: 50rem;
+    margin: 0 auto;
   }
 
   ${theme.breakpoints.sm} {
-    max-width: 90%;
+    max-width: 100%;
+
+    img {
+      max-width: 34rem;
+      max-height: 32vh;
+    }
   }
 `;
 

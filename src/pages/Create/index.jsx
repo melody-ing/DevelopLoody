@@ -26,7 +26,10 @@ import Buttons from "@/components/Buttons";
 import Clone from "./Clone";
 import Delete from "./Delete";
 
-import { useGetFireStore } from "@/utils/hook/useGetFireStore";
+import {
+  useGetFireStore,
+  useGetFireStores,
+} from "@/utils/hook/useGetFireStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { setFireStore } from "@/utils/reviseFireStore";
 import { serverTimestamp } from "firebase/firestore";
@@ -41,12 +44,14 @@ import TextField from "@mui/material/TextField";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import Mryellow from "@/components/css/animation/Mryellow";
 import Mrpurple from "@/components/css/animation/Mrpurple";
+import { getAuth } from "firebase/auth";
+import { app } from "@/utils/firebase";
 
 const Wrapper = styled.div`
   max-height: 100vh;
   width: 100%;
   display: flex;
-  height: calc(100vh - 6rem);
+  height: 100vh;
 
   ${theme.breakpoints.sm} {
     flex-direction: column;
@@ -205,7 +210,7 @@ const EditAreaWrapper = styled.div`
   width: 100%;
   position: relative;
   padding-top: 2rem;
-  height: calc(100vh - 6rem);
+  height: 100vh;
   overflow: hidden;
 
   ${theme.breakpoints.sm} {
@@ -217,14 +222,14 @@ const EditAreaWrapper = styled.div`
 const WrapMryellow = styled.div`
   position: absolute;
   bottom: -60%;
-  right: -60%;
+  right: -50%;
   z-index: -1;
 `;
 
 const WrapMrpurple = styled.div`
   position: absolute;
-  top: -70%;
-  left: -60%;
+  top: -60%;
+  left: -50%;
   z-index: -1;
 `;
 
@@ -244,7 +249,6 @@ const QuestionInput = styled(TextField)`
 
   & .MuiFormLabel-root {
     font-size: 2rem;
-    margin-top: 2rem;
   }
 
   ${theme.breakpoints.sm} {
@@ -327,7 +331,6 @@ const TextAreaInput = styled(TextField)`
 
   & .MuiFormLabel-root {
     font-size: 2rem;
-    margin-top: 0.6rem;
   }
 
   & .MuiOutlinedInput-notchedOutline {
@@ -371,7 +374,7 @@ const WrapShortAnswerInput = styled.div`
   background-color: #fff;
 
   ${theme.breakpoints.sm} {
-    height: 4rem;
+    height: 5.6rem;
     bottom: 2rem;
   }
 `;
@@ -460,7 +463,7 @@ const WrapMedia = styled.div`
 `;
 
 const ViewMedia = styled.img`
-  max-height: calc(100vh - 43rem);
+  max-height: calc(100vh - 40rem);
   max-width: calc(100vw - 50rem);
   object-fit: contain;
   ${theme.breakpoints.sm} {
@@ -639,16 +642,21 @@ const QbankNameTextWarning = styled.div`
   font-size: 1.4rem;
 `;
 
+const WrapQuestionInput = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
 const TitleTextWarning = styled.div`
   position: absolute;
   color: #c7c7c7;
-  right: 2.2rem;
-  top: 6rem;
+  right: 2.4rem;
+  top: 4rem;
   font-size: 1.4rem;
 
   ${theme.breakpoints.sm} {
-    top: 5rem;
-    right: 4.8rem;
+    top: 2.8rem;
+    right: 4rem;
   }
 `;
 
@@ -658,16 +666,34 @@ const OptionTextWarning = styled.div`
   right: 0.6rem;
   top: 5.6rem;
   font-size: 1.4rem;
+
+  ${theme.breakpoints.sm} {
+    top: 3rem;
+  }
 `;
 
 const Create = () => {
   const navigate = useNavigate();
+  const auth = getAuth(app);
+  const user = auth.currentUser;
+  let uid = null;
+  let ownerName = null;
+  if (user) {
+    uid = user.uid;
+    ownerName = user.displayName;
+  }
+
   const { documentId: getUrlDocumentId, UserId: getUrlUserId } = useParams();
   const {
     data: getQbankData,
-    isError,
-    isLoading,
+    isError: getQbankIsError,
+    isLoading: getQbankIsLoading,
   } = useGetFireStore("qbank", getUrlDocumentId);
+  const {
+    data: getQbanksData,
+    isError: qbanksIsError,
+    isLoading: qbanksIsLoading,
+  } = useGetFireStores(`users/${uid}/qbanks`);
   const [editNum, setEditNum] = useState(0);
   const [isChanging, setIsChanging] = useState(false);
   const question = getQbankData?.questions[editNum];
@@ -684,6 +710,20 @@ const Create = () => {
   const [isQBankNameFill, setIsQBankNameFill] = useState(true);
 
   useOnAuthStateChange();
+
+  console.log(getQbanksData);
+
+  useEffect(() => {
+    if (!getQbanksData) return;
+    const isGetQbankShared = getQbanksData.some(
+      (qBank) => qBank.id === getUrlDocumentId
+    );
+    if (!isGetQbankShared) {
+      setFireStore(`users/${uid}/qbanks`, getUrlDocumentId, {
+        id: getUrlDocumentId,
+      });
+    }
+  }, [getQbanksData]);
 
   useEffect(() => {
     if (isChanging === true) return;
@@ -787,14 +827,27 @@ const Create = () => {
   }
 
   function handleAnswerInput(e, index) {
-    setInputOptions((inputOptions) => {
-      const newArray = [...inputOptions];
-      newArray[index] = e.target.value.toUpperCase().slice(0, 15);
-      return newArray;
-    });
-    getQbankData.questions[editNum].options[index] = e.target.value
-      .toUpperCase()
-      .slice(0, 15);
+    if (questionType === "mc" || questionType === "tf") {
+      setInputOptions((inputOptions) => {
+        const newArray = [...inputOptions];
+        newArray[index] = e.target.value.slice(0, 15);
+        return newArray;
+      });
+      getQbankData.questions[editNum].options[index] = e.target.value.slice(
+        0,
+        15
+      );
+    } else {
+      setInputOptions((inputOptions) => {
+        const newArray = [...inputOptions];
+        newArray[index] = e.target.value.toUpperCase().slice(0, 15);
+        return newArray;
+      });
+      getQbankData.questions[editNum].options[index] = e.target.value
+        .toUpperCase()
+        .slice(0, 15);
+    }
+
     handleIsChange();
   }
 
@@ -889,8 +942,6 @@ const Create = () => {
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
 
-  console.log(mediaUrl);
-
   function handleFileInput(e) {
     console.log(e);
     if (e) {
@@ -937,9 +988,18 @@ const Create = () => {
     getQbankData.questions[editNum].media = "";
     setFireStore("qbank", getUrlDocumentId, getQbankData);
   }
-
   function handleComplete() {
     setIsDone();
+    getQbankData.questions.forEach((question) => {
+      if (
+        question.type === "sa" &&
+        question.answer !== "" &&
+        question.options[0] !== ""
+      ) {
+        question.answer = question.answer.trim();
+        question.options[0] = question.options[0].trim();
+      }
+    });
     const allIsDone = getQbankData.questions.every(
       (question) => question.isDone === true
     );
@@ -969,8 +1029,7 @@ const Create = () => {
   return (
     getQbankData && (
       <>
-        <Header />
-        {isLoading ? (
+        {getQbankIsLoading ? (
           <Loading>
             <ReactLoading
               type="bars"
@@ -1114,14 +1173,18 @@ const Create = () => {
               <WrapMrpurple>
                 <Mrpurple />
               </WrapMrpurple>
-              <QuestionInput
-                error={!isTitleFill}
-                id="outlined-error"
-                label={isTitleFill ? null : "尚未輸入"}
-                value={title}
-                onChange={handleTitleInput}
-              />
-              <TitleTextWarning>{title ? title.length : 0}/40</TitleTextWarning>
+              <WrapQuestionInput>
+                <QuestionInput
+                  error={!isTitleFill}
+                  id="outlined-error"
+                  label={isTitleFill ? null : "請輸入題目"}
+                  value={title}
+                  onChange={handleTitleInput}
+                />
+                <TitleTextWarning>
+                  {title ? title.length : 0}/40
+                </TitleTextWarning>
+              </WrapQuestionInput>
               {mediaUrl === "" ? (
                 <FileLabel htmlFor={"fileInput"}>
                   <p>輸入圖片</p>
@@ -1156,7 +1219,7 @@ const Create = () => {
                       <TextAreaWrapper>
                         <TextAreaInput
                           error={!isOptionsFill[index]}
-                          label={isOptionsFill[index] ? null : "尚未輸入"}
+                          label={isOptionsFill[index] ? null : "請輸入選項"}
                           value={inputOptions[index]}
                           onChange={(e) => handleAnswerInput(e, index)}
                         />
@@ -1177,7 +1240,7 @@ const Create = () => {
                   >
                     <ShortAnswerInput
                       error={!isOptionsFill[index]}
-                      label={isOptionsFill[index] ? null : "尚未輸入"}
+                      label={isOptionsFill[index] ? null : "請輸入答案"}
                       type="text"
                       value={inputOptions[index]}
                       onChange={(e) => {
@@ -1185,6 +1248,10 @@ const Create = () => {
                         handleAnswerInput(e, index);
                       }}
                     />
+                    <OptionTextWarning>
+                      {inputOptions[index] ? inputOptions[index].length : "0"}
+                      /15
+                    </OptionTextWarning>
                   </WrapShortAnswerInput>
                 ))}
             </EditAreaWrapper>
@@ -1195,7 +1262,7 @@ const Create = () => {
                   value={qBankName}
                   onChange={handleQBankName}
                   error={!isQBankNameFill}
-                  label={isQBankNameFill ? null : "尚未輸入"}
+                  label={isQBankNameFill ? null : "請輸入題庫名稱"}
                 />
                 <QbankNameTextWarning>
                   {qBankName ? qBankName.length : 0}/40

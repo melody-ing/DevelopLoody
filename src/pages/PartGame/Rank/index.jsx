@@ -7,6 +7,10 @@ const WrapRank = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: fixed;
+  top: 16rem;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const RankTitle = styled.div`

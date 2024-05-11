@@ -16,7 +16,8 @@ const HoverHost = styled.div`
   background-color: #ffffff;
   border: 2px solid #ececec;
   position: absolute;
-  left: 8.8rem;
+  transform: translate(-1rem);
+  left: 0rem;
   width: 10rem;
   top: 4rem;
   height: 4rem;
@@ -27,6 +28,14 @@ const HoverHost = styled.div`
   text-align: center;
   border-radius: 5px;
   font-size: 1.4rem;
+
+  ${theme.breakpoints.sm} {
+    transform: translate(-2rem);
+  }
+`;
+
+const WrapHost = styled.div`
+  position: relative;
 `;
 
 const HostButton = ({ item }) => {
@@ -54,7 +63,7 @@ const HostButton = ({ item }) => {
       <Buttons onClick={() => handleEdit(item.id)} type="light" size="small">
         編輯
       </Buttons>
-      <div
+      <WrapHost
         onClick={() => item.isDone && handleHost(item.id)}
         onMouseEnter={() => setIsHostHover(true)}
         onMouseLeave={() => setIsHostHover(false)}
@@ -62,8 +71,8 @@ const HostButton = ({ item }) => {
         <Buttons type={item.isDone ? "success" : "invalid"} size="small">
           主持
         </Buttons>
-      </div>
-      {!item.isDone && isHostHover && <HoverHost>尚未編輯完成</HoverHost>}
+        {!item.isDone && isHostHover && <HoverHost>尚未編輯完成</HoverHost>}
+      </WrapHost>
     </WrapQBankButtons>
   );
 };

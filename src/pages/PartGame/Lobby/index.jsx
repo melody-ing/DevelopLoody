@@ -12,8 +12,8 @@ const WrapLobby = styled.div`
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  position: relative;
-  margin-top: 12rem;
+  position: fixed;
+  bottom: 40vh;
 
   h3 {
     color: #fff;

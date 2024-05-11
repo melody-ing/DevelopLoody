@@ -44,7 +44,7 @@ const User = ({ user, index }) => {
   const rankRef = useRef(null);
 
   useGSAP(() => {
-    gsap.to(rankRef.current, { top: user.rank * 80, duration: 3 });
+    gsap.to(rankRef.current, { top: user.rank * 80, duration: 2.56 });
   });
 
   return (
@@ -78,7 +78,7 @@ const User = ({ user, index }) => {
         <CountUp
           start={user.score - user.addScore}
           end={user.score}
-          duration={4.9}
+          duration={3.5}
         />
       </UserRank>
     </UsersRank>

@@ -39,8 +39,8 @@ const UserRank = styled.div`
   background-color: #fff;
 `;
 
-const Rank = ({ users, audioRef }) => {
-  const arrayUsers = Object.values(users)
+const Rank = ({ audioRef, arrayUsers }) => {
+  const newArrayUsers = arrayUsers
     .sort((a, b) => b.score - a.score)
     .map((user, index) => ({ ...user, rank: index }))
     .sort((a, b) => b.score - b.addScore - (a.score - a.addScore))
@@ -49,7 +49,7 @@ const Rank = ({ users, audioRef }) => {
   return (
     <WrapRank>
       <WrapUsersRank className="try">
-        {arrayUsers
+        {newArrayUsers
           .sort((a, b) => b.score - b.addScore - (a.score - a.addScore))
           .map((user, index) => {
             return <User key={index} index={index} user={user} />;

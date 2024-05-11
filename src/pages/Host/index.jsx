@@ -10,6 +10,7 @@ import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { Timestamp } from "firebase/firestore";
 import { useBgm } from "@/utils/hook/useBgm";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const WrapHost = styled(PrimaryBg)`
   display: flex;
@@ -48,6 +49,7 @@ const WrapCode = styled.div`
   height: 8rem;
   width: 30rem;
   text-align: left;
+  border-radius: 6px;
   div {
     padding: 0 2rem;
     height: 3.6rem;
@@ -70,6 +72,10 @@ const WrapCode = styled.div`
   }
 `;
 
+const WrapParticipants = styled(ScrollArea)`
+  height: calc(100vh - 30rem);
+`;
+
 const Participants = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -90,19 +96,27 @@ const Attenance = styled.div`
   position: absolute;
   bottom: 4rem;
   left: 4rem;
-  padding: 2rem;
+  padding: 2rem 0.5rem;
   background-color: ${theme.colors.tertiary}66;
   color: ${theme.colors.light};
-  font-size: 3rem;
-  width: 8rem;
+  font-size: 4rem;
+  width: 10rem;
   height: 8rem;
   line-height: 4rem;
+  border-radius: 5px;
+
+  p {
+    font-size: 1.4rem;
+    right: 0.5rem;
+    bottom: 0;
+    position: absolute;
+  }
 `;
 
 const SoundButton = styled.div`
   position: absolute;
   right: 4rem;
-  bottom: 10rem;
+  bottom: 4rem;
   background-color: ${({ $isPlayBgm }) => ($isPlayBgm ? "#e8c83b" : "#b69e35")};
   box-shadow: 0 3.4px 0px 0 #b69e35;
 
@@ -117,8 +131,14 @@ const SoundButton = styled.div`
 
 const StartBtn = styled.div`
   position: absolute;
-  bottom: 4rem;
+  bottom: 13rem;
   right: 4rem;
+`;
+
+const DashboardBtn = styled.div`
+  position: absolute;
+  bottom: 13rem;
+  left: 4rem;
 `;
 
 const Host = () => {
@@ -140,7 +160,6 @@ const Host = () => {
 
   window.onpopstate = () => {
     const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
-    const currentUrl = window.location.href;
 
     if (confirmLeave) {
       removeRealTime(getUrlDocumentId);
@@ -149,6 +168,25 @@ const Host = () => {
       navigate(`/host/${getUrlDocumentId}/${getUrlPin}`);
     }
   };
+
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      e.preventDefault();
+      e.returnValue = "確定要離開當前頁面嗎?";
+    }
+
+    function handleUnload(e) {
+      removeRealTime(getUrlDocumentId);
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
 
   useEffect(() => {
     if (audioRef.current !== null && isPlayBgm) audioRef.current.muted = false;
@@ -165,6 +203,11 @@ const Host = () => {
   function handleState() {
     updateRealTime(getUrlDocumentId, { state: "game", time: Timestamp.now() });
     navigate(`/hostgame/${getUrlDocumentId}`);
+  }
+
+  function handleDashboard() {
+    navigate(`/dashboard`);
+    removeRealTime(getUrlDocumentId);
   }
 
   return (
@@ -184,12 +227,27 @@ const Host = () => {
             size={window.innerWidth < 940 ? 130 : 190}
           />
         </JoinCode>
-        <Participants>
-          {Object.values(users)?.map((user, index) => (
-            <p key={index}>{user.name}</p>
-          ))}
-        </Participants>
-        {users && <Attenance>{Object.keys(users).length}</Attenance>}
+        <WrapParticipants>
+          <Participants>
+            {Object.values(users)?.map(
+              (user, index) => user.isOnline && <p key={index}>{user.name}</p>
+            )}
+          </Participants>
+        </WrapParticipants>
+        <DashboardBtn onClick={handleDashboard}>
+          <Buttons type="success">首頁</Buttons>
+        </DashboardBtn>
+        {users && (
+          <Attenance>
+            {Object.keys(users).length}
+            <p>人</p>
+          </Attenance>
+        )}
+        {Object.keys(users).length !== 0 && (
+          <StartBtn onClick={handleState}>
+            <Buttons>開始</Buttons>
+          </StartBtn>
+        )}
         <SoundButton type="sound" onClick={setIsPlayBgm} $isPlayBgm={isPlayBgm}>
           {isPlayBgm ? (
             <svg
@@ -223,11 +281,6 @@ const Host = () => {
             </svg>
           )}
         </SoundButton>
-        {Object.keys(users).length !== 0 && (
-          <StartBtn onClick={handleState}>
-            <Buttons>開始</Buttons>
-          </StartBtn>
-        )}
       </WrapHome>{" "}
       <audio autoPlay loop src="/bgm/game.mp3" ref={audioRef} />
     </WrapHost>

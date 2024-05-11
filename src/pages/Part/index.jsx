@@ -102,6 +102,7 @@ const Part = () => {
         name: userName,
         score: 0,
         time: Timestamp.now(),
+        isOnline: true,
       });
       localStorage.setItem("userId", userId);
       navigate(`/partgame/${getUrlDocumentId}`);

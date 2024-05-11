@@ -61,7 +61,7 @@ const WrapSheetContent = styled(SheetContent)`
   display: flex;
   flex-direction: column;
 
-  z-index: 400;
+  z-index: 600;
 
   ${theme.breakpoints.sm} {
     max-width: 24rem;
@@ -110,6 +110,8 @@ const SheetHr = styled.hr`
   margin: 2rem 0;
   background-color: #ffffff;
 `;
+
+const WrapSheet = styled(Sheet)``;
 
 const Header = ({ children }) => {
   const [isLogoutBtn, setIsLogoutBtn] = useState(false);

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { updateRealTime } from "../../../utils/reviseRealTime";
 import Buttons from "@/components/Buttons";
-import { Timestamp, serverTimestamp } from "firebase/firestore";
-import { useParams } from "react-router-dom";
+import { Timestamp } from "firebase/firestore";
+
 import ReactLoading from "react-loading";
 
 const WrapOptions = styled.div``;
@@ -13,7 +13,7 @@ const WrapChooseOptions = styled.div`
   position: fixed;
   width: 60%;
   left: 50%;
-  bottom: 4rem;
+  bottom: 6rem;
   transform: translateX(-50%);
   display: grid;
   grid-template-columns: 50% 50%;
@@ -22,6 +22,7 @@ const WrapChooseOptions = styled.div`
 
   ${theme.breakpoints.sm} {
     width: 90%;
+    bottom: 6rem;
   }
 `;
 
@@ -62,10 +63,14 @@ const WrapShortAnswer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   gap: 2rem;
-  bottom: 10rem;
+  bottom: 8rem;
   width: 100%;
+
+  ${theme.breakpoints.sm} {
+    bottom: 3rem;
+  }
 `;
 
 const WrapShortAnswerInput = styled.div`
@@ -78,7 +83,7 @@ const WrapShortAnswerInput = styled.div`
   padding: 1rem;
   padding-left: 2rem;
   border-radius: 5px;
-
+  position: relative;
   background-color: #fff;
 
   ${theme.breakpoints.sm} {
@@ -117,26 +122,18 @@ const Loading = styled.div`
 const NameTextWarning = styled.div`
   position: absolute;
   color: #c7c7c7;
-  right: 2.6rem;
+  right: 1rem;
   top: 5.4rem;
   font-size: 1.6rem;
 `;
 
-const Options = ({
-  questions,
-  addScore,
-
-  getUrlDocumentId,
-  userId,
-  user,
-}) => {
+const Options = ({ questions, addScore, getUrlDocumentId, userId, user }) => {
   const [shortAnswer, setShortAnswer] = useState("");
 
   function handleAnswer(e) {
     if (getUrlDocumentId === undefined) return;
 
     if (questions.type === "mc" || questions.type === "tf") {
-      console.log(`${getUrlDocumentId}/users/${userId}`);
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         selected: +e.target.value,
         addScore,
@@ -145,7 +142,7 @@ const Options = ({
     }
     if (questions.type === "sa") {
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
-        selected: shortAnswer,
+        selected: shortAnswer.trim(),
         addScore,
         time: Timestamp.now(),
       });

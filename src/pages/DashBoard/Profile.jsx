@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
 import { app, db } from "@/utils/firebase";
 import {
   Avatar as ComAvatar,
@@ -17,21 +16,43 @@ import theme from "@/components/css/theme";
 import Buttons from "@/components/Buttons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { doc, onSnapshot } from "firebase/firestore";
-
 import { updateRealTime } from "@/utils/reviseRealTime";
-
-const auth = getAuth(app);
+import { getAuth, signOut } from "firebase/auth";
 
 const WarpProfile = styled(ScrollArea)`
-  background-color: #c2b98c3a;
-  height: calc(100vh - 6rem);
-  padding: 3rem;
+  background-color: ${theme.colors.primary};
+  height: 100vh;
+  padding: 2.6rem;
   width: 28rem;
   text-align: left;
   box-shadow: 0px 3px 3px 3px #ccc;
+  position: relative;
+  /* border-radius: 20px; */
+  /* margin: 1rem; */
 
   ${theme.breakpoints.sm} {
     display: none;
+  }
+`;
+
+const WrapLogo = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 7rem;
+  width: 100%;
+  border-radius: 10px;
+  /* background-color: #f7f0c6; */
+  /* background-color: ${theme.colors.primary}; */
+  /* box-shadow: 0px 2px 3px #31313146; */
+
+  margin: 0 auto;
+  cursor: pointer;
+
+  img {
+    width: auto;
+    height: 3rem;
+    margin: 2rem auto;
   }
 `;
 
@@ -44,21 +65,28 @@ const WrapAvatar = styled(ComAvatar)`
 const WrapUserInfo = styled.div`
   display: flex;
   gap: 1rem;
+  height: auto;
+  margin-top: 7rem;
 `;
 
 const UserName = styled.p`
   font-size: 2rem;
   margin-bottom: 0.4rem;
+  width: 16rem;
+  /* color: #fff; */
+  word-wrap: break-word;
 `;
 
 const UserEmail = styled.p`
-  color: #aaa;
-  font-size: 1.4rem;
+  color: #656565;
+  font-size: 1.3rem;
+  width: 16rem;
+  word-wrap: break-word;
 `;
 
 const UserId = styled.p`
-  color: #aaa;
-  font-size: 1.4rem;
+  color: #656565;
+  font-size: 1.3rem;
 `;
 
 const SheetHr = styled.hr`
@@ -66,6 +94,16 @@ const SheetHr = styled.hr`
   height: 1px;
   margin: 2rem 0;
   background-color: #ffffff;
+`;
+
+const Title = styled.div`
+  color: #fff;
+`;
+
+const Logout = styled.div`
+  position: absolute;
+  left: 2rem;
+  bottom: 2rem;
 `;
 
 const WrapShareQBanks = styled.div`
@@ -140,6 +178,7 @@ const Profile = () => {
   } = useGetFireStores("users");
 
   const userUid = useOnAuthStateChange();
+  const auth = getAuth(app);
 
   useEffect(() => {
     setUid(userUid);
@@ -199,64 +238,86 @@ const Profile = () => {
     navigate(`/create/${id}`);
   }
 
-  console.log(shareData);
+  function handleLogout() {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        navigate("/");
+        console.log("Sign-out successful");
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log("Sign-out error");
+      });
+  }
 
-  return (
-    getUserData && (
-      <WarpProfile>
-        {" "}
-        <WrapUserInfo>
-          <WrapAvatar onClick={handleUserBtn}>
-            <AvatarImage src="" />
-            <AvatarFallback>{getUserData?.name.slice(0, 2)}</AvatarFallback>
-          </WrapAvatar>
-          <div>
-            <UserName>{getUserData.name}</UserName>
-            <UserEmail>{getUserData.email}</UserEmail>
-            <UserId>id：{getUserData.userId}</UserId>
-          </div>
-        </WrapUserInfo>
-        <SheetHr />
-        <p>共同編輯題庫</p>
-        <WrapShareQBanks>
-          {shareData?.map((qbank) => {
-            return (
-              qbank.name && (
-                <WrapShareQBank
-                  onClick={(e) => handleSharedQBank(e, qbank.id)}
-                  key={qbank.id}
-                >
-                  <QbankName>{qbank.name}</QbankName>
-                  <QBankImg
-                    src={qbank.mainImg ? qbank.mainImg : "/bankImg.jpg"}
-                    alt=""
-                  />
-                  <WrapInfo>
-                    {" "}
-                    <WrapQBankAvatars>
-                      <QBankAvatar>
-                        <AvatarImage src="" />
-                        <QBankAvatarFallback>
-                          {qbank.ownerName.slice(0, 2)}
-                        </QBankAvatarFallback>
-                      </QBankAvatar>
-                    </WrapQBankAvatars>
-                    <Buttons
-                      size="small"
-                      onClick={(e) => handleHost(e, qbank.id)}
-                      style={{ width: "6rem" }}
-                      type={qbank.isDone ? "success" : "invalid"}
-                    >
-                      主持
-                    </Buttons>{" "}
-                  </WrapInfo>
-                </WrapShareQBank>
-              )
-            );
-          })}
-        </WrapShareQBanks>
-      </WarpProfile>
-    )
+  return usersIsLoading || userIsLoading || shareIsLoading ? (
+    <WarpProfile>
+      {" "}
+      <WrapUserInfo></WrapUserInfo>
+      <SheetHr />
+      <p>共同編輯題庫</p>
+    </WarpProfile>
+  ) : (
+    <WarpProfile>
+      <WrapLogo onClick={() => navigate("/")}>
+        <img src="/logo.png" />
+      </WrapLogo>
+
+      <WrapUserInfo>
+        <WrapAvatar onClick={handleUserBtn}>
+          <AvatarImage src="" />
+          <AvatarFallback>{getUserData?.name.slice(0, 2)}</AvatarFallback>
+        </WrapAvatar>
+        <div>
+          <UserName>{getUserData?.name}</UserName>
+          <UserEmail>{getUserData?.email}</UserEmail>
+          <UserId>id：{getUserData?.userId}</UserId>
+        </div>
+      </WrapUserInfo>
+      <SheetHr />
+      {/* <Title>共同編輯題庫</Title> */}
+      <WrapShareQBanks>
+        {shareData?.map((qbank) => {
+          return (
+            qbank.name && (
+              <WrapShareQBank
+                onClick={(e) => handleSharedQBank(e, qbank.id)}
+                key={qbank.id}
+              >
+                <QbankName>{qbank.name}</QbankName>
+                <QBankImg
+                  src={qbank.mainImg ? qbank.mainImg : "/bankImg.jpg"}
+                  alt=""
+                />
+                <WrapInfo>
+                  {" "}
+                  <WrapQBankAvatars>
+                    <QBankAvatar>
+                      <AvatarImage src="" />
+                      <QBankAvatarFallback>
+                        {qbank.ownerName.slice(0, 2)}
+                      </QBankAvatarFallback>
+                    </QBankAvatar>
+                  </WrapQBankAvatars>
+                  <Buttons
+                    size="small"
+                    onClick={(e) => handleHost(e, qbank.id)}
+                    style={{ width: "6rem" }}
+                    type={qbank.isDone ? "success" : "invalid"}
+                  >
+                    主持
+                  </Buttons>{" "}
+                </WrapInfo>
+              </WrapShareQBank>
+            )
+          );
+        })}
+      </WrapShareQBanks>
+      <Logout onClick={handleLogout}>
+        <Buttons size="small">登出</Buttons>
+      </Logout>
+    </WarpProfile>
   );
 };
 
