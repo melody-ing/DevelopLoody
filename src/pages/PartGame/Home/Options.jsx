@@ -11,7 +11,7 @@ const WrapOptions = styled.div``;
 
 const WrapChooseOptions = styled.div`
   position: fixed;
-  width: 60%;
+  width: 65%;
   left: 50%;
   bottom: 6rem;
   transform: translateX(-50%);
@@ -39,7 +39,6 @@ const OptionsButton = styled.button`
   align-items: center;
   height: 8rem;
   font-size: larger;
-
   background: #ffffff;
   border: 2px solid goldenrod;
   border-radius: 4px;
@@ -74,7 +73,7 @@ const WrapShortAnswer = styled.div`
 `;
 
 const WrapShortAnswerInput = styled.div`
-  width: 60%;
+  width: 65%;
   height: 8rem;
   display: flex;
   align-items: center;
@@ -101,7 +100,7 @@ const ShortAnswerInput = styled.input`
 `;
 
 const ShortAnswerBtn = styled.div`
-  width: 60%;
+  width: 65%;
   height: 2rem;
 
   ${theme.breakpoints.sm} {

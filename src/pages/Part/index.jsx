@@ -6,10 +6,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { pushRealTime } from "../../utils/reviseRealTime";
 import { Timestamp } from "firebase/firestore";
 import { useGetRealTimeNavigate } from "@/utils/hook/useGetRealTime";
+import HomeBg from "@/components/css/HomeBg";
 
-const WrapPart = styled(PrimaryBg)`
+const WrapPart = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 const UserName = styled.p`
@@ -111,6 +113,7 @@ const Part = () => {
 
   return (
     <WrapPart>
+      <HomeBg />
       <UserName>請輸入暱稱</UserName>
       <Entry>
         <InputName

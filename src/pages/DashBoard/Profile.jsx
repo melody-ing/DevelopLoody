@@ -21,14 +21,13 @@ import { getAuth, signOut } from "firebase/auth";
 
 const WarpProfile = styled(ScrollArea)`
   background-color: ${theme.colors.primary};
+
   height: 100vh;
   padding: 2.6rem;
-  width: 28rem;
+  width: 22rem;
   text-align: left;
   box-shadow: 0px 3px 3px 3px #ccc;
   position: relative;
-  /* border-radius: 20px; */
-  /* margin: 1rem; */
 
   ${theme.breakpoints.sm} {
     display: none;
@@ -39,26 +38,23 @@ const WrapLogo = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  height: 7rem;
+  /* height: 7rem; */
   width: 100%;
   border-radius: 10px;
-  /* background-color: #f7f0c6; */
-  /* background-color: ${theme.colors.primary}; */
-  /* box-shadow: 0px 2px 3px #31313146; */
-
   margin: 0 auto;
   cursor: pointer;
 
   img {
     width: auto;
-    height: 3rem;
-    margin: 2rem auto;
+    height: 4rem;
+    margin: 0rem auto;
+    margin-top: 2.4rem;
   }
 `;
 
 const WrapAvatar = styled(ComAvatar)`
-  width: 5.5rem;
-  height: 5.5rem;
+  width: 5rem;
+  height: 5rem;
   border: 2px solid #cecece;
 `;
 
@@ -66,11 +62,12 @@ const WrapUserInfo = styled.div`
   display: flex;
   gap: 1rem;
   height: auto;
-  margin-top: 7rem;
+  margin-top: 6rem;
+  margin-left: 1rem;
 `;
 
 const UserName = styled.p`
-  font-size: 2rem;
+  font-size: 1.6rem;
   margin-bottom: 0.4rem;
   width: 16rem;
   /* color: #fff; */
@@ -271,7 +268,7 @@ const Profile = () => {
         </WrapAvatar>
         <div>
           <UserName>{getUserData?.name}</UserName>
-          <UserEmail>{getUserData?.email}</UserEmail>
+          {/* <UserEmail>{getUserData?.email}</UserEmail> */}
           <UserId>id：{getUserData?.userId}</UserId>
         </div>
       </WrapUserInfo>

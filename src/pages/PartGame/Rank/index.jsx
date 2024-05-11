@@ -33,9 +33,9 @@ const RankNum = styled.div`
 `;
 
 const Rank = ({ users, userId }) => {
-  const userRank = Object.entries(users).sort(
-    ([, a], [, b]) => b.score - a.score
-  );
+  const userRank = Object.entries(users)
+    .filter((user) => user[1].isOnline === true)
+    .sort(([, a], [, b]) => b.score - a.score);
   const rank = userRank.findIndex(([id]) => id === userId);
 
   return (

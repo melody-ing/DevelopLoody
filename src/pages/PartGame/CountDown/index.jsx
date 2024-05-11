@@ -47,7 +47,7 @@ const Container = styled.div`
     bottom: 1rem;
     left: 50%;
     transform: translate(-50%);
-    width: 60%;
+    width: 65%;
 
     height: 40px;
     border-radius: 10px;

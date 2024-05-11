@@ -52,8 +52,13 @@ import Duplicate from "./Duplicate";
 import Buttons from "@/components/Buttons";
 
 const Wrapper = styled.div`
+  height: auto;
+  min-height: 100vh;
+  width: calc(100% - 22rem);
+  background-color: #f5f5f3;
   overflow: ${({ $isShareOpen }) => $isShareOpen && "hidden"};
   height: ${({ $isShareOpen }) => $isShareOpen && "100vh"};
+  margin-left: 22rem;
 `;
 
 const WrapProfile = styled.div`
@@ -63,10 +68,10 @@ const WrapProfile = styled.div`
 `;
 
 const WrapDashboard = styled.div`
-  width: 70%;
-  margin: 2rem auto 4rem;
-  margin-left: 34rem;
+  width: 86%;
+  margin: 0 auto;
   text-align: left;
+  padding-bottom: 4rem;
 
   ${theme.breakpoints.md} {
     width: 55%;
@@ -85,6 +90,7 @@ const WrapQbanks = styled.div``;
 
 const DashboardTitle = styled.h3`
   display: inline-block;
+  margin-top: 6rem;
 `;
 
 const QbankNum = styled.p`
@@ -112,6 +118,7 @@ const WrapQuestionBank = styled.div`
   height: 30rem;
   box-shadow: ${theme.shadow};
   border-radius: 5px;
+  background-color: #fff;
 `;
 const WrapQBankImg = styled.div`
   height: 16rem;
@@ -481,7 +488,7 @@ const Dashboard = () => {
   };
 
   return (
-    <>
+    <Wrapper>
       {" "}
       {isLoading ? (
         <>
@@ -507,7 +514,7 @@ const Dashboard = () => {
           </AddQBankButton>
         </>
       ) : (
-        <Wrapper $isShareOpen={isShareOpen}>
+        <>
           <WrapProfile>
             <Profile />
           </WrapProfile>
@@ -646,9 +653,9 @@ const Dashboard = () => {
 
 
           </WrapShareAlert> */}
-        </Wrapper>
+        </>
       )}
-    </>
+    </Wrapper>
   );
 };
 
