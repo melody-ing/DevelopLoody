@@ -8,6 +8,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: fixed;
+  top: 12rem;
+  left: 50%;
+  transform: translate(-50%);
 `;
 
 const Result = styled.svg`

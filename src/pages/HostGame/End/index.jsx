@@ -66,14 +66,14 @@ const UserName = styled.div`
   width: auto;
 `;
 
-const End = ({ users, audioRef }) => {
+const End = ({ audioRef, arrayUsers }) => {
   const clapRef = useRef(null);
   gsap.registerPlugin(useGSAP);
 
   useGSAP(() => {
-    let tl = gsap.timeline();
-    console.log(Object.values(users).length);
-    if (Object.values(users).length >= 3) {
+    let tl = gsap.timeline({ delay: 0.5 });
+
+    if (arrayUsers.length >= 3) {
       tl.from(".third", {
         y: -150,
         opacity: 0,
@@ -96,7 +96,7 @@ const End = ({ users, audioRef }) => {
           });
       });
     }
-    if (Object.values(users).length >= 2) {
+    if (arrayUsers.length >= 2) {
       tl.from(".second", {
         y: -150,
         opacity: 0,
@@ -152,9 +152,9 @@ const End = ({ users, audioRef }) => {
 
   const userNameLength = (length) => {
     if (length >= 8) {
-      return 7;
+      return 5;
     } else if (length >= 5) {
-      return 9;
+      return 8;
     }
     return 10;
   };
@@ -163,10 +163,10 @@ const End = ({ users, audioRef }) => {
     <WrapRank>
       {" "}
       <WrapConfetti className="confetti">
-        <Confetti style={{ zIndex: -1 }} />
+        <Confetti style={{ zIndex: -1, height: 1000 }} />
       </WrapConfetti>
       <WrapPodium>
-        {Object.values(users)
+        {arrayUsers
           .sort((a, b) => b.score - a.score)
           .slice(0, 3)
           .map((user, index) => {

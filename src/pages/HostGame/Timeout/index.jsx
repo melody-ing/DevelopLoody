@@ -77,7 +77,7 @@ class CustomizedContent extends PureComponent {
 }
 
 const WrapTimeout = styled.div`
-  width: 70%;
+  width: 77%;
   height: 50%;
   margin: 2rem auto;
   display: flex;
@@ -93,17 +93,23 @@ const WrapShortAnswers = styled(ScrollArea)`
 
 const WrapShortAnswer = styled.div`
   margin: 1rem auto;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  text-align: left;
   width: 100%;
   height: 6.5rem;
-  ${({ $isCorrect }) => $isCorrect && `background-color: #fbeb8f`};
+  grid-template-columns: 25rem 1fr;
+
+  ${({ $isCorrect }) =>
+    $isCorrect ? `background-color: #fbeb8f` : `background-color: #fff`};
 
   font-size: 3rem;
   box-shadow: ${theme.shadow};
   padding: 2rem;
   border-radius: 10px;
-  background-color: #fff;
+
+  ${theme.breakpoints.sm} {
+    grid-template-columns: 18rem 1fr;
+  }
 `;
 
 const WrapMedia = styled.div`
@@ -130,14 +136,13 @@ const WrapMedia = styled.div`
 
 const WrapGraph = styled(ResponsiveContainer)``;
 
-const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
+const Timeout = ({ qbank, qNumber, questions, audioRef, arrayUsers }) => {
   const qType = qbank.questions[qNumber].type;
   const [nameLength, setNameLength] = useState(null);
   const [answerLength, setAnswerLength] = useState(null);
 
   const peopleNum = (ans) =>
-    users &&
-    Object.values(users).filter((user) => user.selected === ans).length;
+    arrayUsers && arrayUsers.filter((user) => user.selected === ans).length;
 
   const data = [];
 
@@ -168,14 +173,14 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
   };
 
   const calculateAnswerLength = () => {
-    if (window.innerWidth < 490) {
+    if (window.innerWidth < 520) {
       return 3;
     } else if (window.innerWidth < 940) {
       return 5;
     } else if (window.innerWidth < 1280) {
-      return 12;
+      return 13;
     }
-    return 16;
+    return 22;
   };
 
   const handleResize = () => {
@@ -197,16 +202,19 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
   useGSAP(() => {
     const media = document.querySelector(".media");
     const graph = document.querySelector(".graph");
-    const mediaWidth = media.offsetWidth;
-    const graphWidth = graph.offsetWidth;
-    gsap.to(".media", {
-      x: -mediaWidth / 1.9,
-      duration: 2,
-    });
-    gsap.to(".graph", {
-      x: graphWidth / 1.9,
-      duration: 2,
-    });
+    const mediaWidth = media?.offsetWidth;
+    const graphWidth = graph?.offsetWidth;
+    if (mediaWidth) {
+      gsap.to(".media", {
+        x: -mediaWidth / 1.9,
+        duration: 2,
+      });
+
+      gsap.to(".graph", {
+        x: graphWidth / 1.9,
+        duration: 2,
+      });
+    }
   });
 
   return (
@@ -233,21 +241,32 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
       )}
       {questions?.type === "sa" && (
         <WrapShortAnswers>
-          {Object.values(users)
+          {arrayUsers
             .sort((a, b) => b.addScore - a.addScore)
             .map(
               (user, index) =>
                 user.selected === questions.answer && (
                   <WrapShortAnswer $isCorrect={true} key={index}>
-                    <div>{user.name}</div>
-                    <div>{user.selected}</div>
-                    <div>{user.addScore}</div>
+                    <div>
+                      {user.name.length <= 6
+                        ? user.name
+                        : user.name.slice(0, nameLength) + "..."}
+                    </div>
+                    <div>
+                      {user.selected
+                        ? user.selected.length <= answerLength
+                          ? user.selected
+                          : user.selected.slice(0, answerLength) + "..."
+                        : ""}
+                    </div>
                   </WrapShortAnswer>
                 )
             )}
-          {Object.values(users).map(
+          {arrayUsers.map(
             (user, index) =>
-              user.selected !== questions.answer && (
+              user.selected !== questions.answer &&
+              user.selected !== "" &&
+              user.selected !== undefined && (
                 <WrapShortAnswer $isCorrect={false} key={index}>
                   <div>
                     {user.name.length <= 6
@@ -256,12 +275,11 @@ const Timeout = ({ users, qbank, qNumber, questions, audioRef }) => {
                   </div>
                   <div>
                     {user.selected
-                      ? user.selected.length <= 10
+                      ? user.selected.length <= answerLength
                         ? user.selected
                         : user.selected.slice(0, answerLength) + "..."
                       : ""}
                   </div>
-                  <div>{user.addScore}</div>
                 </WrapShortAnswer>
               )
           )}

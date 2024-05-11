@@ -70,6 +70,8 @@ input{
   border: 1px solid #ccc;
 }
 
+
+
 hr {
   height: 2rem;
   border: 1px solid ${theme.colors.info};

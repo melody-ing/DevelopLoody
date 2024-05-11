@@ -34,6 +34,7 @@ const WrapOptions = styled.div`
 
 const WrapShortAnswer = styled.div`
   width: 100%;
+  margin-bottom: 6rem;
 
   h3 {
     margin: 0 auto;

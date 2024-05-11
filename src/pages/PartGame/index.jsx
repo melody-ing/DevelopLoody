@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import theme from "../../components/css/theme";
 import Options from "./Home/Options";
@@ -10,12 +10,13 @@ import Score from "./Score";
 import CountDown from "./CountDown";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
-import { updateRealTime } from "../../utils/reviseRealTime";
+import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate, useParams } from "react-router-dom";
 import Media from "./Home/Media";
 import ReactLoading from "react-loading";
 import { Timestamp } from "firebase/firestore";
 import GameAniBg from "@/components/css/GameAniBg";
+import { update } from "firebase/database";
 
 const WrapGame = styled.div`
   width: 100vw;
@@ -27,6 +28,8 @@ const WrapGame = styled.div`
 const WrapQuestion = styled.div`
   display: flex;
   width: 100%;
+  position: fixed;
+  top: 1rem;
 `;
 
 const Question = styled.h2`
@@ -99,9 +102,44 @@ const PartGame = () => {
     updateRealTime(`${getUrlDocumentId}/users/${userId}`, { addScore: 0 });
   }
 
-  window.onpopstate = () => {
-    navigate("/");
+  function pushHistoryState(isReturning = false) {
+    history.pushState({ isReturning }, "", document.location.pathname);
+  }
+
+  window.onpopstate = (e) => {
+    if (e.state && e.state.isReturning) {
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
+        isOnline: true,
+      });
+    } else {
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
+        isOnline: false,
+      });
+    }
   };
+
+  useEffect(() => {
+    function handleLoad() {
+      pushHistoryState();
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
+        isOnline: true,
+      });
+    }
+
+    function handleUnload(e) {
+      updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
+        isOnline: false,
+      });
+    }
+
+    window.addEventListener("load", handleLoad);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("load", handleLoad);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
 
   useEffect(() => {
     const timeLimit = questions?.timeLimit;
@@ -147,7 +185,7 @@ const PartGame = () => {
               userId={userId}
               getUrlDocumentId={getUrlDocumentId}
             />
-            {user.selected === "" && (
+            {(user.selected === "" || user.selected === undefined) && (
               <CountDown questions={questions} timeoutSec={timeoutSec} />
             )}
           </>
@@ -184,8 +222,6 @@ const PartGame = () => {
           </>
         );
         nextState = "rank";
-
-        console.log(getUrlDocumentId, userId);
         break;
 
       case "end":

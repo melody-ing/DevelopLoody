@@ -3,8 +3,11 @@ import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import theme from "@/components/css/theme";
-import Buttons from "@/components/Buttons";
-
+import {
+  Avatar as ComAvatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -31,18 +34,27 @@ import {
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
-import { useGetFireStores } from "@/utils/hook/useGetFireStore";
+import {
+  useGetFireStore,
+  useGetFireStores,
+} from "@/utils/hook/useGetFireStore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { updateRealTime } from "@/utils/reviseRealTime";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { app, db } from "@/utils/firebase";
-import ReactLoading from "react-loading";
-import * as HoverCard from "@radix-ui/react-hover-card";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import Profile from "./Profile";
 import Share from "./Share";
 import { Slide, toast } from "react-toastify";
 import HostButton from "./HostButton";
+import { Skeleton } from "@/components/ui/skeleton";
+import EllipsisBtn from "./EllipsisBtn";
+import Duplicate from "./Duplicate";
+import Buttons from "@/components/Buttons";
+
+const Wrapper = styled.div`
+  overflow: ${({ $isShareOpen }) => $isShareOpen && "hidden"};
+  height: ${({ $isShareOpen }) => $isShareOpen && "100vh"};
+`;
 
 const WrapProfile = styled.div`
   position: fixed;
@@ -50,7 +62,7 @@ const WrapProfile = styled.div`
   bottom: 0;
 `;
 
-const WrapDashBoard = styled.div`
+const WrapDashboard = styled.div`
   width: 70%;
   margin: 2rem auto 4rem;
   margin-left: 34rem;
@@ -71,7 +83,7 @@ const WrapDashBoard = styled.div`
 
 const WrapQbanks = styled.div``;
 
-const DashBoardTitle = styled.h3`
+const DashboardTitle = styled.h3`
   display: inline-block;
 `;
 
@@ -83,15 +95,15 @@ const QbankNum = styled.p`
 const WrapQuestionBanks = styled.div`
   margin-top: 2rem;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(15vw, 1fr));
   justify-content: center;
   gap: 2rem;
 
   ${theme.breakpoints.md} {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(17vw, 1fr));
   }
   ${theme.breakpoints.sm} {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(15vw, 1fr));
   }
 `;
 
@@ -123,6 +135,26 @@ const QBankImg = styled.img`
   margin-top: 1rem;
 `;
 
+const WrapQBankAvatars = styled.div`
+  position: absolute;
+  display: flex;
+  gap: -10rem;
+  margin-top: 1rem;
+  right: 0.3rem;
+  top: -0.6rem;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+`;
+
+const QBankAvatar = styled(ComAvatar)`
+  width: 4rem;
+  height: 4rem;
+`;
+
+const QBankAvatarFallback = styled(AvatarFallback)`
+  font-size: 1.4rem;
+`;
+
 const WrapQBankInfo = styled.div`
   margin: 0rem 2rem;
   display: flex;
@@ -130,6 +162,7 @@ const WrapQBankInfo = styled.div`
   justify-content: flex-start;
   text-align: left;
   gap: 1rem;
+  position: relative;
 
   ${theme.breakpoints.sm} {
     margin: 1rem 1rem;
@@ -138,10 +171,10 @@ const WrapQBankInfo = styled.div`
 
 const QBankName = styled.div`
   font-size: 1.6rem;
-  height: 4.4rem;
-  line-height: 2.6rem;
-  border-radius: 5px;
+  line-height: 2.2rem;
+
   border: none;
+  height: 4rem;
 
   ${theme.breakpoints.md} {
     font-size: 1.8rem;
@@ -160,25 +193,8 @@ const QBankTime = styled.p`
   }
 `;
 
-const WrapQBankButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-`;
-
-const WrapHoverCardContent = styled(HoverCard.Content)`
-  border: 1px solid black;
-  padding: 1rem;
-  background-color: #fff;
-  border-radius: 5px;
-`;
-
-const WrapHoverCardArrow = styled(HoverCard.Arrow)`
-  color: #fff;
-`;
-
 const WrapContextMenuContent = styled(ContextMenuContent)`
-  /* width: 10; */
+  z-index: 500;
 `;
 
 const WrapContextMenuItem = styled(ContextMenuItem)`
@@ -210,16 +226,16 @@ const CloseShareDialog = styled.div`
   width: 100vw;
   height: 100vh;
   position: absolute;
-  background-color: #22222296;
+  background-color: #413a1aae;
 
   top: 0;
   left: 0;
+  z-index: 400;
 `;
 
 const WrapShareDialog = styled.div`
   display: ${({ $isShareOpen }) => ($isShareOpen ? "block" : "none")};
-
-  z-index: 300;
+  z-index: 500;
 `;
 
 const ShareDialog = styled.div`
@@ -233,19 +249,24 @@ const ShareDialog = styled.div`
   border-radius: 5px;
   padding: 3rem;
   text-align: start;
-`;
-const WrapTrans = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
+  z-index: 500;
 `;
 
 const ShareTitle = styled.h3``;
 
-const ShareInput = styled.input`
+const WrapUrl = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+`;
+
+const ShareUrl = styled.div`
   margin: 2rem 0;
   border-radius: 5px;
-  padding: 0 1rem;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 40rem;
 `;
 
 const AddQBankButton = styled.div`
@@ -272,24 +293,6 @@ const AddQBankButton = styled.div`
   }
 `;
 
-const HoverHost = styled.div`
-  color: ${theme.colors.info};
-  background-color: #ffffff;
-  border: 2px solid #ececec;
-  position: absolute;
-  left: 8.8rem;
-  width: 10rem;
-  top: 4rem;
-  height: 4rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-radius: 5px;
-  font-size: 1.4rem;
-`;
-
 const HoverCardContent = styled.div`
   color: ${theme.colors.secondary};
   background-color: #fff;
@@ -306,13 +309,7 @@ const HoverCardContent = styled.div`
   border-radius: 5px;
 `;
 
-const Loading = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10rem;
-`;
-
-const DashBoard = () => {
+const Dashboard = () => {
   const auth = getAuth(app);
   const user = auth.currentUser;
   let uid = null;
@@ -325,12 +322,17 @@ const DashBoard = () => {
   const navigate = useNavigate();
 
   const [isHover, setIsHover] = useState(false);
-  const [isHostHover, setIsHostHover] = useState(false);
   const [data, setData] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareQBankId, setShareQBankId] = useState(null);
   const [shareToUserId, setShareToUserId] = useState("");
   const chooseQBankId = useRef("");
+
+  const {
+    data: getUserData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+  } = useGetFireStore("users", uid);
 
   const {
     data: qbanks,
@@ -394,73 +396,26 @@ const DashBoard = () => {
     });
   }
 
-  console.log(shareQBankId);
-  async function handleShare() {
-    const q = query(
-      collection(db, "users"),
-      where("userId", "==", shareToUserId)
-    );
-
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.docs.length > 0) {
-      console.log(querySnapshot.docs.length);
-      querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-        setFireStore(
-          `users/${doc.id}/share`,
-          shareQBankId,
-          {
-            id: shareQBankId,
-          },
-          { merge: true }
-        );
-      });
-
-      toast.warn("分享成功", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        icon: false,
-        transition: Slide,
-      });
+  function handleDelete(id, isMine) {
+    if (isMine) {
+      const confirmDelete = window.confirm(
+        "確定要刪除嗎?(會連同分享給他人的資料一起刪掉)"
+      );
+      if (confirmDelete) {
+        deleteFireStore(`users/${uid}/qbanks`, id);
+        deleteFireStore("qbank", id);
+        setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
+      }
     } else {
-      console.log("no have");
-      toast.error("無此使用者", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        icon: false,
-        transition: Slide,
-      });
-    }
-    setShareToUserId("");
-    setIsShareOpen(false);
-  }
-
-  function handleDelete(id) {
-    const confirmDelete = window.confirm(
-      "確定要刪除嗎?(會連同分享給他人的資料一起刪掉)"
-    );
-    if (confirmDelete) {
-      deleteFireStore(`users/${uid}/qbanks`, id);
-      deleteFireStore("qbank", id);
-      setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
-
-      const q = query(collection(db, "users"), where("capital", "==", true));
+      const confirmDelete = window.confirm("確定要刪除嗎?");
+      if (confirmDelete) {
+        deleteFireStore(`users/${uid}/qbanks`, id);
+        setData((prevData) => prevData.filter((qbank) => qbank.id !== id));
+      }
     }
   }
 
-  function handleAddImg(e, id) {
+  function handleAddImg(e) {
     if (e) {
       const file = e.target.files[0];
       const fileType = file.type;
@@ -491,44 +446,76 @@ const DashBoard = () => {
       alert("無效的檔案");
     }
   }
-  function handleEdit(id) {
-    navigate(`/create/${id}`);
-  }
 
-  function handleHost(id) {
-    const pin = Math.floor(Math.random() * 900000) + 100000;
+  const handleCopyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `${location.origin}/create/${shareQBankId}`
+      );
+      toast.warn("複製成功", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        icon: false,
+        transition: Slide,
+      });
+    } catch (error) {
+      toast.error("複製失敗", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        icon: false,
+        transition: Slide,
+      });
+    }
+  };
 
-    updateRealTime(id, {
-      id,
-      pin: pin.toString(),
-      question: { answer: 1, id: 0 },
-      state: "lobby",
-      users: {},
-    });
-    navigate(`/host/${id}/${pin}`);
-  }
   return (
     <>
       {" "}
-      <Header />
       {isLoading ? (
-        <Loading>
-          <ReactLoading
-            type="bars"
-            color={theme.colors.primary}
-            height={100}
-            width={100}
-          />
-        </Loading>
-      ) : (
         <>
           <WrapProfile>
             <Profile />
           </WrapProfile>
-          <WrapDashBoard>
+          <WrapDashboard>
             <WrapQbanks>
-              <DashBoardTitle>所有Loody</DashBoardTitle>
+              <DashboardTitle>所有題庫</DashboardTitle>
               <QbankNum>題庫數量：{data && data.length}</QbankNum>
+
+              <WrapQuestionBanks>
+                {["", "", "", ""].map((item, index) => (
+                  <div key={index}>
+                    <Skeleton className="w-auto h-[30rem] rounded " />
+                  </div>
+                ))}
+              </WrapQuestionBanks>
+            </WrapQbanks>
+          </WrapDashboard>
+          <AddQBankButton>
+            <Plus size={6} />
+          </AddQBankButton>
+        </>
+      ) : (
+        <Wrapper $isShareOpen={isShareOpen}>
+          <WrapProfile>
+            <Profile />
+          </WrapProfile>
+          <WrapDashboard>
+            <WrapQbanks>
+              <DashboardTitle>所有題庫</DashboardTitle>
+              <QbankNum>題庫數量：{data && data.length}</QbankNum>
+
               <WrapQuestionBanks>
                 {data &&
                   data?.map((item) => (
@@ -548,14 +535,30 @@ const DashBoard = () => {
                                   item.mainImg ? item.mainImg : "/bankImg.jpg"
                                 }
                               />
+                              {item.ownerName !== getUserData.name && (
+                                <WrapQBankAvatars>
+                                  <QBankAvatar>
+                                    <AvatarImage src="" />
+                                    <QBankAvatarFallback>
+                                      {item.ownerName.slice(0, 2)}
+                                    </QBankAvatarFallback>
+                                  </QBankAvatar>
+                                </WrapQBankAvatars>
+                              )}
                               <QuestionsQuantity>
                                 {item.questions.length}題
                               </QuestionsQuantity>
                             </WrapQBankImg>
                             <WrapQBankInfo>
-                              <QBankName>
-                                {item.name.slice(0, 15) +
-                                  `${item.name.length > 15 ? "..." : ""}`}
+                              <EllipsisBtn
+                                setIsShareOpen={setIsShareOpen}
+                                setShareQBankId={setShareQBankId}
+                                handleDelete={handleDelete}
+                                chooseQBankId={chooseQBankId}
+                                item={item}
+                              />
+                              <QBankName className="overflow-clip">
+                                {item.name}
                               </QBankName>
 
                               <QBankTime>
@@ -586,7 +589,11 @@ const DashBoard = () => {
                           </WrapContextMenuItem>
 
                           <WrapContextMenuItem
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => {
+                              const isMine =
+                                item.ownerName === getUserData.name;
+                              handleDelete(item.id, isMine);
+                            }}
                           >
                             <Delete size={12} />
                             <p>刪除</p>
@@ -596,7 +603,7 @@ const DashBoard = () => {
                             onClick={() => (chooseQBankId.current = item.id)}
                           >
                             <FileLabel htmlFor="fileInput">
-                              <Image size={12} /> <p>新增首圖</p>
+                              <Image size={12} /> <p>新增封面</p>
                             </FileLabel>
                           </WrapContextMenuItem>
                         </WrapContextMenuContent>
@@ -605,7 +612,7 @@ const DashBoard = () => {
                   ))}
               </WrapQuestionBanks>
             </WrapQbanks>
-          </WrapDashBoard>
+          </WrapDashboard>
           <CloseShareDialog
             $isShareOpen={isShareOpen}
             onClick={() => {
@@ -617,19 +624,11 @@ const DashBoard = () => {
           </CloseShareDialog>
           <WrapShareDialog $isShareOpen={isShareOpen}>
             <ShareDialog>
-              <ShareTitle>要分享給誰？</ShareTitle>
-              <WrapTrans>
-                <ShareInput
-                  placeholder="請輸入使用者ID"
-                  value={shareToUserId}
-                  onChange={(e) => setShareToUserId(e.target.value)}
-                ></ShareInput>
-                <div onClick={() => handleShare()}>
-                  <Buttons style={{ width: "8rem", height: "3.6rem" }}>
-                    分享
-                  </Buttons>
-                </div>
-              </WrapTrans>
+              <ShareTitle>複製連結以共用</ShareTitle>
+              <WrapUrl>
+                <ShareUrl>{`${location.origin}/create/${shareQBankId}`}</ShareUrl>
+                <Duplicate size={4.6} onClick={handleCopyURL} />
+              </WrapUrl>
             </ShareDialog>
           </WrapShareDialog>
 
@@ -642,10 +641,15 @@ const DashBoard = () => {
             </div>
           </AddQBankButton>
           {isHover && <HoverCardContent>建立新題庫</HoverCardContent>}
-        </>
+
+          {/* <WrapShareAlert>
+
+
+          </WrapShareAlert> */}
+        </Wrapper>
       )}
     </>
   );
 };
 
-export default DashBoard;
+export default Dashboard;

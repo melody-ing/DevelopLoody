@@ -81,6 +81,8 @@ const HostGame = () => {
   const qNumber = realTimeData?.question.id;
   const state = realTimeData?.state;
   const users = realTimeData?.users;
+  const arrayUsers =
+    users && Object.values(users)?.filter((user) => user.isOnline === true);
   const time = realTimeData?.time;
   const question = realTimeData?.question;
   const questions = qbank?.questions[qNumber];
@@ -102,6 +104,24 @@ const HostGame = () => {
       navigate(`/hostgame/${getUrlDocumentId}`);
     }
   };
+
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      e.preventDefault();
+    }
+
+    function handleUnload(e) {
+      removeRealTime(getUrlDocumentId);
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
 
   useEffect(() => {
     const timeLimit = questions?.timeLimit;
@@ -139,12 +159,12 @@ const HostGame = () => {
             <Home
               questions={questions}
               timeoutSec={timeoutSec}
-              users={users}
               getUrlDocumentId={getUrlDocumentId}
               isPlayBgm={isPlayBgm}
               audioRef={audioRef}
               reply={reply}
               setReply={setReply}
+              arrayUsers={arrayUsers}
             />
             <Media questions={questions} />
             {questions.type === "sa" || (
@@ -152,18 +172,18 @@ const HostGame = () => {
             )}
           </>
         );
-        if (reply === Object.values(users).length)
+        if (reply === arrayUsers.length)
           updateRealTime(getUrlDocumentId, { state: "timeout" });
         nextState = "timeout";
         break;
       case "timeout":
         title = questions.title;
-        button = "排名";
+        button = qNumber === qbank.questions.length - 1 ? "結束" : "排名";
         content = (
           <>
             <Timeout
               questions={questions}
-              users={users}
+              arrayUsers={arrayUsers}
               qbank={qbank}
               qNumber={qNumber}
               audioRef={audioRef}
@@ -177,10 +197,10 @@ const HostGame = () => {
         break;
       case "rank":
         title = "記分板";
-        button = "下一題";
+        button = `第${qNumber + 2}題`;
         content = (
           <Rank
-            users={users}
+            arrayUsers={arrayUsers}
             getUrlDocumentId={getUrlDocumentId}
             audioRef={audioRef}
           />
@@ -192,7 +212,7 @@ const HostGame = () => {
         button = "首頁";
         content = (
           <>
-            <End users={users} audioRef={audioRef} />
+            <End arrayUsers={arrayUsers} audioRef={audioRef} />
           </>
         );
         updateRealTime(`${getUrlDocumentId}/question`, { id: 0 });
@@ -229,6 +249,7 @@ const HostGame = () => {
             name: value.name,
             score: value.score,
             time: value.time,
+            isOnline: value.isOnline,
           },
         ])
       );

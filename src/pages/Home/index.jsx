@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
@@ -26,14 +25,60 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { app } from "@/utils/firebase";
-import { v4 as uuidv4 } from "uuid";
 import { Slide, toast } from "react-toastify";
 import { Password } from "primereact/password";
 const auth = getAuth(app);
 
-const WrapHome = styled(PrimaryBg)`
+const WrapHome = styled.div`
+  width: 100vw;
+  height: 100vh;
+
+  padding: 4rem;
+  align-items: center;
   display: flex;
   flex-direction: column;
+`;
+
+const WrapBg = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ebdb86;
+  z-index: -1;
+`;
+
+const ArrowBg = styled.img`
+  position: absolute;
+  width: 14rem;
+  left: 50vw;
+  top: 50vh;
+  transform: translate(-150%);
+`;
+
+const FingerBg = styled.img`
+  position: absolute;
+  width: 14rem;
+  left: 50vw;
+  top: 50vh;
+  transform: translate(-150%, -180%);
+
+  ${theme.breakpoints.sm} {
+    width: 12rem;
+    transform: translate(-150%, -200%);
+  }
+`;
+
+const ShapeBg = styled.img`
+  position: absolute;
+  width: 30rem;
+  left: 50vw;
+  top: 50vh;
+
+  ${theme.breakpoints.sm} {
+    width: 12rem;
+  }
 `;
 
 const Logo = styled.img`
@@ -86,6 +131,8 @@ const InputPin = styled.input`
     -webkit-appearance: none;
     margin: 0;
   }
+  -moz-appearance: textfield;
+  /* firefox的type="number" 設定 */
 `;
 
 const WrapButton = styled.button`
@@ -107,9 +154,12 @@ const WrapButton = styled.button`
 `;
 
 const Login = styled.p`
-  color: ${theme.colors.secondary};
-  text-decoration: underline;
+  color: #56684d;
   cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const WrapPassword = styled(Password)`
@@ -196,6 +246,23 @@ const Home = () => {
   }
 
   function handleRegister() {
+    const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    const passwordPattern = /^.{6,}$/;
+    const namePattern = /^.{2,10}$/;
+    if (!emailPattern.test(inputEmail)) {
+      alert("請輸入有效的電子郵件");
+      return;
+    }
+    if (!passwordPattern.test(inputPassword)) {
+      alert("請輸入有效的密碼");
+      return;
+    }
+
+    if (!namePattern.test(inputName)) {
+      alert("請輸入有效的姓名");
+      return;
+    }
+
     createUserWithEmailAndPassword(auth, inputEmail, inputPassword)
       .then((userCredential) => {
         // Signed up
@@ -280,8 +347,26 @@ const Home = () => {
     });
   }
 
+  function randomPosition() {
+    const top = Math.floor(Math.random() * 100) + 1;
+    const left = Math.floor(Math.random() * 100) + 1;
+    return { top, left };
+  }
+  // const {top, left} =
+
   return (
     <WrapHome>
+      <WrapBg>
+        {/* <ArrowBg src="/arrow.png" alt="" /> */}
+        {/* <FingerBg src="/finger.png" /> */}
+        {/* <ShapeBg $top={randomPosition()} src="/bling.png" alt="" />
+        <ShapeBg src="/blue.png" alt="" />
+        <ShapeBg src="/brown.png" alt="" />
+        <ShapeBg src="/draw.png" alt="" />
+
+        <ShapeBg src="/green.png" alt="" />
+        <ShapeBg src="/pink.png" alt="" /> */}
+      </WrapBg>
       <Logo src="logo.png" alt="" />
       <Entry>
         <InputPin
@@ -386,7 +471,7 @@ const Home = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-[3.2rem] my-10 small:text-[2.4rem] small:my-0 ">
-                      感謝你的註冊呦
+                      感謝您的註冊
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-10 small:space-y-6">
@@ -441,8 +526,8 @@ const Home = () => {
                         id="name"
                         value={inputName}
                         onChange={(e) => setInputName(e.target.value)}
-                        pattern="^.{2,}$"
-                        title="使用者名稱必須大於2個字"
+                        pattern="^.{2,10}$"
+                        title="使用者名稱必須大於2個字並小於10個字"
                         required
                       />
                     </div>
