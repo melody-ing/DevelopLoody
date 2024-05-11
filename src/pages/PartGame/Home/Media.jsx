@@ -24,7 +24,7 @@ const WrapMedia = styled.div`
   justify-content: center;
 
   img {
-    max-height: calc(100vh - 40rem);
+    max-height: calc(100vh - 43rem);
     object-fit: contain;
     max-width: 50rem;
     margin: 0 auto;

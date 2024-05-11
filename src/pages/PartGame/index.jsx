@@ -35,7 +35,7 @@ const WrapQuestion = styled.div`
 const Question = styled.h2`
   font-size: 3rem;
   line-height: 5rem;
-  width: 60%;
+  width: 65%;
   height: auto;
   margin: 0 auto;
   margin-bottom: 2rem;
@@ -155,7 +155,7 @@ const PartGame = () => {
   let nextState = "";
 
   if (qbank && user && qNumber !== null && users && state) {
-    if (!user) navigate("/");
+    if (!user) navigate("/entry");
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
@@ -234,7 +234,7 @@ const PartGame = () => {
         );
         break;
       default:
-        navigate("/");
+        navigate("/entry");
     }
   }
 

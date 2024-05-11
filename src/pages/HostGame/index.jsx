@@ -42,6 +42,7 @@ const Question = styled.h2`
   margin: 0 auto;
   margin-bottom: 2rem;
   height: auto;
+  min-height: 8rem;
   padding: 2rem;
 
   background-color: #f4f4f48d;
@@ -261,7 +262,7 @@ const HostGame = () => {
       updateRealTime(`${getUrlDocumentId}`, { time: Timestamp.now() });
     }
     if (state === "end") {
-      navigate("/");
+      navigate("/dashboard");
       removeRealTime(getUrlDocumentId);
     } else {
       state === "rank" && setQNumber(qNumber);

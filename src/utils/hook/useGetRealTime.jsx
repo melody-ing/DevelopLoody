@@ -47,7 +47,7 @@ export const useGetRealTimeNavigate = (path, navigation) => {
       (snapshot) => {
         try {
           const data = snapshot.val();
-          if (data === null) navigate(navigation);
+          if (data === null) navigation;
           setData(data);
         } catch (error) {
           console.log("No data available");
