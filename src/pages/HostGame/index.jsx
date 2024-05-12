@@ -213,7 +213,11 @@ const HostGame = () => {
         button = "首頁";
         content = (
           <>
-            <End arrayUsers={arrayUsers} audioRef={audioRef} />
+            <End
+              arrayUsers={arrayUsers}
+              audioRef={audioRef}
+              isPlayBgm={isPlayBgm}
+            />
           </>
         );
         updateRealTime(`${getUrlDocumentId}/question`, { id: 0 });

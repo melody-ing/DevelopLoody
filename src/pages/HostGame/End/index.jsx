@@ -66,7 +66,7 @@ const UserName = styled.div`
   width: auto;
 `;
 
-const End = ({ audioRef, arrayUsers }) => {
+const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
   const clapRef = useRef(null);
   gsap.registerPlugin(useGSAP);
 
@@ -126,7 +126,7 @@ const End = ({ audioRef, arrayUsers }) => {
       duration: 0.9,
       ease: "bounce.out",
       onComplete: () => {
-        clapRef.current.play();
+        isPlayBgm && clapRef.current.play();
       },
     });
     tl.add(() => {
