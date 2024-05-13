@@ -18,27 +18,24 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { doc, onSnapshot } from "firebase/firestore";
 import { updateRealTime } from "@/utils/reviseRealTime";
 import { getAuth, signOut } from "firebase/auth";
+import Box from "./Box";
+import Setting from "./Setting";
 
 const WarpProfile = styled(ScrollArea)`
   background-color: ${theme.colors.primary};
-
   height: 100vh;
-  padding: 2.6rem;
   width: 22rem;
   text-align: left;
   box-shadow: 0px 3px 3px 3px #ccc;
   position: relative;
-
   ${theme.breakpoints.sm} {
     display: none;
   }
 `;
 
 const WrapLogo = styled.div`
-  position: absolute;
   top: 0;
   left: 0;
-  /* height: 7rem; */
   width: 100%;
   border-radius: 10px;
   margin: 0 auto;
@@ -47,7 +44,7 @@ const WrapLogo = styled.div`
   img {
     width: auto;
     height: 4rem;
-    margin: 0rem auto;
+    margin: 0 auto;
     margin-top: 2.4rem;
   }
 `;
@@ -60,24 +57,16 @@ const WrapAvatar = styled(ComAvatar)`
 
 const WrapUserInfo = styled.div`
   display: flex;
+  align-items: center;
   gap: 1rem;
-  height: auto;
-  margin-top: 6rem;
-  margin-left: 1rem;
+  height: 6rem;
+  margin-top: 2rem;
+  margin-left: 2rem;
 `;
 
 const UserName = styled.p`
   font-size: 1.6rem;
   margin-bottom: 0.4rem;
-  width: 16rem;
-  /* color: #fff; */
-  word-wrap: break-word;
-`;
-
-const UserEmail = styled.p`
-  color: #656565;
-  font-size: 1.3rem;
-  width: 16rem;
   word-wrap: break-word;
 `;
 
@@ -89,12 +78,49 @@ const UserId = styled.p`
 const SheetHr = styled.hr`
   border: none;
   height: 1px;
-  margin: 2rem 0;
+  margin: 2rem;
   background-color: #ffffff;
 `;
 
-const Title = styled.div`
-  color: #fff;
+const WrapPages = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+`;
+
+const Page = styled.div`
+  font-weight: 400;
+  width: 100%;
+  margin-left: 2rem;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  cursor: pointer;
+  background-color: ${({ $param, $page }) =>
+    $param === $page && "rgba(193, 182, 126, 0.403)"};
+  border-radius: ${({ $param, $page }) => $param === $page && "10px"};
+
+  &:hover {
+    background-color: rgba(193, 182, 126, 0.403);
+    border-radius: 10px;
+  }
+`;
+
+const WrapAiIcon = styled.div`
+  color: #fffdee;
+  background-color: #c1b67ed5;
+  padding-left: 0.3rem;
+  padding-right: 0.2rem;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.2rem;
+  width: 2rem;
+  line-height: 1.8rem;
 `;
 
 const Logout = styled.div`
@@ -103,59 +129,11 @@ const Logout = styled.div`
   bottom: 2rem;
 `;
 
-const WrapShareQBanks = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2rem;
-  gap: 2rem;
-`;
-
-const WrapShareQBank = styled.div`
-  background-color: #fffffa;
-  padding: 1rem;
-  width: 100%;
-  &:hover {
-    background-color: #cccccc5f;
-    cursor: pointer;
-  }
-`;
-
-const QbankName = styled.div`
-  font-size: 1.4rem;
-`;
-
-const QBankImg = styled.img`
-  width: 20rem;
-  height: 10rem;
-  object-fit: cover;
-  margin-top: 1rem;
-`;
-
-const WrapInfo = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1rem;
-`;
-
-const WrapQBankAvatars = styled.div`
-  display: flex;
-  gap: -10rem;
-  margin-top: 1rem;
-`;
-
-const QBankAvatar = styled(ComAvatar)``;
-
-const QBankAvatarFallback = styled(AvatarFallback)`
-  font-size: 1rem;
-`;
-
 const Profile = () => {
+  const param = location.pathname;
+
   const [isLogoutBtn, setIsLogoutBtn] = useState(false);
   const [uid, setUid] = useState(null);
-  const [shareData, setShareData] = useState([]);
   const {
     data: shareQbanks,
     isError: shareIsError,
@@ -181,58 +159,10 @@ const Profile = () => {
     setUid(userUid);
   }, [userUid]);
 
-  useEffect(() => {
-    const fetchData = () => {
-      shareQbanks?.forEach((qbank) => {
-        const docRef = doc(db, `qbank`, qbank.id);
-        const unsubscribe = onSnapshot(docRef, async (docSnapshot) => {
-          if (docSnapshot) {
-            // 處理即時更新的資料並放入setData中
-            setShareData((prevData) => {
-              const newData = [...prevData];
-              const index = newData.findIndex((item) => item.id === qbank.id);
-
-              if (index !== -1) {
-                newData[index] = { id: qbank.id, ...docSnapshot.data() };
-              } else {
-                newData.push({ id: qbank.id, ...docSnapshot.data() });
-              }
-              return newData;
-            });
-          } else {
-            console.log("Document does not exist");
-          }
-        });
-
-        // 返回取消監聽的函式以便清理
-        return unsubscribe;
-      });
-    };
-    fetchData();
-  }, [shareQbanks]);
-
   const navigate = useNavigate();
-  function handleHost(e, id) {
-    e.stopPropagation();
-
-    const pin = Math.floor(Math.random() * 900000) + 100000;
-
-    updateRealTime(id, {
-      id,
-      pin: pin.toString(),
-      question: { answer: 1, id: 0 },
-      state: "lobby",
-      users: {},
-    });
-    navigate(`/host/${id}/${pin}`);
-  }
 
   function handleUserBtn() {
     setIsLogoutBtn(!isLogoutBtn);
-  }
-
-  function handleSharedQBank(e, id) {
-    navigate(`/create/${id}`);
   }
 
   function handleLogout() {
@@ -253,7 +183,6 @@ const Profile = () => {
       {" "}
       <WrapUserInfo></WrapUserInfo>
       <SheetHr />
-      <p>共同編輯題庫</p>
     </WarpProfile>
   ) : (
     <WarpProfile>
@@ -273,44 +202,32 @@ const Profile = () => {
         </div>
       </WrapUserInfo>
       <SheetHr />
-      {/* <Title>共同編輯題庫</Title> */}
-      <WrapShareQBanks>
-        {shareData?.map((qbank) => {
-          return (
-            qbank.name && (
-              <WrapShareQBank
-                onClick={(e) => handleSharedQBank(e, qbank.id)}
-                key={qbank.id}
-              >
-                <QbankName>{qbank.name}</QbankName>
-                <QBankImg
-                  src={qbank.mainImg ? qbank.mainImg : "/bankImg.jpg"}
-                  alt=""
-                />
-                <WrapInfo>
-                  {" "}
-                  <WrapQBankAvatars>
-                    <QBankAvatar>
-                      <AvatarImage src="" />
-                      <QBankAvatarFallback>
-                        {qbank.ownerName.slice(0, 2)}
-                      </QBankAvatarFallback>
-                    </QBankAvatar>
-                  </WrapQBankAvatars>
-                  <Buttons
-                    size="small"
-                    onClick={(e) => handleHost(e, qbank.id)}
-                    style={{ width: "6rem" }}
-                    type={qbank.isDone ? "success" : "invalid"}
-                  >
-                    主持
-                  </Buttons>{" "}
-                </WrapInfo>
-              </WrapShareQBank>
-            )
-          );
-        })}
-      </WrapShareQBanks>
+      <WrapPages>
+        <Page
+          $param={param}
+          $page="/dashboard"
+          onClick={() => navigate("/dashboard")}
+        >
+          <Box />
+          <p>所有題庫</p>
+        </Page>
+        <Page
+          $param={param}
+          $page="/aigenerate"
+          onClick={() => navigate("/aigenerate")}
+        >
+          <WrapAiIcon>AI</WrapAiIcon>
+          <p>AI生成題庫</p>
+        </Page>
+        <Page
+          $param={param}
+          $page="/setting"
+          onClick={() => navigate("/dashboard")}
+        >
+          <Setting />
+          <p>設定</p>
+        </Page>
+      </WrapPages>
       <Logout onClick={handleLogout}>
         <Buttons size="small">登出</Buttons>
       </Logout>

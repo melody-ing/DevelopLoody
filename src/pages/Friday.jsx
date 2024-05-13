@@ -1,106 +1,116 @@
 import theme from "@/components/css/theme";
 import React from "react";
 import styled, { keyframes } from "styled-components";
-const brightYellow = "#883567";
-
-const bgColor = keyframes`
-0% {
-  background-color: ${brightYellow};
-}
-50% {
-  background-color: #b78fa6;
-}
-100% {
-  background-color:  ${brightYellow};
-}`;
-
-const bgRotate = keyframes`
-from {
-  transform: rotate(0deg);
-}
-from {
-  transform: rotate(360deg);
-}
-`;
-
-const progressbarWidth = keyframes` 
-from{
-  width: 100%;
-}
-to{
-  width: 0%;
-}
-`;
-
-const Container = styled.div`
-  max-width: 500px;
-  margin: 50px auto;
-  h1 {
-    text-align: center;
-  }
-  .progressbar-container {
-    position: relative;
-    width: 100%;
-    height: 50px;
-    border: 1px solid #fff;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    .progressbar-complete {
-      position: absolute;
-      left: 0;
-      top: 0px;
-      height: 100%;
-      background-color: ${brightYellow};
-      border-radius: 10px;
-      animation: ${bgColor} 2500ms infinite ease-in-out;
-      z-index: 2;
-      animation-name: ${progressbarWidth};
-      animation-duration: 10s;
-      animation-iteration-count: 1;
-      .progressbar-liquid {
-        z-index: 1;
-        width: 70px;
-        height: 70px;
-        animation: ${bgColor} 2500ms infinite ease-in-out,
-          ${bgRotate} 3000ms infinite cubic-bezier(0.5, 0.5, 0.5, 0.5);
-        position: absolute;
-        right: -5px;
-        top: -10px;
-        background-color: ${brightYellow};
-        border-radius: 40%;
-      }
-    }
-    .progress {
-      z-index: 2;
-    }
-  }
-`;
+import { loadFull } from "tsparticles";
+import { useEffect, useMemo, useState } from "react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
 
 const Fsfs = styled.div`
-  height: 100vh;
-  width: 100vw;
+  /* height: 100vh;
+  width: 100vw; */
 `;
 
 const Friday = () => {
-  const progress = 40;
-  return (
-    <Fsfs>
-      <video autoPlay muted>
-        {" "}
-        <source src="/4KBG.mp4" type="video/mp4" />
-      </video>
-      <Container className="container">
-        <div className="progressbar-container">
-          <div className="progressbar-complete">
-            <div className="progressbar-liquid"></div>
-          </div>
-        </div>
-      </Container>
-    </Fsfs>
+  const [init, setInit] = useState(false);
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
+      // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
+      // starting from v2 you can add only the features you need reducing the bundle size
+      //await loadAll(engine);
+      //await loadFull(engine);
+      await loadSlim(engine);
+      //await loadBasic(engine);
+    }).then(() => {
+      setInit(true);
+    });
+  }, []);
+
+  const particlesLoaded = (container) => {
+    console.log(container);
+  };
+
+  const options = useMemo(
+    () => ({
+      background: {
+        color: {
+          value: "#f5f5f3",
+        },
+      },
+      fpsLimit: 120,
+      interactivity: {
+        events: {
+          onClick: {
+            enable: true,
+            mode: "push",
+          },
+          onHover: {
+            enable: true,
+            mode: "repulse",
+          },
+        },
+        modes: {
+          push: {
+            quantity: 4,
+          },
+          repulse: {
+            distance: 200,
+            duration: 0.4,
+          },
+        },
+      },
+      particles: {
+        color: {
+          value: "#5f5f5f",
+        },
+        links: {
+          color: "#5f5f5f",
+          distance: 150,
+          enable: true,
+          opacity: 0.5,
+          width: 1,
+        },
+        move: {
+          direction: "none",
+          enable: true,
+          outModes: {
+            default: "bounce",
+          },
+          random: false,
+          speed: 6,
+          straight: false,
+        },
+        number: {
+          density: {
+            enable: true,
+          },
+          value: 80,
+        },
+        opacity: {
+          value: 0.5,
+        },
+        shape: {
+          type: "circle",
+        },
+        size: {
+          value: { min: 1, max: 5 },
+        },
+      },
+      detectRetina: true,
+    }),
+    []
   );
+
+  if (init) {
+    return (
+      <Particles
+        id="tsparticles"
+        particlesLoaded={particlesLoaded}
+        options={options}
+      />
+    );
+  }
 };
 
 export default Friday;

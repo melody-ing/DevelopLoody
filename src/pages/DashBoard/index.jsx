@@ -138,8 +138,8 @@ const QuestionsQuantity = styled.p`
 `;
 
 const QBankImg = styled.img`
-  object-fit: contain;
-  margin-top: 1rem;
+  object-fit: cover;
+  border-radius: 5px 5px 0 0;
 `;
 
 const WrapQBankAvatars = styled.div`
@@ -503,7 +503,7 @@ const Dashboard = () => {
               <WrapQuestionBanks>
                 {["", "", "", ""].map((item, index) => (
                   <div key={index}>
-                    <Skeleton className="w-auto h-[30rem] rounded " />
+                    <Skeleton className="w-auto h-[30rem] rounded bg-gray-200" />
                   </div>
                 ))}
               </WrapQuestionBanks>
