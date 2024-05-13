@@ -15,14 +15,14 @@
 }
 
 .swiper-slide:nth-child(1n) {
-  background: url("/public/swiper/timeout.png");
+  background: url("/swiper/timeout.png");
   background-size: 50px 50px;
   background-size: 50% 50%;
   background-size: cover;
 }
 
 .swiper-slide:nth-child(2n) {
-  background: url("/public/swiper/end.png");
+  background: url("/swiper/end.png");
   background-size: 50px 50px;
   background-size: 50% 50%;
   background-size: cover;

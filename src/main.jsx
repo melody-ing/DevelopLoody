@@ -13,6 +13,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashBoard from "./pages/DashBoard/index.jsx";
 import Create from "./pages/Create/index.jsx";
 import Home from "./pages/Home/index.jsx";
+import AiGenerate from "./pages/AiGenerate/index.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="entry" element={<Entry />} />
+        <Route path="aigenerate" element={<AiGenerate />} />
         <Route path="host/:documentId/:pin" element={<Host />} />
         <Route path="hostgame/:documentId" element={<HostGame />} />
         <Route path="part/:documentId/:pin" element={<Part />} />

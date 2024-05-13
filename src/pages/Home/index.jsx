@@ -360,7 +360,7 @@ const Home = () => {
         >
           <WrapDialogTrigger>
             {" "}
-            <Login onClick={handleAuthState}>製作Loody</Login>
+            <Login onClick={handleAuthState}>製作 Loody</Login>
           </WrapDialogTrigger>
           <WrapDialogContent>
             <Tabs

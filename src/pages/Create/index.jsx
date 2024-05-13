@@ -1274,7 +1274,7 @@ const Create = () => {
                   value={questionType}
                   onValueChange={handleQuestionType}
                 >
-                  <WrapSelectTrigger>
+                  <WrapSelectTrigger className="focus:ring-0">
                     <SelectValue placeholder="請選擇" />
                   </WrapSelectTrigger>
                   <WrapSelectContent>
@@ -1286,7 +1286,7 @@ const Create = () => {
 
                 <InputTitle>每題時間</InputTitle>
                 <WrapSelect value={timeLimit} onValueChange={handleTimeLimit}>
-                  <WrapSelectTrigger>
+                  <WrapSelectTrigger className="focus:ring-0">
                     <SelectValue placeholder="請選擇" />
                   </WrapSelectTrigger>
                   <WrapSelectContent>
