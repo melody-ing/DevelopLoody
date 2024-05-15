@@ -142,11 +142,11 @@ const Header = ({ children }) => {
       .then(() => {
         // Sign-out successful.
         navigate("/");
-        console.log("Sign-out successful");
+        // console.log("Sign-out successful");
       })
       .catch((error) => {
         // An error happened.
-        console.log("Sign-out error");
+        // console.log("Sign-out error");
       });
   }
 

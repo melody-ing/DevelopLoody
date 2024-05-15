@@ -109,7 +109,6 @@ const WrapButton = styled.div`
     right: -2rem;
     top: 2rem;
     left: auto;
-    /* transform: translate(-5rem); */
     width: 6rem;
   }
 `;
@@ -710,8 +709,6 @@ const Create = () => {
   const [isQBankNameFill, setIsQBankNameFill] = useState(true);
 
   useOnAuthStateChange();
-
-  console.log(getQbanksData);
 
   useEffect(() => {
     if (!getQbanksData) return;

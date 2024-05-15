@@ -211,14 +211,14 @@ const Profile = () => {
           <Box />
           <p>所有題庫</p>
         </Page>
-        <Page
+        {/* <Page
           $param={param}
           $page="/aigenerate"
           onClick={() => navigate("/aigenerate")}
         >
           <WrapAiIcon>AI</WrapAiIcon>
           <p>AI生成題庫</p>
-        </Page>
+        </Page> */}
         <Page
           $param={param}
           $page="/setting"

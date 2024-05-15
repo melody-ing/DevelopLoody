@@ -259,7 +259,6 @@ const Home = () => {
 
     createUserWithEmailAndPassword(auth, inputEmail, inputPassword)
       .then((userCredential) => {
-        // Signed up
         const userId = Math.floor(Math.random() * 90000000) + 10000000;
         const user = userCredential.user;
 
@@ -288,7 +287,6 @@ const Home = () => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // ..
         console.log(errorCode, errorMessage);
         if (errorCode === "auth/email-already-in-use") {
           setIsRegisterError(true);
@@ -299,7 +297,6 @@ const Home = () => {
   async function handleLogin() {
     signInWithEmailAndPassword(auth, inputEmail, inputPassword)
       .then((userCredential) => {
-        // Signed up
         const user = userCredential.user;
         const userData = getFireStore("users", user.uid);
         setIsLoginError(false);

@@ -50,6 +50,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EllipsisBtn from "./EllipsisBtn";
 import Duplicate from "./Duplicate";
 import Buttons from "@/components/Buttons";
+import Dialog from "@/components/Dialog/Dialog";
 
 const Wrapper = styled.div`
   height: auto;
@@ -221,6 +222,7 @@ const FileLabel = styled.label`
   align-items: center;
   width: 100%;
   gap: 2rem;
+  cursor: pointer;
 `;
 
 const FileInput = styled.input`
@@ -229,12 +231,10 @@ const FileInput = styled.input`
 
 const CloseShareDialog = styled.div`
   display: ${({ $isShareOpen }) => ($isShareOpen ? "block" : "none")};
-
-  width: 100vw;
+  width: 100%;
   height: 100vh;
-  position: absolute;
+  position: fixed;
   background-color: #413a1aae;
-
   top: 0;
   left: 0;
   z-index: 400;
@@ -246,7 +246,7 @@ const WrapShareDialog = styled.div`
 `;
 
 const ShareDialog = styled.div`
-  position: absolute;
+  position: fixed;
   left: 50vw;
   top: 50vh;
   width: 50rem;
@@ -353,7 +353,6 @@ const Dashboard = () => {
         const docRef = doc(db, "qbank", qbank.id);
         const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
           if (docSnapshot.exists()) {
-            // 處理即時更新的資料並放入setData中
             setData((prevData) => {
               const newData = [...prevData];
               const index = newData.findIndex((item) => item.id === qbank.id);
@@ -369,7 +368,6 @@ const Dashboard = () => {
           }
         });
 
-        // 返回取消監聽的函式以便清理
         return unsubscribe;
       });
     };
@@ -388,7 +386,7 @@ const Dashboard = () => {
       ownerName,
       id: uuid,
       mainImg:
-        "https://firebasestorage.googleapis.com/v0/b/loody-ing.appspot.com/o/1714835814726?alt=media&token=1b589a8e-8b0e-49c3-b4a1-4c496085e70b",
+        "https://firebasestorage.googleapis.com/v0/b/loody-ing.appspot.com/o/1715678773074?alt=media&token=28fa8d44-6825-4885-a303-9b0b9c3abc1a",
       questions: [
         {
           answer: 0,
@@ -620,24 +618,21 @@ const Dashboard = () => {
               </WrapQuestionBanks>
             </WrapQbanks>
           </WrapDashboard>
-          <CloseShareDialog
-            $isShareOpen={isShareOpen}
-            onClick={() => {
+
+          <Dialog
+            onClickCloseDialog={() => {
               setIsShareOpen(false);
               setShareToUserId("");
             }}
+            isOpen={isShareOpen}
           >
             {" "}
-          </CloseShareDialog>
-          <WrapShareDialog $isShareOpen={isShareOpen}>
-            <ShareDialog>
-              <ShareTitle>複製連結以共用</ShareTitle>
-              <WrapUrl>
-                <ShareUrl>{`${location.origin}/create/${shareQBankId}`}</ShareUrl>
-                <Duplicate size={4.6} onClick={handleCopyURL} />
-              </WrapUrl>
-            </ShareDialog>
-          </WrapShareDialog>
+            <ShareTitle>複製連結以共用</ShareTitle>
+            <WrapUrl>
+              <ShareUrl>{`${location.origin}/create/${shareQBankId}`}</ShareUrl>
+              <Duplicate size={4.6} onClick={handleCopyURL} />
+            </WrapUrl>
+          </Dialog>
 
           <AddQBankButton onClick={handleAddQBank}>
             <div
