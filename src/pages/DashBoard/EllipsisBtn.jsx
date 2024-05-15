@@ -48,6 +48,7 @@ const FileLabel = styled.label`
   align-items: center;
   width: 100%;
   gap: 2rem;
+  cursor: pointer;
 `;
 
 const EllipsisBtn = ({
@@ -93,19 +94,27 @@ const EllipsisBtn = ({
             onClick={() => {
               setIsShareOpen(true);
               setShareQBankId(item.id);
+              closePopup();
             }}
           >
             <Share size={12} />
             <p>分享</p>
           </WrapEllipsisMenuItem>
 
-          <WrapEllipsisMenuItem onClick={() => handleDelete(item.id)}>
+          <WrapEllipsisMenuItem
+            onClick={() => {
+              handleDelete(item.id);
+              closePopup();
+            }}
+          >
             <Delete size={12} />
             <p>刪除</p>
           </WrapEllipsisMenuItem>
 
           <WrapEllipsisMenuItem
-            onClick={() => (chooseQBankId.current = item.id)}
+            onClick={() => {
+              chooseQBankId.current = item.id;
+            }}
           >
             <FileLabel htmlFor="fileInput">
               <Image size={12} /> <p>新增封面</p>

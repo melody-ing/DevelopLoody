@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Profile from "../DashBoard/Profile";
-import Buttons from "@/components/Buttons";
+import "ldrs/ring";
+import { treadmill } from "ldrs";
+
 import { useGetFireStore } from "@/utils/hook/useGetFireStore";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { v4 as uuidv4 } from "uuid";
@@ -16,6 +18,11 @@ import {
 import theme from "@/components/css/theme";
 import AiBg from "@/components/css/AiBg";
 import Send from "./Send";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { TextPlugin } from "gsap/TextPlugin";
+import { useBgm } from "@/utils/hook/useBgm";
+import { setFireStore } from "@/utils/reviseFireStore";
 
 const Wrapper = styled.div`
   height: auto;
@@ -43,8 +50,41 @@ const WrapAiGenerate = styled.div`
   align-items: center;
 `;
 
+const WrapLoading = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`;
+
 const Title = styled.h2`
   font-size: 4rem;
+  height: 8rem;
+  margin-bottom: 5rem;
+`;
+
+const Treeone = styled.img`
+  position: absolute;
+  width: 12rem;
+  bottom: 5rem;
+`;
+const Treetwo = styled.img`
+  position: absolute;
+  width: 8rem;
+  bottom: 5rem;
+`;
+
+const LoadingHr = styled.hr`
+  width: 50rem;
+  height: 1rem;
+  background-color: #3b7577;
+  border-radius: 30px;
+  border: none;
+`;
+
+const Wait = styled.div`
+  margin-top: 2rem;
 `;
 
 const Rules = styled.div`
@@ -53,7 +93,7 @@ const Rules = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 3rem;
+
   border: 1px solid #ccc;
   border-radius: 20px;
   background-color: #fff;
@@ -177,44 +217,109 @@ const Button = styled.div`
 `;
 
 const AiGenerate = () => {
+  const { isAiLoading, setIsAiLoading, setIsAiGenerate, setAiQbankId } =
+    useBgm();
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState("1");
   const [uid, setUid] = useState(null);
   const [theme, setTheme] = useState("");
+  const [isError, setIsError] = useState(null);
   const userUid = useOnAuthStateChange();
+  const tree1Ref = useRef(null);
+  const tree2Ref = useRef(null);
+  const titleRef = useRef(null);
   const {
     data: getUserData,
-    isLoading,
-    isError,
+    isLoading: userDataIsLoading,
+    isError: userDataIsError,
   } = useGetFireStore("users", uid);
   const uuid = uuidv4();
-  console.log(quantity);
 
+  useEffect(() => {
+    gsap.registerPlugin(useGSAP);
+    const treeTl = gsap.timeline({
+      repeat: -1,
+    });
+
+    treeTl
+      .from(tree1Ref.current, {
+        opacity: 0,
+        duration: 1,
+        x: 300,
+        ease: "linear",
+      })
+      .to(tree1Ref.current, {
+        opacity: 0,
+        duration: 1,
+        x: -300,
+        ease: "linear",
+      })
+      .from(tree2Ref.current, {
+        opacity: 0,
+        duration: 1,
+        delay: 1,
+        x: 300,
+        ease: "linear",
+      })
+      .to(tree2Ref.current, {
+        opacity: 0,
+        duration: 1,
+        x: -300,
+        ease: "linear",
+      });
+  }, [isAiLoading]);
+
+  useEffect(() => {
+    gsap.registerPlugin(TextPlugin);
+
+    const tl = gsap.timeline();
+    tl.to(titleRef.current, {
+      duration: 1,
+      text: "需要新的想法嗎?",
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
   useEffect(() => {
     setUid(userUid);
   }, [userUid]);
 
   const handleOpenai = async () => {
+    setIsAiLoading(true);
     try {
       const qbankId = uuid;
       console.log(qbankId);
-      //   const response = await fetch(
-      //     `https://loodyserver.onrender.com/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}`
-      //   );
       const response = await fetch(
-        `http://localhost:3000/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
+        `https://loodyserver.onrender.com/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
       );
+      // const response = await fetch(
+      //   `http://localhost:3000/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
+      // );
 
       if (!response.ok) {
+        setIsError(true);
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      navigate(`/create/${qbankId}`);
-      console.log(data); // Here you can handle the data as needed
+      setIsAiLoading(false);
+      setIsAiGenerate();
+      setIsError(null);
+      setAiQbankId(qbankId);
+
+      setFireStore(`users/${uid}/qbanks`, qbankId, {
+        id: qbankId,
+      });
     } catch (error) {
+      setIsAiLoading(false);
+      setIsError(error.message);
       console.error("There was a problem with your fetch operation:", error);
     }
   };
+
+  treadmill.register();
+
   return (
     <>
       <AiBg />
@@ -222,38 +327,57 @@ const AiGenerate = () => {
         <WrapProfile>
           <Profile />
         </WrapProfile>
+
         <WrapAiGenerate>
-          <Title>需要新的想法嗎？</Title>
-          <Rules>
-            <WrapSelected>
-              <WrapSelect
-                value={quantity}
-                onValueChange={(e) => setQuantity(e)}
-              >
-                <WrapSelectTrigger className="justify-around">
-                  <SelectValue placeholder="請選擇" />
-                </WrapSelectTrigger>
-                <WrapSelectContent>
-                  <WrapSelectItem value={1}>1題</WrapSelectItem>
-                  <WrapSelectItem value={2}>2題</WrapSelectItem>
-                  <WrapSelectItem value={3}>3題</WrapSelectItem>
-                  <WrapSelectItem value={4}>4題</WrapSelectItem>
-                  <WrapSelectItem value={5}>5題</WrapSelectItem>
-                </WrapSelectContent>
-              </WrapSelect>
-            </WrapSelected>
-            <hr />
-            <InputTheme
-              placeholder="動物知識"
-              type="text"
-              onChange={(e) => setTheme(e.target.value)}
-              value={theme}
-            />{" "}
-            <Button onClick={() => handleOpenai()}>
-              <p> 生成</p>
-              <Send size={2} />
-            </Button>
-          </Rules>
+          {isAiLoading ? (
+            <WrapLoading>
+              {" "}
+              <Title ref={titleRef}>題庫生成中...</Title>
+              <Treeone ref={tree1Ref} src="/tree1.png" />
+              <Treetwo ref={tree2Ref} src="/tree2.png" />
+              <l-treadmill
+                size="200"
+                speed="1.25"
+                color="#f7e173"
+              ></l-treadmill>
+              <LoadingHr />
+              <Wait>約需一分鐘...</Wait>
+            </WrapLoading>
+          ) : (
+            <>
+              <Title ref={titleRef}></Title>
+              <Rules>
+                <WrapSelected>
+                  <WrapSelect
+                    value={quantity}
+                    onValueChange={(e) => setQuantity(e)}
+                  >
+                    <WrapSelectTrigger className="justify-around">
+                      <SelectValue placeholder="請選擇" />
+                    </WrapSelectTrigger>
+                    <WrapSelectContent>
+                      <WrapSelectItem value="1">1題</WrapSelectItem>
+                      <WrapSelectItem value="2">2題</WrapSelectItem>
+                      <WrapSelectItem value="3">3題</WrapSelectItem>
+                      <WrapSelectItem value="4">4題</WrapSelectItem>
+                      <WrapSelectItem value="5">5題</WrapSelectItem>
+                    </WrapSelectContent>
+                  </WrapSelect>
+                </WrapSelected>
+                <hr />
+                <InputTheme
+                  placeholder="ex.動物知識"
+                  type="text"
+                  onChange={(e) => setTheme(e.target.value)}
+                  value={theme}
+                />{" "}
+                <Button onClick={() => handleOpenai()}>
+                  <p> 生成</p>
+                  <Send size={2} />
+                </Button>
+              </Rules>
+            </>
+          )}
         </WrapAiGenerate>
       </Wrapper>
     </>

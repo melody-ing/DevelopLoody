@@ -21,7 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Route path="/" element={<App />}>
         <Route index element={<Home />} />
         <Route path="entry" element={<Entry />} />
-        <Route path="aigenerate" element={<AiGenerate />} />
+        {/* <Route path="aigenerate" element={<AiGenerate />} /> */}
         <Route path="host/:documentId/:pin" element={<Host />} />
         <Route path="hostgame/:documentId" element={<HostGame />} />
         <Route path="part/:documentId/:pin" element={<Part />} />
