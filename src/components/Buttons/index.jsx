@@ -7,25 +7,20 @@ import styled from "styled-components";
 const Button = styled.div`
   ${({ $bg, $color, $hoverbg, $size }) =>
     `
-    background-color: ${$bg}; 
-    color: ${$color}; 
-    &:hover{ background-color:${$hoverbg}}; 
-    width: ${$size}rem; 
-    box-shadow: 0 3.4px 0px 0 ${$hoverbg};
-    font-size: ${($size * 2) / 10}rem;
+     &:hover{ background-color:${$hoverbg}}; 
     height: ${$size / 2.4}rem;
      `};
+  width: ${({ $size }) => $size};
+  color: ${({ $color }) => $color};
+  background-color: ${({ $bg }) => $bg};
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 5px;
+  box-shadow: 0 3.4px 0 0 ${({ $hoverbg }) => $hoverbg};
+  font-size: ${({ $size }) => ($size * 2) / 10}rem;
 
   ${({ $type }) => $type === "invalid" || "cursor: pointer;"};
-
-  p {
-    letter-spacing: 1.2rem;
-    transform: translate(0.6rem);
-  }
 
   ${theme.breakpoints.md} {
     ${({ $bg, $color, $hoverbg, $size }) =>
@@ -45,6 +40,11 @@ const Button = styled.div`
     height: ${$size / 2.4}rem;
      `};
   }
+`;
+
+const ButtonContent = styled.p`
+  letter-spacing: 1.2rem;
+  transform: translate(0.6rem);
 `;
 
 const Buttons = ({ children, type, size = "default", style, onClick }) => {
@@ -125,7 +125,7 @@ const Buttons = ({ children, type, size = "default", style, onClick }) => {
       style={style}
       onClick={onClick}
     >
-      <p>{children}</p>
+      <ButtonContent>{children}</ButtonContent>
     </Button>
   );
 };

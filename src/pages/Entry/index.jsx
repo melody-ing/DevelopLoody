@@ -295,7 +295,7 @@ const Entry = () => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        // console.log(errorCode, errorMessage);
         if (errorCode === "auth/email-already-in-use") {
           setIsRegisterError(true);
         }
@@ -329,7 +329,7 @@ const Entry = () => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        // console.log(errorCode, errorMessage);
         setIsLoginError(true);
       });
   }
@@ -339,9 +339,9 @@ const Entry = () => {
       if (user) {
         const uid = user.uid;
         navigate(`/dashboard`);
-        console.log("User is signed in");
+        // console.log("User is signed in");
       } else {
-        console.log("User is not signed in");
+        // console.log("User is not signed in");
       }
     });
   }

@@ -168,13 +168,11 @@ const Profile = () => {
   function handleLogout() {
     signOut(auth)
       .then(() => {
-        // Sign-out successful.
         navigate("/");
-        console.log("Sign-out successful");
+        // console.log("Sign-out successful");
       })
       .catch((error) => {
-        // An error happened.
-        console.log("Sign-out error");
+        // console.log("Sign-out error");
       });
   }
 
@@ -211,14 +209,14 @@ const Profile = () => {
           <Box />
           <p>所有題庫</p>
         </Page>
-        {/* <Page
+        <Page
           $param={param}
           $page="/aigenerate"
           onClick={() => navigate("/aigenerate")}
         >
           <WrapAiIcon>AI</WrapAiIcon>
           <p>AI生成題庫</p>
-        </Page> */}
+        </Page>
         <Page
           $param={param}
           $page="/setting"

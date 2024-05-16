@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ref, onValue } from "firebase/database";
 import { database } from "../firebase";
-import { useNavigate } from "react-router-dom";
 
 export const useGetRealTime = (path) => {
   const [data, setData] = useState(null);
@@ -16,7 +15,7 @@ export const useGetRealTime = (path) => {
           const data = snapshot.val();
           setData(data);
         } catch (error) {
-          console.log("No data available");
+          // console.log("No data available");
           setIsError(error.message);
           setData(null);
         } finally {
@@ -36,7 +35,6 @@ export const useGetRealTime = (path) => {
 };
 
 export const useGetRealTimeNavigate = (path, navigation) => {
-  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(null);
@@ -50,7 +48,7 @@ export const useGetRealTimeNavigate = (path, navigation) => {
           if (data === null) navigation;
           setData(data);
         } catch (error) {
-          console.log("No data available");
+          // console.log("No data available");
           setIsError(error.message);
           setData(null);
         } finally {

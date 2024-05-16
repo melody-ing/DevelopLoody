@@ -290,7 +290,6 @@ const AiGenerate = () => {
     setIsAiLoading(true);
     try {
       const qbankId = uuid;
-      console.log(qbankId);
       const response = await fetch(
         `https://loodyserver.onrender.com/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
       );
@@ -314,7 +313,7 @@ const AiGenerate = () => {
     } catch (error) {
       setIsAiLoading(false);
       setIsError(error.message);
-      console.error("There was a problem with your fetch operation:", error);
+      // console.error("There was a problem with your fetch operation:", error);
     }
   };
 
