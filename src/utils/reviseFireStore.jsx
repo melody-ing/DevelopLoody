@@ -1,13 +1,4 @@
-import {
-  doc,
-  updateDoc,
-  setDoc,
-  collection,
-  addDoc,
-  deleteDoc,
-  getDoc,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, updateDoc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
 
@@ -24,20 +15,6 @@ export const getFireStore = async (path, documentId) => {
   }
 };
 
-// export const getFireStore = async (path, documentId) => {
-//   const docRef = doc(db, path, documentId);
-//   const unsubscribe = onSnapshot(docRef, (docSnap) => {
-//     if (docSnap.exists()) {
-//       console.log("Document data:", docSnap.data());
-//       return docSnap.data();
-//     } else {
-//       console.log("No such document!");
-//     }
-//   });
-
-//   return unsubscribe;
-// };
-
 export const updateFireStore = async (path, documentId, data) => {
   try {
     const docRef = doc(db, path, documentId);
@@ -51,16 +28,6 @@ export const updateFireStore = async (path, documentId, data) => {
 export const setFireStore = async (path, documentId, data) => {
   try {
     await setDoc(doc(db, path, documentId), data, { merge: true });
-    // console.log("Document written with ID: ", documentId);
-  } catch (e) {
-    // console.error("Error adding document: ", e);
-  }
-};
-
-export const addFireStore = async (path, data) => {
-  try {
-    const documentId = uuidv4();
-    await setDoc(doc(db, path, documentId), { ...data, id: documentId });
     // console.log("Document written with ID: ", documentId);
   } catch (e) {
     // console.error("Error adding document: ", e);

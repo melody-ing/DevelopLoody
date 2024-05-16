@@ -17,7 +17,7 @@ import ReactLoading from "react-loading";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { Timestamp } from "firebase/firestore";
 import GameAniBg from "@/components/css/GameAniBg";
-import { useBgm } from "@/utils/hook/useBgm";
+import { useStore } from "@/utils/hook/useStore";
 
 const WrapGame = styled.div`
   width: 100%;
@@ -88,7 +88,7 @@ const HostGame = () => {
   const question = realTimeData?.question;
   const questions = qbank?.questions[qNumber];
   const [timeoutSec, setTimeoutSec] = useState(null);
-  const { isPlayBgm, setIsPlayBgm } = useBgm();
+  const { isPlayBgm, setIsPlayBgm } = useStore();
   const [reply, setReply] = useState(0);
   const audioRef = useRef(null);
 

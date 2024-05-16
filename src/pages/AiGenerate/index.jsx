@@ -3,11 +3,9 @@ import styled from "styled-components";
 import Profile from "../DashBoard/Profile";
 import "ldrs/ring";
 import { treadmill } from "ldrs";
-
 import { useGetFireStore } from "@/utils/hook/useGetFireStore";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -21,8 +19,9 @@ import Send from "./Send";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { TextPlugin } from "gsap/TextPlugin";
-import { useBgm } from "@/utils/hook/useBgm";
+import { useStore } from "@/utils/hook/useStore";
 import { setFireStore } from "@/utils/reviseFireStore";
+import AiGenerateLoading from "./AiGenerateLoading";
 
 const Wrapper = styled.div`
   height: auto;
@@ -50,41 +49,10 @@ const WrapAiGenerate = styled.div`
   align-items: center;
 `;
 
-const WrapLoading = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-`;
-
 const Title = styled.h2`
   font-size: 4rem;
   height: 8rem;
   margin-bottom: 5rem;
-`;
-
-const Treeone = styled.img`
-  position: absolute;
-  width: 12rem;
-  bottom: 5rem;
-`;
-const Treetwo = styled.img`
-  position: absolute;
-  width: 8rem;
-  bottom: 5rem;
-`;
-
-const LoadingHr = styled.hr`
-  width: 50rem;
-  height: 1rem;
-  background-color: #3b7577;
-  border-radius: 30px;
-  border: none;
-`;
-
-const Wait = styled.div`
-  margin-top: 2rem;
 `;
 
 const Rules = styled.div`
@@ -218,15 +186,12 @@ const Button = styled.div`
 
 const AiGenerate = () => {
   const { isAiLoading, setIsAiLoading, setIsAiGenerate, setAiQbankId } =
-    useBgm();
-  const navigate = useNavigate();
+    useStore();
   const [quantity, setQuantity] = useState("1");
   const [uid, setUid] = useState(null);
   const [theme, setTheme] = useState("");
   const [isError, setIsError] = useState(null);
   const userUid = useOnAuthStateChange();
-  const tree1Ref = useRef(null);
-  const tree2Ref = useRef(null);
   const titleRef = useRef(null);
   const {
     data: getUserData,
@@ -235,53 +200,6 @@ const AiGenerate = () => {
   } = useGetFireStore("users", uid);
   const uuid = uuidv4();
 
-  useEffect(() => {
-    gsap.registerPlugin(useGSAP);
-    const treeTl = gsap.timeline({
-      repeat: -1,
-    });
-
-    treeTl
-      .from(tree1Ref.current, {
-        opacity: 0,
-        duration: 1,
-        x: 300,
-        ease: "linear",
-      })
-      .to(tree1Ref.current, {
-        opacity: 0,
-        duration: 1,
-        x: -300,
-        ease: "linear",
-      })
-      .from(tree2Ref.current, {
-        opacity: 0,
-        duration: 1,
-        delay: 1,
-        x: 300,
-        ease: "linear",
-      })
-      .to(tree2Ref.current, {
-        opacity: 0,
-        duration: 1,
-        x: -300,
-        ease: "linear",
-      });
-  }, [isAiLoading]);
-
-  useEffect(() => {
-    gsap.registerPlugin(TextPlugin);
-
-    const tl = gsap.timeline();
-    tl.to(titleRef.current, {
-      duration: 1,
-      text: "需要新的想法嗎?",
-    });
-
-    return () => {
-      tl.kill();
-    };
-  }, []);
   useEffect(() => {
     setUid(userUid);
   }, [userUid]);
@@ -319,6 +237,20 @@ const AiGenerate = () => {
 
   treadmill.register();
 
+  useEffect(() => {
+    gsap.registerPlugin(TextPlugin);
+
+    const tl = gsap.timeline();
+    tl.to(titleRef.current, {
+      duration: 1,
+      text: "需要新的想法嗎?",
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
+
   return (
     <>
       <AiBg />
@@ -329,19 +261,7 @@ const AiGenerate = () => {
 
         <WrapAiGenerate>
           {isAiLoading ? (
-            <WrapLoading>
-              {" "}
-              <Title ref={titleRef}>題庫生成中...</Title>
-              <Treeone ref={tree1Ref} src="/tree1.png" />
-              <Treetwo ref={tree2Ref} src="/tree2.png" />
-              <l-treadmill
-                size="200"
-                speed="1.25"
-                color="#f7e173"
-              ></l-treadmill>
-              <LoadingHr />
-              <Wait>約需一分鐘...</Wait>
-            </WrapLoading>
+            <AiGenerateLoading isAiLoading={isAiLoading} />
           ) : (
             <>
               <Title ref={titleRef}></Title>
@@ -355,11 +275,13 @@ const AiGenerate = () => {
                       <SelectValue placeholder="請選擇" />
                     </WrapSelectTrigger>
                     <WrapSelectContent>
-                      <WrapSelectItem value="1">1題</WrapSelectItem>
-                      <WrapSelectItem value="2">2題</WrapSelectItem>
-                      <WrapSelectItem value="3">3題</WrapSelectItem>
-                      <WrapSelectItem value="4">4題</WrapSelectItem>
-                      <WrapSelectItem value="5">5題</WrapSelectItem>
+                      {Array(5)
+                        .fill("")
+                        .map((_, index) => (
+                          <WrapSelectItem key={index} value={`${index + 1}`}>
+                            {`${index + 1}`}題
+                          </WrapSelectItem>
+                        ))}
                     </WrapSelectContent>
                   </WrapSelect>
                 </WrapSelected>
@@ -371,7 +293,7 @@ const AiGenerate = () => {
                   value={theme}
                 />{" "}
                 <Button onClick={() => handleOpenai()}>
-                  <p> 生成</p>
+                  <p>生成</p>
                   <Send size={2} />
                 </Button>
               </Rules>

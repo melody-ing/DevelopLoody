@@ -4,7 +4,7 @@ import BaseGlobalStyle from "./components/css/BaseGlobalStyle";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dialog from "./components/Dialog/Dialog";
-import { useBgm } from "./utils/hook/useBgm";
+import { useStore } from "./utils/hook/useStore";
 import Buttons from "./components/Buttons";
 import styled from "styled-components";
 
@@ -26,7 +26,7 @@ const WrapButtons = styled.div`
 `;
 
 const App = () => {
-  const { isAiGenerate, setIsAiGenerate, aiQbankId } = useBgm();
+  const { isAiGenerate, setIsAiGenerate, aiQbankId } = useStore();
   const navigate = useNavigate();
   return (
     <div>

@@ -1,5 +1,3 @@
-import React from "react";
-
 const Ellipsis = ({ size = 6 }) => {
   return (
     <svg

@@ -1,5 +1,3 @@
-import React from "react";
-
 const Link = ({ size = 6 }) => {
   return (
     <svg

@@ -1,5 +1,4 @@
 import theme from "@/components/css/theme";
-import React from "react";
 import styled from "styled-components";
 
 const WrapRank = styled.div`

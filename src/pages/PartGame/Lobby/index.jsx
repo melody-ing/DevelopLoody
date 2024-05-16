@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import ReactLoading from "react-loading";
 import NameTag from "@/components/css/animation/NameTag";
