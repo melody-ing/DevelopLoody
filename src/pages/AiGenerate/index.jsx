@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import Profile from "../DashBoard/Profile";
+import Profile from "@/components/Profile";
 import "ldrs/ring";
 import { treadmill } from "ldrs";
 import { useGetFireStore } from "@/utils/hook/useGetFireStore";

@@ -44,8 +44,7 @@ import TextField from "@mui/material/TextField";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import Mryellow from "@/components/css/animation/Mryellow";
 import Mrpurple from "@/components/css/animation/Mrpurple";
-import { getAuth } from "firebase/auth";
-import { app } from "@/utils/firebase";
+import { auth } from "@/utils/firebase";
 
 const Wrapper = styled.div`
   max-height: 100vh;
@@ -673,7 +672,7 @@ const OptionTextWarning = styled.div`
 
 const Create = () => {
   const navigate = useNavigate();
-  const auth = getAuth(app);
+
   const user = auth.currentUser;
   let uid = null;
   let ownerName = null;
