@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export const useBgm = create((set) => ({
+export const useStore = create((set) => ({
   isPlayBgm: true,
   setIsPlayBgm: () => set((state) => ({ isPlayBgm: !state.isPlayBgm })),
 

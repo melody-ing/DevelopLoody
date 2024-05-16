@@ -1,5 +1,4 @@
 import theme from "@/components/css/theme";
-import React from "react";
 import styled, { keyframes } from "styled-components";
 
 const fadeIn = keyframes`

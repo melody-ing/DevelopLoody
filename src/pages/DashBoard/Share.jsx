@@ -1,5 +1,3 @@
-import React from "react";
-
 const Share = ({ size = 6 }) => {
   return (
     <svg

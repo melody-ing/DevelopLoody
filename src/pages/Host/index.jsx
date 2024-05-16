@@ -9,7 +9,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { Timestamp } from "firebase/firestore";
-import { useBgm } from "@/utils/hook/useBgm";
+import { useStore } from "@/utils/hook/useStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const WrapHost = styled(PrimaryBg)`
@@ -143,7 +143,7 @@ const DashboardBtn = styled.div`
 
 const Host = () => {
   const audioRef = useRef(null);
-  const { isPlayBgm, setIsPlayBgm } = useBgm();
+  const { isPlayBgm, setIsPlayBgm } = useStore();
 
   const navigate = useNavigate();
 

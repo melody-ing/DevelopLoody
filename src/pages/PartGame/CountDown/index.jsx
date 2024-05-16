@@ -1,4 +1,3 @@
-import React from "react";
 import theme from "@/components/css/theme";
 import styled, { keyframes } from "styled-components";
 

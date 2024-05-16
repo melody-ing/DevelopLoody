@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 const size = window.innerWidth < 940 ? 50 : 80;

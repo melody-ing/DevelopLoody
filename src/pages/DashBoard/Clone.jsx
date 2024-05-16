@@ -1,5 +1,3 @@
-import React from "react";
-
 const Clone = ({ size = 6 }) => {
   return (
     <svg

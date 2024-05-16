@@ -5,12 +5,7 @@ import styled from "styled-components";
 // <Buttons type="light">主持</Buttons>
 
 const Button = styled.div`
-  ${({ $bg, $color, $hoverbg, $size }) =>
-    `
-     &:hover{ background-color:${$hoverbg}}; 
-    height: ${$size / 2.4}rem;
-     `};
-  width: ${({ $size }) => $size};
+  width: ${({ $size }) => $size}rem;
   color: ${({ $color }) => $color};
   background-color: ${({ $bg }) => $bg};
   display: flex;
@@ -19,26 +14,22 @@ const Button = styled.div`
   border-radius: 5px;
   box-shadow: 0 3.4px 0 0 ${({ $hoverbg }) => $hoverbg};
   font-size: ${({ $size }) => ($size * 2) / 10}rem;
+  height: ${({ $size }) => $size / 2.4}rem;
+  cursor: ${({ $type }) => $type !== "invalid" && "pointer"};
 
-  ${({ $type }) => $type === "invalid" || "cursor: pointer;"};
+  &:hover {
+    background-color: ${({ $hoverbg }) => $hoverbg};
+  }
 
   ${theme.breakpoints.md} {
-    ${({ $bg, $color, $hoverbg, $size }) =>
-      `
-    width: ${$size * 0.9}rem; 
-    box-shadow: 0 3.4px 0px 0 ${$hoverbg};
-    font-size: ${(($size * 2) / 10) * 0.95}rem;
-    height: ${($size / 2.4) * 0.9}rem;
-     `};
+    width: ${({ $size }) => $size * 0.9}rem;
+    font-size: ${({ $size }) => (($size * 2) / 10) * 0.95}rem;
+    height: ${({ $size }) => ($size / 2.4) * 0.9}rem;
   }
   ${theme.breakpoints.sm} {
-    ${({ $bg, $color, $hoverbg, $size }) =>
-      `
-    width: ${$size * 0.7}rem; 
-    box-shadow: 0 3.4px 0px 0 ${$hoverbg};
-    font-size: ${(($size * 2) / 10) * 0.9}rem;
-    height: ${$size / 2.4}rem;
-     `};
+    width: ${({ $size }) => $size * 0.7}rem;
+    font-size: ${({ $size }) => (($size * 2) / 10) * 0.9}rem;
+    height: ${({ $size }) => $size / 2.4}rem;
   }
 `;
 

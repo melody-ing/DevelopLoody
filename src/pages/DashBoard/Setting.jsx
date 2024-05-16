@@ -1,5 +1,3 @@
-import React from "react";
-
 const Setting = ({ size = 2 }) => {
   return (
     <svg

@@ -1,4 +1,3 @@
-import React from "react";
 import theme from "../../../components/css/theme";
 import Buttons from "../../../components/Buttons";
 import { styled } from "styled-components";

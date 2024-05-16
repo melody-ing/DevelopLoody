@@ -1,5 +1,3 @@
-import React from "react";
-
 const Send = ({ size = 6 }) => {
   return (
     <svg
