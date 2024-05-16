@@ -1,6 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import Header from "../../components/Header";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import theme from "@/components/css/theme";
 import {
@@ -14,7 +12,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-
 import Delete from "./Delete";
 import Image from "./Image";
 import Plus from "./Plus";
@@ -23,15 +20,7 @@ import {
   setFireStore,
   updateFireStore,
 } from "@/utils/reviseFireStore";
-import {
-  doc,
-  onSnapshot,
-  serverTimestamp,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import {
@@ -39,17 +28,15 @@ import {
   useGetFireStores,
 } from "@/utils/hook/useGetFireStore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getAuth, signOut } from "firebase/auth";
-import { app, db } from "@/utils/firebase";
+import { auth, db } from "@/utils/firebase";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
-import Profile from "./Profile";
+import Profile from "@/components/Profile";
 import Share from "./Share";
 import { Slide, toast } from "react-toastify";
 import HostButton from "./HostButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import EllipsisBtn from "./EllipsisBtn";
 import Duplicate from "./Duplicate";
-import Buttons from "@/components/Buttons";
 import Dialog from "@/components/Dialog/Dialog";
 
 const Wrapper = styled.div`
@@ -317,7 +304,6 @@ const HoverCardContent = styled.div`
 `;
 
 const Dashboard = () => {
-  const auth = getAuth(app);
   const user = auth.currentUser;
   let uid = null;
   let ownerName = null;
@@ -325,8 +311,6 @@ const Dashboard = () => {
     uid = user.uid;
     ownerName = user.displayName;
   }
-
-  const navigate = useNavigate();
 
   const [isHover, setIsHover] = useState(false);
   const [data, setData] = useState([]);

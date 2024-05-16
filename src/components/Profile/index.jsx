@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { app, db } from "@/utils/firebase";
+import { auth } from "@/utils/firebase";
 import {
   Avatar as ComAvatar,
   AvatarFallback,
@@ -15,9 +15,8 @@ import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import theme from "@/components/css/theme";
 import Buttons from "@/components/Buttons";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { doc, onSnapshot } from "firebase/firestore";
-import { updateRealTime } from "@/utils/reviseRealTime";
-import { getAuth, signOut } from "firebase/auth";
+
+import { signOut } from "firebase/auth";
 import Box from "./Box";
 import Setting from "./Setting";
 
@@ -153,7 +152,6 @@ const Profile = () => {
   } = useGetFireStores("users");
 
   const userUid = useOnAuthStateChange();
-  const auth = getAuth(app);
 
   useEffect(() => {
     setUid(userUid);

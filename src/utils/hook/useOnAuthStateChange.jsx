@@ -1,13 +1,12 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
 
 export function useOnAuthStateChange() {
   const [getUid, setGetUid] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
-    const auth = getAuth();
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const uid = user.uid;

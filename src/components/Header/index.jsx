@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import theme from "../css/theme";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { app } from "@/utils/firebase";
+import { signOut } from "firebase/auth";
+import { app, auth } from "@/utils/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetFireStore } from "@/utils/hook/useGetFireStore";
 import {
@@ -16,8 +16,6 @@ import {
 } from "@/components/ui/sheet";
 import Buttons from "../Buttons";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
-
-const auth = getAuth(app);
 
 const WarpHeader = styled.div`
   z-index: 300;

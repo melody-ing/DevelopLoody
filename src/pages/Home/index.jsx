@@ -18,13 +18,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { getFireStore, setFireStore } from "@/utils/reviseFireStore";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
-import { app } from "@/utils/firebase";
+import { auth } from "@/utils/firebase";
 import { Slide, toast } from "react-toastify";
 import { Password } from "primereact/password";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -33,7 +32,6 @@ import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
 import "../../components/css/swiper.css";
 import HomeBg from "@/components/css/HomeBg";
-const auth = getAuth(app);
 
 const WrapHome = styled.div``;
 

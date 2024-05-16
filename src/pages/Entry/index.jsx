@@ -3,7 +3,7 @@ import styled from "styled-components";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
 import { useGetRealTime } from "../../utils/hook/useGetRealTime";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,17 +18,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { getFireStore, setFireStore } from "@/utils/reviseFireStore";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
-import { app } from "@/utils/firebase";
+import { auth } from "@/utils/firebase";
 import { Slide, toast } from "react-toastify";
 import { Password } from "primereact/password";
 import HomeBg from "@/components/css/HomeBg";
-const auth = getAuth(app);
 
 const WrapHome = styled.div`
   width: 100vw;
