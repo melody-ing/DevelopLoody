@@ -772,7 +772,6 @@ const Create = () => {
   };
 
   function setIsDone() {
-    console.log("setIsDone");
     const isOptionsIncomplete = inputOptions.some((option) => option === "");
     if (!title || isOptionsIncomplete) {
       getQbankData.questions[editNum].isDone = false;
@@ -940,19 +939,18 @@ const Create = () => {
   }
 
   function handleFileInput(e) {
-    console.log(e);
     if (e) {
       const file = e.target.files[0];
       const fileType = file.type;
 
       const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
-      const validVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
-      const validAudioTypes = ["audio/mpeg", "audio/wav", "audio/ogg"];
+      // const validVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
+      // const validAudioTypes = ["audio/mpeg", "audio/wav", "audio/ogg"];
 
       if (
-        validImageTypes.includes(fileType) ||
-        validVideoTypes.includes(fileType) ||
-        validAudioTypes.includes(fileType)
+        validImageTypes.includes(fileType)
+        // validVideoTypes.includes(fileType) ||
+        // validAudioTypes.includes(fileType)
       ) {
         const storage = getStorage();
         const imagesRef = ref(storage, `${Date.now()}`);
@@ -962,16 +960,14 @@ const Create = () => {
               .then((url) => {
                 setMediaUrl(url);
                 getQbankData.questions[editNum].media = url;
-                console.log(getQbankData);
-                console.log(editNum);
                 setFireStore("qbank", getUrlDocumentId, getQbankData);
               })
               .catch((error) => {
-                console.log(error.message);
+                // console.log(error.message);
               });
           })
           .catch((error) => {
-            console.log(error.message);
+            // console.log(error.message);
           });
 
         return;

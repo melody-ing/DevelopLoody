@@ -51,9 +51,9 @@ export const updateFireStore = async (path, documentId, data) => {
 export const setFireStore = async (path, documentId, data) => {
   try {
     await setDoc(doc(db, path, documentId), data, { merge: true });
-    console.log("Document written with ID: ", documentId);
+    // console.log("Document written with ID: ", documentId);
   } catch (e) {
-    console.error("Error adding document: ", e);
+    // console.error("Error adding document: ", e);
   }
 };
 
@@ -61,9 +61,9 @@ export const addFireStore = async (path, data) => {
   try {
     const documentId = uuidv4();
     await setDoc(doc(db, path, documentId), { ...data, id: documentId });
-    console.log("Document written with ID: ", documentId);
+    // console.log("Document written with ID: ", documentId);
   } catch (e) {
-    console.error("Error adding document: ", e);
+    // console.error("Error adding document: ", e);
   }
 };
 

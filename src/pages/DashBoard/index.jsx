@@ -364,7 +364,7 @@ const Dashboard = () => {
               return newData;
             });
           } else {
-            console.log("Document does not exist");
+            // console.log("Document does not exist");
           }
         });
 
@@ -439,11 +439,11 @@ const Dashboard = () => {
                 });
               })
               .catch((error) => {
-                console.log(error.message);
+                // console.log(error.message);
               });
           })
           .catch((error) => {
-            console.log(error.message);
+            // console.log(error.message);
           });
 
         return;
