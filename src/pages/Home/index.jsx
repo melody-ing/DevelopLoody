@@ -47,16 +47,6 @@ const WrapLeft = styled.div`
   gap: 1.5rem;
 `;
 
-const WrapBg = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  /* background-color: #ebdb86; */
-  z-index: -1;
-`;
-
 const Logo = styled.img`
   width: auto;
   height: 7rem;
@@ -198,38 +188,8 @@ const Home = () => {
   const [inputEmail, setInputEmail] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [inputName, setInputName] = useState("");
-  const [inputPin, setInputPin] = useState("");
   const [isLoginError, setIsLoginError] = useState(false);
   const [isRegisterError, setIsRegisterError] = useState(false);
-
-  const {
-    data: realTime,
-    isError: isRTError,
-    isLoading: isRTLoading,
-  } = useGetRealTime();
-  function handlePart() {
-    const room =
-      realTime &&
-      Object.values(realTime).filter((data) => data.pin === `${inputPin}`);
-
-    if (room.length > 0) {
-      navigate(`/part/${room[0].id}/${inputPin} `);
-      return;
-    }
-    setInputPin("");
-    toast.warn("無此房間", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      icon: false,
-      transition: Slide,
-    });
-  }
 
   function handleEmptyInput() {
     setInputEmail("");
@@ -284,7 +244,7 @@ const Home = () => {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
+        // const errorMessage = error.message;
         // console.log(errorCode, errorMessage);
         if (errorCode === "auth/email-already-in-use") {
           setIsRegisterError(true);
@@ -317,8 +277,8 @@ const Home = () => {
         });
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        // const errorCode = error.code;
+        // const errorMessage = error.message;
         // console.log(errorCode, errorMessage);
         setIsLoginError(true);
       });
@@ -327,7 +287,6 @@ const Home = () => {
   function handleAuthState() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
         navigate(`/dashboard`);
         // console.log("User is signed in");
       } else {

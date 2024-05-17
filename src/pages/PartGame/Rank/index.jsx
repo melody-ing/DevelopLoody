@@ -1,4 +1,3 @@
-import theme from "@/components/css/theme";
 import styled from "styled-components";
 
 const WrapRank = styled.div`

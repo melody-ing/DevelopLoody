@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import BaseGlobalStyle from "./components/css/BaseGlobalStyle";
 import { ToastContainer } from "react-toastify";

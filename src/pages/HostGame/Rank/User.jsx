@@ -38,7 +38,7 @@ const Champion = styled.div`
   }
 `;
 
-const User = ({ user, index }) => {
+const User = ({ user }) => {
   gsap.registerPlugin(useGSAP);
   const rankRef = useRef(null);
 

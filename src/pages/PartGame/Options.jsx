@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
-import theme from "../../../components/css/theme";
-import { updateRealTime } from "../../../utils/reviseRealTime";
+import theme from "@/components/css/theme";
+import { updateRealTime } from "@/utils/reviseRealTime";
 import Buttons from "@/components/Buttons";
 import { Timestamp } from "firebase/firestore";
 

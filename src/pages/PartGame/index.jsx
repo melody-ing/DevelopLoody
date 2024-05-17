@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import theme from "../../components/css/theme";
-import Options from "./Home/Options";
+import Options from "./Options";
 import Timeout from "./Timeout";
 import Rank from "./Rank";
-import End from "./End";
 import Lobby from "./Lobby";
 import Score from "./Score";
 import CountDown from "./CountDown";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
-import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
+import { updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate, useParams } from "react-router-dom";
-import Media from "./Home/Media";
+import Media from "./Media";
 import ReactLoading from "react-loading";
 import { Timestamp } from "firebase/firestore";
 import GameAniBg from "@/components/css/GameAniBg";
-import { update } from "firebase/database";
 
 const WrapGame = styled.div`
   width: 100vw;
@@ -64,12 +62,12 @@ const PartGame = () => {
 
   const {
     data: qbank,
-    isError,
+    // isError,
     isLoading,
   } = useGetFireStore("qbank", getUrlDocumentId);
   const {
     data: realTimeData,
-    isError: isRTError,
+    // isError: isRTError,
     isLoading: isRTLoading,
   } = useGetRealTimeNavigate(getUrlDocumentId, "/");
   const realTime = realTimeData;
@@ -77,8 +75,8 @@ const PartGame = () => {
 
   const {
     data: user,
-    isError: isUserError,
-    isLoading: isUserLoading,
+    // isError: isUserError,
+    // isLoading: isUserLoading,
   } = useGetRealTimeNavigate(`${getUrlDocumentId}/users/${userId}`, "/");
   const qNumber = realTime?.question?.id;
   const state = realTime?.state;
@@ -126,7 +124,7 @@ const PartGame = () => {
       });
     }
 
-    function handleUnload(e) {
+    function handleUnload() {
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         isOnline: false,
       });
@@ -152,7 +150,6 @@ const PartGame = () => {
   let title = "";
   let content = null;
   let addScore = 0;
-  let nextState = "";
 
   if (qbank && user && qNumber !== null && users && state) {
     if (!user) navigate("/entry");
@@ -190,7 +187,6 @@ const PartGame = () => {
             )}
           </>
         );
-        nextState = "timeout";
         user.selected === answer
           ? (addScore = setScore(qTime, user.time))
           : (addScore = setScore(null, null));
@@ -210,7 +206,6 @@ const PartGame = () => {
             />
           </>
         );
-        nextState = "rank";
 
         break;
       case "rank":
@@ -221,7 +216,6 @@ const PartGame = () => {
             <Score user={user} />
           </>
         );
-        nextState = "rank";
         break;
 
       case "end":
@@ -229,7 +223,6 @@ const PartGame = () => {
         content = (
           <>
             <Rank userId={userId} user={user} users={users} />
-            <End />
           </>
         );
         break;

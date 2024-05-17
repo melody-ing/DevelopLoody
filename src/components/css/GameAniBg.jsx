@@ -3,7 +3,6 @@ import Mryellow from "./animation/Mryellow";
 import Yellowlines from "./animation/Yellowlines";
 import styled from "styled-components";
 import Mrpurple from "./animation/Mrpurple";
-import Yellowsmall from "./animation/Yellowsmall";
 import Bubbles from "./animation/Bubbles";
 import Doodle from "./animation/Doodle";
 import gsap from "gsap";

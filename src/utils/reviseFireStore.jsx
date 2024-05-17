@@ -1,6 +1,5 @@
 import { doc, updateDoc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { v4 as uuidv4 } from "uuid";
 
 export const getFireStore = async (path, documentId) => {
   const docRef = doc(db, path, documentId);

@@ -1,7 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 import gsap from "gsap";
-import { TextPlugin } from "gsap/TextPlugin";
 import { useGSAP } from "@gsap/react";
 
 const WrapLoading = styled.div`

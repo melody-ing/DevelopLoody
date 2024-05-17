@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { updateRealTime } from "../../../utils/reviseRealTime";

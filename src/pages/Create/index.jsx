@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import Header from "../../components/Header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 import {

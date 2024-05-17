@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import Home from "./Home";
 import theme from "../../components/css/theme";
 import Buttons from "../../components/Buttons";
-import Options from "./Home/Options";
+import Options from "./Options";
 import Timeout from "./Timeout";
 import Rank from "./Rank";
 import End from "./End";
-import Media from "./Home/Media";
-import SetReply from "./SetReply";
+import Media from "./Media";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
@@ -71,12 +70,12 @@ const HostGame = () => {
   const { documentId: getUrlDocumentId } = useParams();
   const {
     data: qbank,
-    isError,
+    // isError,
     isLoading,
   } = useGetFireStore("qbank", getUrlDocumentId);
   const {
     data: realTimeData,
-    isError: isRTError,
+    // isError: isRTError,
     isLoading: isRTLoading,
   } = useGetRealTimeNavigate(getUrlDocumentId, "/dashboard");
   const qNumber = realTimeData?.question.id;
@@ -111,7 +110,7 @@ const HostGame = () => {
       e.preventDefault();
     }
 
-    function handleUnload(e) {
+    function handleUnload() {
       removeRealTime(getUrlDocumentId);
     }
 
@@ -188,9 +187,9 @@ const HostGame = () => {
               qbank={qbank}
               qNumber={qNumber}
               audioRef={audioRef}
+              setReply={setReply}
             />
 
-            <SetReply reply={reply} setReply={setReply} />
             <Options questions={questions} answer={answer} state={state} />
           </>
         );

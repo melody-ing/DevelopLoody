@@ -1,11 +1,10 @@
-import React, { PureComponent, useEffect, useState } from "react";
+import { PureComponent, useEffect, useState } from "react";
 import { Treemap, ResponsiveContainer } from "recharts";
 import styled from "styled-components";
 import theme from "../../../components/css/theme";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef } from "react";
 
 const COLORS = [
   `#808F7C`,
@@ -26,9 +25,7 @@ class CustomizedContent extends PureComponent {
       width,
       height,
       index,
-      payload,
       colors,
-      rank,
       name,
       usersAnswer,
     } = this.props;
@@ -136,10 +133,21 @@ const WrapMedia = styled.div`
 
 const WrapGraph = styled(ResponsiveContainer)``;
 
-const Timeout = ({ qbank, qNumber, questions, audioRef, arrayUsers }) => {
+const Timeout = ({
+  qbank,
+  qNumber,
+  questions,
+  audioRef,
+  arrayUsers,
+  setReply,
+}) => {
   const qType = qbank.questions[qNumber].type;
   const [nameLength, setNameLength] = useState(null);
   const [answerLength, setAnswerLength] = useState(null);
+
+  useEffect(() => {
+    setReply(0);
+  }, []);
 
   const peopleNum = (ans) =>
     arrayUsers && arrayUsers.filter((user) => user.selected === ans).length;

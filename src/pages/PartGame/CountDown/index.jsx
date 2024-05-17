@@ -26,9 +26,6 @@ from {
 const progressbarWidth = (transSecond, second) => keyframes` 
 from{
       width: ${(transSecond / second) * 100}%;
-      
-
-  /* width: 60%; */
 }
 to{
   width: 0%;
