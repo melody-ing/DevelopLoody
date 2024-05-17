@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import theme from "../../../components/css/theme";
+import theme from "@/components/css/theme";
 
 const Wrapper = styled.div`
   position: fixed;

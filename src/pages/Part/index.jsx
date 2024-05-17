@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import PrimaryBg from "../../components/css/PrimaryBg";
 import theme from "../../components/css/theme";
 import { useNavigate, useParams } from "react-router-dom";
 import { pushRealTime } from "../../utils/reviseRealTime";
 import { Timestamp } from "firebase/firestore";
-import { useGetRealTimeNavigate } from "@/utils/hook/useGetRealTime";
 import HomeBg from "@/components/css/HomeBg";
 
 const WrapPart = styled.div`
@@ -88,12 +86,6 @@ const NameTextWarning = styled.div`
 const Part = () => {
   const [userName, setUserName] = useState("");
   const { documentId: getUrlDocumentId } = useParams();
-
-  const {
-    data: realTimeData,
-    isError: isRTError,
-    isLoading: isRTLoading,
-  } = useGetRealTimeNavigate("/", "/");
 
   const navigate = useNavigate();
 

@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import {
-  getDoc,
-  doc,
-  setDoc,
-  addDoc,
-  collection,
-  getDocs,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, collection, onSnapshot } from "firebase/firestore";
 
 export const useGetFireStore = (path, documentId) => {
   const [data, setData] = useState(null);

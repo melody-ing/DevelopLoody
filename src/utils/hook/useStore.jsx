@@ -12,5 +12,5 @@ export const useStore = create((set) => ({
     set((state) => ({ isAiGenerate: !state.isAiGenerate })),
 
   aiQbankId: "",
-  setAiQbankId: (id) => set((state) => ({ aiQbankId: id })),
+  setAiQbankId: (id) => set(() => ({ aiQbankId: id })),
 }));

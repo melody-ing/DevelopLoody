@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Profile from "@/components/Profile";
 import "ldrs/ring";
@@ -17,7 +17,6 @@ import theme from "@/components/css/theme";
 import AiBg from "@/components/css/AiBg";
 import Send from "./Send";
 import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import { TextPlugin } from "gsap/TextPlugin";
 import { useStore } from "@/utils/hook/useStore";
 import { setFireStore } from "@/utils/reviseFireStore";
@@ -219,7 +218,7 @@ const AiGenerate = () => {
         setIsError(true);
         throw new Error("Network response was not ok");
       }
-      const data = await response.json();
+
       setIsAiLoading(false);
       setIsAiGenerate();
       setIsError(null);

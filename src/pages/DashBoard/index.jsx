@@ -216,36 +216,6 @@ const FileInput = styled.input`
   display: none;
 `;
 
-const CloseShareDialog = styled.div`
-  display: ${({ $isShareOpen }) => ($isShareOpen ? "block" : "none")};
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  background-color: #413a1aae;
-  top: 0;
-  left: 0;
-  z-index: 400;
-`;
-
-const WrapShareDialog = styled.div`
-  display: ${({ $isShareOpen }) => ($isShareOpen ? "block" : "none")};
-  z-index: 500;
-`;
-
-const ShareDialog = styled.div`
-  position: fixed;
-  left: 50vw;
-  top: 50vh;
-  width: 50rem;
-  height: 18rem;
-  background-color: #fff;
-  transform: translate(-50%, -50%);
-  border-radius: 5px;
-  padding: 3rem;
-  text-align: start;
-  z-index: 500;
-`;
-
 const ShareTitle = styled.h3``;
 
 const WrapUrl = styled.div`
@@ -316,18 +286,17 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareQBankId, setShareQBankId] = useState(null);
-  const [shareToUserId, setShareToUserId] = useState("");
   const chooseQBankId = useRef("");
 
   const {
     data: getUserData,
-    isLoading: userIsLoading,
-    isError: userIsError,
+    // isLoading: userIsLoading,
+    // isError: userIsError,
   } = useGetFireStore("users", uid);
 
   const {
     data: qbanks,
-    isError,
+    // isError,
     isLoading,
   } = useGetFireStores(`users/${uid}/qbanks`);
 
@@ -606,7 +575,6 @@ const Dashboard = () => {
           <Dialog
             onClickCloseDialog={() => {
               setIsShareOpen(false);
-              setShareToUserId("");
             }}
             isOpen={isShareOpen}
           >
@@ -627,11 +595,6 @@ const Dashboard = () => {
             </div>
           </AddQBankButton>
           {isHover && <HoverCardContent>建立新題庫</HoverCardContent>}
-
-          {/* <WrapShareAlert>
-
-
-          </WrapShareAlert> */}
         </>
       )}
     </Wrapper>

@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from "react";
-import PrimaryBg from "../../components/css/PrimaryBg";
+import { useEffect, useRef } from "react";
 import theme from "../../components/css/theme";
 import Buttons from "../../components/Buttons";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,7 +11,12 @@ import { Timestamp } from "firebase/firestore";
 import { useStore } from "@/utils/hook/useStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const WrapHost = styled(PrimaryBg)`
+const WrapHost = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: #ebdb86;
+  padding: 4rem;
+  align-items: center;
   display: flex;
   flex-direction: column;
 `;
@@ -24,11 +28,6 @@ const WrapHome = styled.div`
   justify-content: center;
   align-items: center;
   gap: 3rem;
-`;
-
-const Logo = styled.img`
-  height: 6rem;
-  width: auto;
 `;
 
 const JoinCode = styled.div`
@@ -150,8 +149,8 @@ const Host = () => {
   const { pin: getUrlPin, documentId: getUrlDocumentId } = useParams();
   const {
     data: realTimeData,
-    isError: isRTError,
-    isLoading: isRTLoading,
+    // isError: isRTError,
+    // isLoading: isRTLoading,
   } = useGetRealTimeNavigate(getUrlDocumentId, "/dashboard");
   const eventData = realTimeData;
   const { users = {} } = eventData || {};
@@ -175,7 +174,7 @@ const Host = () => {
       e.returnValue = "確定要離開當前頁面嗎?";
     }
 
-    function handleUnload(e) {
+    function handleUnload() {
       removeRealTime(getUrlDocumentId);
     }
 

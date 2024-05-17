@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import theme from "../../../components/css/theme";
 import { styled } from "styled-components";
 import { updateRealTime } from "../../../utils/reviseRealTime";
@@ -33,7 +33,7 @@ const TimeLimit = styled.div`
   }
 `;
 
-const Attenance = styled.div`
+const Attendant = styled.div`
   position: absolute;
   bottom: 55%;
   padding: 1rem;
@@ -91,9 +91,9 @@ const Home = ({
   return (
     <WrapHome>
       <TimeLimit>{count}</TimeLimit>
-      <Attenance>
+      <Attendant>
         作答人數： <p>{reply}</p>
-      </Attenance>{" "}
+      </Attendant>{" "}
       <audio autoPlay loop src="/bgm/game.mp3" ref={audioRef} />
     </WrapHome>
   );
