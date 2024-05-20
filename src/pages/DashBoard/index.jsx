@@ -472,7 +472,9 @@ const Dashboard = () => {
           <WrapDashboard>
             <WrapQbanks>
               <DashboardTitle>所有題庫</DashboardTitle>
-              <QbankNum>題庫數量：{data && data.length}</QbankNum>
+              <QbankNum className="melody">
+                題庫數量：{data && data.length}
+              </QbankNum>
 
               <WrapQuestionBanks>
                 {data &&
@@ -486,7 +488,7 @@ const Dashboard = () => {
                       />
                       <ContextMenu key={item.id}>
                         <ContextMenuTrigger>
-                          <WrapQuestionBank>
+                          <WrapQuestionBank id="testQbankNum">
                             <WrapQBankImg>
                               <QBankImg
                                 src={
@@ -586,7 +588,7 @@ const Dashboard = () => {
             </WrapUrl>
           </Dialog>
 
-          <AddQBankButton onClick={handleAddQBank}>
+          <AddQBankButton onClick={handleAddQBank} id="addQbank">
             <div
               onMouseEnter={() => setIsHover(true)}
               onMouseLeave={() => setIsHover(false)}
