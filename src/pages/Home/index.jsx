@@ -295,6 +295,10 @@ const Home = () => {
     });
   }
 
+  const handleToEntry = () => {
+    navigate("/entry");
+  };
+
   return (
     <WrapHome>
       <HomeBg />
@@ -303,7 +307,9 @@ const Home = () => {
         <Logo src="logo.png" alt="" />
         <Slogan>創新學習新體驗，讓所有人一起加入學習派對！</Slogan>
         {/* <Slogan>Leave Ordinary Outside, Dive into your Youthful side!</Slogan> */}
-        <WrapButton onClick={() => navigate("/entry")}>加入遊戲</WrapButton>
+        <WrapButton onClick={handleToEntry} data-testid="button">
+          加入遊戲
+        </WrapButton>
         <WrapDialog
           onOpenChange={(e) => {
             if (e === true) return;
