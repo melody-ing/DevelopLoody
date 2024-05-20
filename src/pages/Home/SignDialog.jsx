@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
@@ -22,8 +22,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "@/utils/firebase";
-import { Slide, toast } from "react-toastify";
-import { Password } from "primereact/password";
+import { toast } from "react-toastify";
 
 const Login = styled.div`
   border: 2px solid ${theme.colors.secondary};
@@ -39,25 +38,6 @@ const Login = styled.div`
   &:hover {
     /* text-decoration: underline; */
     background-color: #9d88951a;
-  }
-`;
-
-const WrapPassword = styled(Password)`
-  border: 1px solid rgb(226, 232, 240);
-  outline: none;
-  display: flex;
-  align-items: center;
-  border-radius: 3px;
-  padding: 0 1rem;
-
-  input {
-    border: none;
-    letter-spacing: 0.2px;
-
-    &:focus {
-      border: none;
-      outline: none;
-    }
   }
 `;
 
@@ -86,6 +66,20 @@ const SignDialog = () => {
   const [inputName, setInputName] = useState("");
   const [isLoginError, setIsLoginError] = useState(false);
   const [isRegisterError, setIsRegisterError] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLogin(true);
+        // console.log("User is signed in");
+      } else {
+        // console.log("User is not signed in");
+        setIsLogin(false);
+      }
+    });
+  }, []);
+
   function handleEmptyInput() {
     setInputEmail("");
     setInputPassword("");
@@ -140,6 +134,7 @@ const SignDialog = () => {
     signInWithEmailAndPassword(auth, inputEmail, inputPassword)
       .then((userCredential) => {
         const user = userCredential.user;
+        console.log(userCredential);
         const userData = getFireStore("users", user.uid);
         setIsLoginError(false);
         return userData;
@@ -159,6 +154,7 @@ const SignDialog = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         navigate(`/dashboard`);
+
         // console.log("User is signed in");
       } else {
         // console.log("User is not signed in");
@@ -233,14 +229,13 @@ const SignDialog = () => {
                   >
                     密碼
                   </Label>
-                  <WrapPassword
-                    className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem] "
+                  <Input
+                    type="password"
+                    className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
                     id="password"
                     value={inputPassword}
                     onChange={(e) => setInputPassword(e.target.value)}
                     required
-                    feedback={false}
-                    tabIndex={1}
                   />
                 </div>
               </CardContent>
@@ -290,7 +285,15 @@ const SignDialog = () => {
                     >
                       密碼
                     </Label>
-                    <WrapPassword
+                    <Input
+                      type="password"
+                      className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
+                      id="password"
+                      value={inputPassword}
+                      onChange={(e) => setInputPassword(e.target.value)}
+                      required
+                    />
+                    {/* <WrapPassword
                       className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem] "
                       id="password"
                       value={inputPassword}
@@ -300,7 +303,7 @@ const SignDialog = () => {
                       required
                       feedback={false}
                       tabIndex={1}
-                    />
+                    /> */}
                   </div>
                   <div className="space-y-2">
                     <Label

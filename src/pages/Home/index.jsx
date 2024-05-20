@@ -8,6 +8,10 @@ import { EffectCards } from "swiper/modules";
 import "../../components/css/swiper.css";
 import HomeBg from "@/components/css/HomeBg";
 import SignDialog from "./SignDialog";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/utils/firebase";
+import { getFireStore } from "@/utils/reviseFireStore";
+import { toast } from "react-toastify";
 
 const WrapHome = styled.div``;
 
@@ -96,12 +100,37 @@ const WrapSwiper = styled.div`
   overflow: hidden;
 `;
 
+const Login = styled.div`
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: ${theme.colors.secondary};
+  width: 22rem;
+  height: 1rem;
+  line-height: 2.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const Home = () => {
   const navigate = useNavigate();
 
   const handleToEntry = () => {
     navigate("/entry");
   };
+
+  function handleTestAccount() {
+    signInWithEmailAndPassword(auth, "testtest@gmail.com", "testtest")
+      .then(() => {
+        navigate(`/dashboard`);
+      })
+      .catch(() => {
+        // console.log(error.code, error.message);
+      });
+  }
 
   return (
     <WrapHome>
@@ -110,11 +139,11 @@ const Home = () => {
       <WrapLeft>
         <Logo src="logo.png" alt="" />
         <Slogan>創新學習新體驗，讓所有人一起加入學習派對！</Slogan>
-        {/* <Slogan>Leave Ordinary Outside, Dive into your Youthful side!</Slogan> */}
         <WrapButton onClick={handleToEntry} data-testid="button">
           加入遊戲
         </WrapButton>
         <SignDialog />
+        <Login onClick={handleTestAccount}>使用測試帳號加入</Login>
       </WrapLeft>
       <WrapRight>
         <WrapDrawShape>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { auth } from "@/utils/firebase";
@@ -18,7 +18,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { signOut } from "firebase/auth";
 import Box from "./Box";
-import Setting from "./Setting";
 
 const WarpProfile = styled(ScrollArea)`
   background-color: ${theme.colors.primary};
@@ -215,14 +214,14 @@ const Profile = () => {
           <WrapAiIcon>AI</WrapAiIcon>
           <p>AI生成題庫</p>
         </Page>
-        <Page
+        {/* <Page
           $param={param}
           $page="/setting"
           onClick={() => navigate("/dashboard")}
         >
           <Setting />
           <p>設定</p>
-        </Page>
+        </Page> */}
       </WrapPages>
       <Logout onClick={handleLogout}>
         <Buttons size="small">登出</Buttons>

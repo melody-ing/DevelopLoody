@@ -38,6 +38,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EllipsisBtn from "./EllipsisBtn";
 import Duplicate from "./svg/Duplicate";
 import Dialog from "@/components/Dialog/Dialog";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   height: auto;
@@ -84,6 +85,27 @@ const DashboardTitle = styled.h3`
 const QbankNum = styled.p`
   display: inline-block;
   margin-left: 3rem;
+`;
+
+const NoQbankWarning = styled.div`
+  position: fixed;
+  top: 20rem;
+  left: calc(50vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const NoQbankWords = styled.div`
+  font-size: 2rem;
+  color: ${theme.colors.tertiary};
+
+  width: 18rem;
+`;
+
+const NoQbankImg = styled.img`
+  width: 16rem;
 `;
 
 const WrapQuestionBanks = styled.div`
@@ -237,7 +259,6 @@ const AddQBankButton = styled.div`
   position: fixed;
   right: 4rem;
   bottom: 4rem;
-  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -248,6 +269,10 @@ const AddQBankButton = styled.div`
   box-shadow: 0px 3px 8px 0px #3333337a;
   background: linear-gradient(to top, #f7e8f1, #fff);
 
+  div {
+    cursor: pointer;
+  }
+
   ${theme.breakpoints.sm} {
     right: 2rem;
     bottom: 2rem;
@@ -257,10 +282,17 @@ const AddQBankButton = styled.div`
   }
 `;
 
+const Arrow = styled.img`
+  position: absolute;
+  left: -13rem;
+  top: -7rem;
+  max-width: 180%;
+  width: 40rem;
+`;
+
 const HoverCardContent = styled.div`
   color: ${theme.colors.secondary};
   background-color: #fff;
-
   box-shadow: ${theme.shadow};
   position: fixed;
   right: 1rem;
@@ -281,12 +313,14 @@ const Dashboard = () => {
     uid = user.uid;
     ownerName = user.displayName;
   }
+  const navigate = useNavigate();
 
   const [isHover, setIsHover] = useState(false);
   const [data, setData] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareQBankId, setShareQBankId] = useState(null);
   const chooseQBankId = useRef("");
+  useOnAuthStateChange();
 
   const {
     data: getUserData,
@@ -327,8 +361,6 @@ const Dashboard = () => {
     fetchData();
   }, [qbanks]);
 
-  useOnAuthStateChange();
-
   async function handleAddQBank() {
     const uuid = uuidv4();
     setFireStore(`users/${uid}/qbanks`, uuid, { id: uuid });
@@ -352,6 +384,7 @@ const Dashboard = () => {
         },
       ],
     });
+    navigate(`/create/${uuid}`);
   }
 
   function handleDelete(id, isMine) {
@@ -453,7 +486,12 @@ const Dashboard = () => {
               <QbankNum className="melody">
                 題庫數量：{data && data.length}
               </QbankNum>
-
+              {data.length === 0 && (
+                <NoQbankWarning>
+                  <NoQbankImg src="/tree3.png" />
+                  <NoQbankWords>建立你的第一個題庫</NoQbankWords>
+                </NoQbankWarning>
+              )}
               <WrapQuestionBanks>
                 {data &&
                   data?.map((item) => (
@@ -566,8 +604,10 @@ const Dashboard = () => {
             </WrapUrl>
           </Dialog>
 
-          <AddQBankButton onClick={handleAddQBank} id="addQbank">
+          <AddQBankButton id="addQbank">
+            {data.length === 0 && <Arrow src="/arrow.png" />}
             <div
+              onClick={handleAddQBank}
               onMouseEnter={() => setIsHover(true)}
               onMouseLeave={() => setIsHover(false)}
             >

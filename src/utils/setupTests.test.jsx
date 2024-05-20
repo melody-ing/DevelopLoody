@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, vi, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
-import Home from "@/pages/Home";
 
 import { useNavigate } from "react-router-dom";
+import Home from "@/pages/Home";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");

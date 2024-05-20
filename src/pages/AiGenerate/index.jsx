@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import theme from "@/components/css/theme";
 import AiBg from "@/components/css/AiBg";
-import Send from "./Send";
+import Send from "./svg/Send";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
 import { useStore } from "@/utils/hook/useStore";
