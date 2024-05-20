@@ -1,4 +1,3 @@
-// src/components/Part.test.jsx
 import Part from "@/pages/Part";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";

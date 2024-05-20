@@ -1,13 +1,10 @@
-// src/pages/Home/Home.test.jsx
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, vi, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import Home from "@/pages/Home";
 
-// 使用 import 而不是 require
 import { useNavigate } from "react-router-dom";
 
-// 模拟 useNavigate 钩子
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {

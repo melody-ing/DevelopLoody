@@ -207,12 +207,12 @@ const AiGenerate = () => {
     setIsAiLoading(true);
     try {
       const qbankId = uuid;
-      // const response = await fetch(
-      //   `https://loodyserver.onrender.com/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
-      // );
       const response = await fetch(
-        `http://localhost:3000/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
+        `https://loodyserver.onrender.com/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
       );
+      // const response = await fetch(
+      //   `http://localhost:3000/openai/${qbankId}?theme=${theme}&owner=${uid}&ownerName=${getUserData.name}&quantity=${quantity}`
+      // );
 
       if (!response.ok) {
         setIsError(true);
