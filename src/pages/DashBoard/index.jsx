@@ -410,31 +410,9 @@ const Dashboard = () => {
       await navigator.clipboard.writeText(
         `${location.origin}/create/${shareQBankId}`
       );
-      toast.warn("複製成功", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        icon: false,
-        transition: Slide,
-      });
+      toast.warn("複製成功");
     } catch (error) {
-      toast.error("複製失敗", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        icon: false,
-        transition: Slide,
-      });
+      toast.error("複製失敗");
     }
   };
 

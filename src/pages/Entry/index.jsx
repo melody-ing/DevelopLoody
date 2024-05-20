@@ -108,18 +108,7 @@ const Entry = () => {
       return;
     }
     setInputPin("");
-    toast.warn("無此房間", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      icon: false,
-      transition: Slide,
-    });
+    toast.warn("無此房間");
   }
 
   return (

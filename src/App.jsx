@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import BaseGlobalStyle from "./components/css/BaseGlobalStyle";
-import { ToastContainer } from "react-toastify";
+import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dialog from "./components/Dialog/Dialog";
 import { useStore } from "./utils/hook/useStore";
@@ -49,7 +49,7 @@ const App = () => {
       </Dialog>
       <BaseGlobalStyle />
       <Outlet />
-      <ToastContainer />
+      <ToastContainer autoClose={2000} icon={false} transition={Slide} />
     </div>
   );
 };
