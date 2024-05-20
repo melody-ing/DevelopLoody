@@ -28,7 +28,6 @@ export const useGetRealTime = (path) => {
       }
     );
 
-    // 在組件卸載時清理監聽器
     return () => unsubscribe();
   }, [path]);
   return { data, isError, isLoading };
@@ -61,7 +60,6 @@ export const useGetRealTimeNavigate = (path, navigation) => {
       }
     );
 
-    // 在組件卸載時清理監聽器
     return () => unsubscribe();
   }, [path]);
   return { data, isError, isLoading };

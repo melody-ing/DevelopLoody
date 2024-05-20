@@ -12,9 +12,9 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import Delete from "./Delete";
-import Image from "./Image";
-import Plus from "./Plus";
+import Delete from "./svg/Delete";
+import Image from "./svg/Image";
+import Plus from "./svg/Plus";
 import {
   deleteFireStore,
   setFireStore,
@@ -31,12 +31,12 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db } from "@/utils/firebase";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import Profile from "@/components/Profile";
-import Share from "./Share";
+import Share from "./svg/Share";
 import { Slide, toast } from "react-toastify";
 import HostButton from "./HostButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import EllipsisBtn from "./EllipsisBtn";
-import Duplicate from "./Duplicate";
+import Duplicate from "./svg/Duplicate";
 import Dialog from "@/components/Dialog/Dialog";
 
 const Wrapper = styled.div`

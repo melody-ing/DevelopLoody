@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import Ellipsis from "./Ellipsis";
-import Share from "./Share";
-import Delete from "./Delete";
-import Image from "./Image";
+import Ellipsis from "./svg/Ellipsis";
+import Share from "./svg/Share";
+import Delete from "./svg/Delete";
+import Image from "./svg/Image";
 
 const WrapEllipsis = styled.div`
   position: absolute;

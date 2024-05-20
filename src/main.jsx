@@ -7,7 +7,7 @@ import HostGame from "./pages/HostGame/index.jsx";
 import PartGame from "./pages/PartGame/index.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashBoard from "./pages/DashBoard/index.jsx";
-import Create from "./pages/Create/index.jsx";
+import Create from "./pages/Create";
 import Home from "./pages/Home/index.jsx";
 import AiGenerate from "./pages/AiGenerate/index.jsx";
 

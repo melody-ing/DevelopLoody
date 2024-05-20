@@ -144,7 +144,6 @@ const PartGame = () => {
     const nowTime = Timestamp.now().seconds;
     const timeoutTime = qTime?.seconds + timeLimit;
     setTimeoutSec(timeoutTime - nowTime - 1);
-    // 因為fetch會延遲所以我把秒數減少一點
   }, [question, questions]);
 
   let title = "";

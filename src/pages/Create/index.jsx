@@ -22,8 +22,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import theme from "@/components/css/theme";
 import Buttons from "@/components/Buttons";
-import Clone from "./Clone";
-import Delete from "./Delete";
+import Clone from "./svg/Clone";
+import Delete from "./svg/Delete";
 
 import {
   useGetFireStore,
