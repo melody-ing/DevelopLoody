@@ -159,6 +159,7 @@ const Create = () => {
               getUrlDocumentId={getUrlDocumentId}
               editNum={editNum}
               stateQuestions={stateQuestions}
+              handleIsChange={handleIsChange}
             />
             <EditAreaWrapper
               setTitle={setTitle}

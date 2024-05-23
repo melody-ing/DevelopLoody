@@ -172,14 +172,13 @@ const QuestionsAreaWrapper = ({
   getUrlDocumentId,
   editNum,
   stateQuestions,
+  handleIsChange,
 }) => {
-  const onDragEnd = (event) => {
+  function onDragEnd(event) {
     const { source, destination } = event;
-
     if (!destination) {
       return;
     }
-
     let newItems = [...stateQuestions];
     const [remove] = newItems.splice(source.index, 1);
 
@@ -187,8 +186,8 @@ const QuestionsAreaWrapper = ({
 
     setStateQuestions(newItems);
     getQbankData.questions = newItems;
-    setFireStore("qbank", getUrlDocumentId, getQbankData);
-  };
+    handleIsChange();
+  }
 
   function handlePickQuestion(index) {
     setIsDone();
