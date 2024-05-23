@@ -10,14 +10,17 @@ import HomeBg from "@/components/css/HomeBg";
 import SignDialog from "./SignDialog";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/utils/firebase";
-import { getFireStore } from "@/utils/reviseFireStore";
-import { toast } from "react-toastify";
 
-const WrapHome = styled.div``;
+const WrapHome = styled.div`
+  /* position: relative; */
+  /* width: 80%; */
+  /* margin: 0 auto; */
+  width: 100vw;
+`;
 
 const WrapLeft = styled.div`
   position: absolute;
-  left: 20rem;
+  left: 22rem;
   top: 45vh;
   transform: translate(0, -50%);
   display: flex;
@@ -68,6 +71,8 @@ const WrapRight = styled.div`
   transform: translate(0, -50%);
   display: flex;
   justify-content: center;
+  /* max-width: 50rem;
+  width: 50vw; */
 `;
 
 const WrapDrawShape = styled.div`

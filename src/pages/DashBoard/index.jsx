@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import theme from "@/components/css/theme";
 import {
   Avatar as ComAvatar,
@@ -32,7 +32,7 @@ import { auth, db } from "@/utils/firebase";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import Profile from "@/components/Profile";
 import Share from "./svg/Share";
-import { Slide, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import HostButton from "./HostButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import EllipsisBtn from "./EllipsisBtn";
@@ -87,6 +87,18 @@ const QbankNum = styled.p`
   margin-left: 3rem;
 `;
 
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
 const NoQbankWarning = styled.div`
   position: fixed;
   top: 20rem;
@@ -95,6 +107,7 @@ const NoQbankWarning = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  animation: ${fadeIn} 1s forwards;
 `;
 
 const NoQbankWords = styled.div`
@@ -129,6 +142,7 @@ const WrapQuestionBank = styled.div`
   box-shadow: ${theme.shadow};
   border-radius: 5px;
   background-color: #fff;
+  position: relative;
 `;
 const WrapQBankImg = styled.div`
   height: 16rem;
@@ -238,6 +252,23 @@ const FileInput = styled.input`
   display: none;
 `;
 
+const NotValidCover = styled.div`
+  position: absolute;
+  z-index: 200;
+  background-color: #4e4c4cc5;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 3rem;
+
+  p {
+    color: #fff;
+  }
+`;
+
 const ShareTitle = styled.h3``;
 
 const WrapUrl = styled.div`
@@ -288,6 +319,7 @@ const Arrow = styled.img`
   top: -7rem;
   max-width: 180%;
   width: 40rem;
+  animation: ${fadeIn} 1s forwards;
 `;
 
 const HoverCardContent = styled.div`
@@ -486,7 +518,7 @@ const Dashboard = () => {
               <QbankNum className="melody">
                 題庫數量：{data && data.length}
               </QbankNum>
-              {data.length === 0 && (
+              {qbanks !== null && data.length === 0 && (
                 <NoQbankWarning>
                   <NoQbankImg src="/tree3.png" />
                   <NoQbankWords>建立你的第一個題庫</NoQbankWords>
@@ -503,8 +535,15 @@ const Dashboard = () => {
                         onChange={(e) => handleAddImg(e, item.id)}
                       />
                       <ContextMenu key={item.id}>
-                        <ContextMenuTrigger>
-                          <WrapQuestionBank id="testQbankNum">
+                        <WrapQuestionBank id="testQbankNum">
+                          <NotValidCover>
+                            <p>
+                              其他裝置正在
+                              <br />
+                              使用這個題庫
+                            </p>
+                          </NotValidCover>
+                          <ContextMenuTrigger>
                             <WrapQBankImg>
                               <QBankImg
                                 src={
@@ -550,8 +589,8 @@ const Dashboard = () => {
 
                               <HostButton item={item} />
                             </WrapQBankInfo>
-                          </WrapQuestionBank>
-                        </ContextMenuTrigger>
+                          </ContextMenuTrigger>
+                        </WrapQuestionBank>
 
                         <WrapContextMenuContent>
                           <WrapContextMenuItem
