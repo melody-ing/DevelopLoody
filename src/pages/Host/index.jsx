@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import theme from "../../components/css/theme";
 import Buttons from "../../components/Buttons";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { QRCodeCanvas } from "qrcode.react";
@@ -112,6 +112,20 @@ const Attenance = styled.div`
     bottom: 0;
     position: absolute;
   }
+
+  ${theme.breakpoints.md} {
+    width: 9rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    width: 7rem;
+    height: 7rem;
+    font-size: 3rem;
+    line-height: 3rem;
+    p {
+      font-size: 1.2rem;
+    }
+  }
 `;
 
 const SoundButton = styled.div`
@@ -128,18 +142,35 @@ const SoundButton = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
+
+  ${theme.breakpoints.md} {
+    width: 9rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    width: 7rem;
+    height: 7rem;
+  }
 `;
 
 const StartBtn = styled.div`
   position: absolute;
   bottom: 13rem;
   right: 4rem;
+
+  ${theme.breakpoints.sm} {
+    bottom: 12rem;
+  }
 `;
 
 const DashboardBtn = styled.div`
   position: absolute;
   bottom: 13rem;
   left: 4rem;
+
+  ${theme.breakpoints.sm} {
+    bottom: 12rem;
+  }
 `;
 
 const Host = () => {
@@ -152,21 +183,29 @@ const Host = () => {
   const {
     data: realTimeData,
     // isError: isRTError,
-    // isLoading: isRTLoading,
+    isLoading: isRTLoading,
   } = useGetRealTimeNavigate(getUrlDocumentId, "/dashboard");
   const eventData = realTimeData;
   const { users = {} } = eventData || {};
 
   useOnAuthStateChange();
 
-  window.onpopstate = () => {
-    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+  useEffect(() => {
+    console.log("eseeffecr");
+    if (!isRTLoading) {
+      realTimeData || navigate("/dashboard");
+    }
+  }, [realTimeData, isRTLoading]);
 
-    if (confirmLeave) {
-      removeRealTime(getUrlDocumentId);
-      navigate("/dashboard");
-    } else {
-      navigate(`/host/${getUrlDocumentId}/${getUrlPin}`);
+  window.onpopstate = () => {
+    if (location.pathname.startsWith("/host")) {
+      const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+      if (confirmLeave) {
+        removeRealTime(getUrlDocumentId);
+        navigate("/dashboard");
+      } else {
+        navigate(`/host/${getUrlDocumentId}/${getUrlPin}`);
+      }
     }
   };
 
@@ -179,12 +218,13 @@ const Host = () => {
     function handleUnload() {
       removeRealTime(getUrlDocumentId);
     }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
+    if (location.pathname.startsWith("/host")) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("unload", handleUnload);
+    }
 
     return () => {
-      window.removeEventListener("beforeunload", handleUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("unload", handleUnload);
     };
   }, []);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Mryellow from "./animation/Mryellow";
 import Yellowlines from "./animation/Yellowlines";
 import styled from "styled-components";

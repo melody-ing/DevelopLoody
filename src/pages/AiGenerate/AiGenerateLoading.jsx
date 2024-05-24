@@ -1,7 +1,7 @@
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 
 const WrapLoading = styled.div`
   display: flex;

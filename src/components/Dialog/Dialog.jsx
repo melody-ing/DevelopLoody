@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import theme from "../css/theme";
 
 const CloseDialog = styled.div`
   display: ${({ $isOpen }) => ($isOpen ? "block" : "none")};
@@ -28,6 +29,10 @@ const DialogBlock = styled.div`
   padding: 3rem;
   text-align: start;
   z-index: 500;
+
+  ${theme.breakpoints.xs} {
+    width: 80vw;
+  }
 `;
 
 const Dialog = ({ children, isOpen, onClickCloseDialog }) => {

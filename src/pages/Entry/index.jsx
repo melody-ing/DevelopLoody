@@ -115,17 +115,24 @@ const Entry = () => {
     <WrapHome>
       <HomeBg />
       <Logo onClick={() => navigate("/")} src="logo.png" alt="" />
-      <EntryGame>
-        <InputPin
-          placeholder="遊戲pin碼"
-          value={inputPin}
-          onChange={(e) => setInputPin(e.target.value.slice(0, 6))}
-          type="number"
-        />
-        <WrapButton onClick={handlePart} size="large">
-          <p>進入</p>
-        </WrapButton>
-      </EntryGame>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handlePart();
+        }}
+      >
+        <EntryGame>
+          <InputPin
+            placeholder="遊戲pin碼"
+            value={inputPin}
+            onChange={(e) => setInputPin(e.target.value.slice(0, 6))}
+            type="number"
+          />
+          <WrapButton size="large">
+            <p>進入</p>
+          </WrapButton>
+        </EntryGame>
+      </form>
     </WrapHome>
   );
 };

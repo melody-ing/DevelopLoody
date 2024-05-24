@@ -6,6 +6,7 @@ import Dialog from "./components/Dialog/Dialog";
 import { useStore } from "./utils/hook/useStore";
 import Buttons from "./components/Buttons";
 import styled from "styled-components";
+import theme from "./components/css/theme";
 
 const DialogTitle = styled.div`
   font-size: 2rem;
@@ -13,6 +14,10 @@ const DialogTitle = styled.div`
   text-align: center;
   line-height: 6rem;
   margin-bottom: 2rem;
+
+  ${theme.breakpoints.xxs} {
+    line-height: 3rem;
+  }
 `;
 
 const WrapButtons = styled.div`
@@ -29,6 +34,7 @@ const App = () => {
   const navigate = useNavigate();
   return (
     <div>
+      {/* <Dialog isOpen={true}> */}
       <Dialog isOpen={isAiGenerate}>
         <DialogTitle> 是否進入AI生成題庫之編輯頁面</DialogTitle>
         <WrapButtons>

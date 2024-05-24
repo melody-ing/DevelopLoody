@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import theme from "../../components/css/theme";
 import { useNavigate, useParams } from "react-router-dom";
 import { pushRealTime } from "../../utils/reviseRealTime";
 import { Timestamp } from "firebase/firestore";
 import HomeBg from "@/components/css/HomeBg";
+import { db } from "@/utils/firebase";
+import { useGetRealTime } from "@/utils/hook/useGetRealTime";
 
 const WrapPart = styled.div`
   display: flex;
@@ -13,7 +15,7 @@ const WrapPart = styled.div`
 `;
 
 const UserName = styled.p`
-  margin-top: 12rem;
+  margin-top: 15rem;
   font-size: xx-large;
   line-height: 7rem;
   height: 7rem;
@@ -25,17 +27,20 @@ const Entry = styled.div`
   flex-direction: column;
   align-items: center;
   height: auto;
-  min-width: 26rem;
-  width: 22%;
+  width: 30rem;
   margin-bottom: 1.2rem;
   border-radius: 10px;
+
+  ${theme.breakpoints.sm} {
+    width: 26rem;
+  }
 `;
 
 const InputName = styled.input`
-  height: 6.2rem;
-  width: 100%;
+  height: 6rem;
+  width: 85%;
   border: 1px solid #ccc;
-  margin-top: 2rem;
+  margin-top: 3rem;
   border-radius: 10px;
   background-color: ${theme.colors.light};
   color: ${theme.colors.tertiary};
@@ -54,6 +59,7 @@ const InputName = styled.input`
 
   ${theme.breakpoints.md} {
     height: 6rem;
+    margin-top: 2rem;
   }
 `;
 
@@ -68,6 +74,7 @@ const Button = styled.button`
   box-shadow: ${theme.shadow};
   border: none;
   cursor: pointer;
+  width: 85%;
 
   p {
     letter-spacing: 2rem;
@@ -78,16 +85,30 @@ const Button = styled.button`
 const NameTextWarning = styled.div`
   position: absolute;
   color: #c7c7c7;
-  right: 0.8rem;
-  top: 5.9rem;
+  right: 2.5rem;
+  top: 6.8rem;
   font-size: 1.4rem;
+
+  ${theme.breakpoints.md} {
+    top: 5.7rem;
+  }
 `;
 
 const Part = () => {
+  const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const { documentId: getUrlDocumentId } = useParams();
+  const {
+    data: realTime,
+    // isError: isRTError,
+    isLoading: isRTLoading,
+  } = useGetRealTime(getUrlDocumentId);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isRTLoading) {
+      realTime || navigate("/entry");
+    }
+  }, [realTime, isRTLoading]);
 
   function handleJoin() {
     if (userName !== "") {
@@ -108,17 +129,24 @@ const Part = () => {
       <HomeBg />
       <UserName>請輸入暱稱</UserName>
       <Entry>
-        <InputName
-          placeholder="暱稱"
-          onChange={(e) => {
-            setUserName(e.target.value.slice(0, 10));
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleJoin();
           }}
-          value={userName}
-        />
-        <Button onClick={handleJoin} size="large">
-          <p>進入</p>
-        </Button>
-        <NameTextWarning>{`${userName.length}/10`}</NameTextWarning>
+        >
+          <InputName
+            placeholder="暱稱"
+            onChange={(e) => {
+              setUserName(e.target.value.slice(0, 10).trim());
+            }}
+            value={userName}
+          />
+          <Button size="large">
+            <p>進入</p>
+          </Button>
+          <NameTextWarning>{`${userName.length}/10`}</NameTextWarning>
+        </form>
       </Entry>
     </WrapPart>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import theme from "../css/theme";
 import styled from "styled-components";
 

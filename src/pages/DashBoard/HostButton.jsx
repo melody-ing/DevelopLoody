@@ -28,6 +28,7 @@ const HoverHost = styled.div`
   text-align: center;
   border-radius: 5px;
   font-size: 1.4rem;
+  z-index: 10;
 
   ${theme.breakpoints.sm} {
     transform: translate(-2rem);

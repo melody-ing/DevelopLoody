@@ -18,7 +18,6 @@ const WrapEditAreaWrapper = styled.div`
   overflow: hidden;
 
   ${theme.breakpoints.sm} {
-    margin-top: 1rem;
     height: 250%;
   }
 `;
@@ -56,11 +55,9 @@ const QuestionInput = styled(TextField)`
   }
 
   ${theme.breakpoints.sm} {
-    width: 90%;
-
     & .MuiOutlinedInput-root {
       box-shadow: 0px 0px 4px 0px #33333369;
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       width: 100%;
       margin-top: 0rem;
       padding: 0;
@@ -69,6 +66,7 @@ const QuestionInput = styled(TextField)`
     & .MuiOutlinedInput-input {
       text-align: center;
       padding: 1rem;
+      height: 3rem;
     }
 
     & .MuiFormLabel-root {
@@ -288,6 +286,10 @@ const InputMediaDelete = styled.div`
 const WrapQuestionInput = styled.div`
   position: relative;
   width: 100%;
+
+  ${theme.breakpoints.sm} {
+    width: 96%;
+  }
 `;
 
 const TitleTextWarning = styled.div`
@@ -299,7 +301,7 @@ const TitleTextWarning = styled.div`
 
   ${theme.breakpoints.sm} {
     top: 2.8rem;
-    right: 4rem;
+    right: 1.2rem;
   }
 `;
 

@@ -79,26 +79,26 @@ const WrapQBankInfo = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   text-align: left;
-  gap: 1rem;
+  gap: 0.8rem;
   position: relative;
 
   ${theme.breakpoints.sm} {
-    margin: 1rem 1rem;
+    margin: 1rem 2rem;
   }
 `;
 
 const QBankName = styled.div`
   font-size: 1.6rem;
   line-height: 2.2rem;
-
   border: none;
-  height: 4rem;
+  height: 4.4rem;
 
   ${theme.breakpoints.md} {
     font-size: 1.8rem;
   }
   ${theme.breakpoints.sm} {
     font-size: 1.6rem;
+    height: 2rem;
   }
 `;
 

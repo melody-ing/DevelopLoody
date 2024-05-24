@@ -41,10 +41,8 @@ const InputTitle = styled.div`
 const WrapQBankNameInput = styled.div`
   position: relative;
   ${theme.breakpoints.sm} {
-    position: absolute;
-    bottom: 2rem;
-    left: 1rem;
-    width: 100%;
+    margin-top: 5rem;
+    width: 70%;
   }
 `;
 
@@ -78,8 +76,6 @@ const QBankNameInput = styled(TextField)`
   }
 
   ${theme.breakpoints.sm} {
-    width: 70%;
-
     & .MuiOutlinedInput-root {
       font-size: 1.6rem;
       width: 100%;
@@ -93,6 +89,14 @@ const QBankNameInput = styled(TextField)`
       font-size: 1.4rem;
     }
   }
+`;
+
+const QbankNameTextWarning = styled.div`
+  position: absolute;
+  color: #c7c7c7;
+  right: 0.6rem;
+  bottom: 0;
+  font-size: 1.4rem;
 `;
 
 const WrapSelect = styled(Select)`
@@ -161,19 +165,6 @@ const SaveButton = styled.div`
     width: auto;
     bottom: 2.6rem;
   }
-`;
-const Loading = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10rem;
-`;
-
-const QbankNameTextWarning = styled.div`
-  position: absolute;
-  color: #c7c7c7;
-  right: 0.6rem;
-  top: 3.6rem;
-  font-size: 1.4rem;
 `;
 
 const RulesAreaWrapper = ({

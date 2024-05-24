@@ -4,6 +4,7 @@ import CountUp from "react-countup";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import Fire from "../svg/Fire";
 
 const UsersRank = styled.div`
   width: 100%;
@@ -11,6 +12,10 @@ const UsersRank = styled.div`
   justify-content: center;
   position: absolute;
   top: ${({ $lastRank }) => $lastRank * 8}rem;
+
+  ${theme.breakpoints.sm} {
+    top: ${({ $lastRank }) => $lastRank * 4}rem;
+  }
 `;
 
 const UserRank = styled.div`
@@ -23,6 +28,12 @@ const UserRank = styled.div`
   padding: 2rem;
   border-radius: 10px;
   background-color: ${({ $rank }) => ($rank === 0 ? "#fff9bd" : "#fff")};
+
+  ${theme.breakpoints.sm} {
+    font-size: 2rem;
+    padding: 1rem;
+    margin: 1rem auto;
+  }
 `;
 
 const Champion = styled.div`
@@ -51,27 +62,7 @@ const User = ({ user }) => {
       <UserRank className="try" $rank={user.rank}>
         <Champion>
           {" "}
-          {user.rank === 0 && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"
-              />
-            </svg>
-          )}
+          {user.rank === 0 && <Fire />}
           <p>{user.name}</p>
         </Champion>
         <CountUp

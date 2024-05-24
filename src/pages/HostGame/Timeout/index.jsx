@@ -86,6 +86,10 @@ const WrapShortAnswers = styled(ScrollArea)`
   flex-direction: column;
   width: 100%;
   height: calc(100vh - 32rem);
+
+  ${theme.breakpoints.sm} {
+    height: calc(100vh - 45rem);
+  }
 `;
 
 const WrapShortAnswer = styled.div`
@@ -120,12 +124,20 @@ const WrapMedia = styled.div`
     object-fit: contain;
   }
 
+  ${theme.breakpoints.md} {
+    max-width: 36vw;
+  }
+
   ${theme.breakpoints.sm} {
     position: absolute;
-    left: calc(100vw - 45rem);
 
     img {
-      max-height: 40rem;
+      object-fit: contain;
+    }
+  }
+
+  ${theme.breakpoints.xs} {
+    img {
       object-fit: contain;
     }
   }
@@ -206,20 +218,22 @@ const Timeout = ({
   }, []);
 
   gsap.registerPlugin(useGSAP);
-
   useGSAP(() => {
     const media = document.querySelector(".media");
+
     const graph = document.querySelector(".graph");
+
     const mediaWidth = media?.offsetWidth;
     const graphWidth = graph?.offsetWidth;
     if (mediaWidth) {
       gsap.to(".media", {
-        x: -mediaWidth / 1.9,
+        x: -mediaWidth / 1.8,
         duration: 2,
       });
+      if (window.innerWidth < 940) return;
 
       gsap.to(".graph", {
-        x: graphWidth / 1.9,
+        x: graphWidth / 1.8,
         duration: 2,
       });
     }
@@ -229,11 +243,16 @@ const Timeout = ({
     <WrapTimeout>
       {(questions?.type === "mc" || questions?.type === "tf") && (
         <>
-          <WrapMedia className="media">
-            <img src={questions.media} alt="" />
-          </WrapMedia>
-
-          <WrapGraph className="graph" width="50%" height="72%">
+          {window.innerWidth > 940 && (
+            <WrapMedia className="media">
+              <img src={questions.media} alt="" />
+            </WrapMedia>
+          )}
+          <WrapGraph
+            className="graph"
+            width={window.innerWidth < 940 ? "80%" : "46%"}
+            height={window.innerWidth < 940 ? "52%" : "72%"}
+          >
             <Treemap
               width={400}
               height={200}

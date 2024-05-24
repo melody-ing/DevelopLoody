@@ -1,11 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
 import Profile from "@/components/Profile";
-import "ldrs/ring";
-import { treadmill } from "ldrs";
-import { useGetFireStore } from "@/utils/hook/useGetFireStore";
-import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
-import { v4 as uuidv4 } from "uuid";
+import AiBg from "@/components/css/AiBg";
+import theme from "@/components/css/theme";
 import {
   Select,
   SelectContent,
@@ -13,14 +8,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import theme from "@/components/css/theme";
-import AiBg from "@/components/css/AiBg";
-import Send from "./svg/Send";
-import gsap from "gsap";
-import { TextPlugin } from "gsap/TextPlugin";
+import { useGetFireStore } from "@/utils/hook/useGetFireStore";
+import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { useStore } from "@/utils/hook/useStore";
 import { setFireStore } from "@/utils/reviseFireStore";
+import gsap from "gsap";
+import { TextPlugin } from "gsap/TextPlugin";
+import { treadmill } from "ldrs";
+import "ldrs/ring";
+import { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import { v4 as uuidv4 } from "uuid";
 import AiGenerateLoading from "./AiGenerateLoading";
+import Send from "./svg/Send";
 
 const Wrapper = styled.div`
   height: auto;
@@ -30,6 +30,12 @@ const Wrapper = styled.div`
   height: ${({ $isShareOpen }) => $isShareOpen && "100vh"};
   margin-left: 22rem;
   z-index: 100;
+
+  ${theme.breakpoints.sm} {
+    margin-left: 0;
+    width: 90%;
+    margin: 0 auto;
+  }
 `;
 
 const WrapProfile = styled.div`
@@ -52,6 +58,11 @@ const Title = styled.h2`
   font-size: 4rem;
   height: 8rem;
   margin-bottom: 5rem;
+
+  ${theme.breakpoints.sm} {
+    font-size: 3rem;
+    margin: 3rem;
+  }
 `;
 
 const Rules = styled.div`
@@ -59,12 +70,17 @@ const Rules = styled.div`
   width: 90%;
   display: flex;
   align-items: center;
-  justify-content: center;
-
+  justify-content: space-between;
   border: 1px solid #ccc;
   border-radius: 20px;
   background-color: #fff;
   height: 6.5rem;
+`;
+
+const Hrrr = styled.hr`
+  ${theme.breakpoints.sm} {
+    display: none;
+  }
 `;
 
 const InputTheme = styled.input`
@@ -79,6 +95,10 @@ const InputTheme = styled.input`
   &::placeholder {
     font-size: 2rem;
   }
+
+  ${theme.breakpoints.sm} {
+    padding: 3rem 1rem;
+  }
 `;
 
 const WrapSelected = styled.div`
@@ -87,11 +107,10 @@ const WrapSelected = styled.div`
 
   ${theme.breakpoints.sm} {
     position: absolute;
-
-    bottom: 8rem;
-    left: 1rem;
-    display: flex;
-    gap: 1rem;
+    top: 36rem;
+    left: 50vw;
+    transform: translate(-50%, 0);
+    width: 20rem;
   }
 `;
 
@@ -115,10 +134,6 @@ const WrapSelectTrigger = styled(SelectTrigger)`
   text-align: center;
   border-radius: 10px;
 
-  ${theme.breakpoints.sm} {
-    font-size: 1.4rem;
-  }
-
   &:focus {
     outline: none;
   }
@@ -126,6 +141,10 @@ const WrapSelectTrigger = styled(SelectTrigger)`
   span {
     font-size: 2rem;
     letter-spacing: 0.5rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    background-color: #ebe5c4;
   }
 `;
 
@@ -137,13 +156,12 @@ const WrapSelectContent = styled(SelectContent)`
   outline: none;
   border: none;
 
-  ${theme.breakpoints.sm} {
-    font-size: 1.4rem;
-    width: auto;
-  }
-
   &:focus {
     outline: none;
+  }
+
+  ${theme.breakpoints.sm} {
+    background-color: #ebe5c4;
   }
 `;
 
@@ -154,10 +172,6 @@ const WrapSelectItem = styled(SelectItem)`
   cursor: pointer;
   font-size: 1.8rem;
   letter-spacing: 0.5rem;
-
-  ${theme.breakpoints.sm} {
-    font-size: 1.4rem;
-  }
 `;
 
 const Button = styled.div`
@@ -167,7 +181,7 @@ const Button = styled.div`
   display: flex;
   letter-spacing: 0.4rem;
   border-radius: 15px;
-  width: 9rem;
+  min-width: 10rem;
   justify-content: center;
   align-items: center;
   cursor: pointer;
@@ -180,6 +194,12 @@ const Button = styled.div`
   &:active {
     transform: scale(0.95);
     box-shadow: 0px 2px 2px #3533387f;
+  }
+
+  ${theme.breakpoints.sm} {
+    font-size: 1.4rem;
+    padding: 1rem 1rem;
+    min-width: 8rem;
   }
 `;
 
@@ -284,7 +304,7 @@ const AiGenerate = () => {
                     </WrapSelectContent>
                   </WrapSelect>
                 </WrapSelected>
-                <hr />
+                <Hrrr />
                 <InputTheme
                   placeholder="ex.動物知識"
                   type="text"

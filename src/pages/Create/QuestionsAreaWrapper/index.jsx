@@ -65,7 +65,7 @@ const WrapButton = styled.div`
   ${theme.breakpoints.sm} {
     flex-direction: column;
     right: -2rem;
-    top: 2rem;
+    top: 2.6rem;
     left: auto;
     width: 6rem;
   }
@@ -81,11 +81,25 @@ const DropImg = styled.img`
   width: 3rem;
   height: 3rem;
   margin-right: 1rem;
+
+  ${theme.breakpoints.sm} {
+    width: 2rem;
+    height: 2rem;
+  }
 `;
 
 const WrapDropdownMenuContent = styled(DropdownMenuContent)`
   ${theme.breakpoints.sm} {
-    transform: translate(-18%);
+    transform: translate(-2%);
+  }
+`;
+
+const WrapDropdownMenuSeparator = styled(DropdownMenuSeparator)``;
+
+const WrapDropdownMenuItem = styled(DropdownMenuItem)`
+  ${theme.breakpoints.sm} {
+    font-size: 1.6rem;
+    padding-right: 1rem;
   }
 `;
 
@@ -269,21 +283,21 @@ const QuestionsAreaWrapper = ({
             <DropdownMenuLabel className="text-2xl ">
               題目種類
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <WrapDropdownMenuSeparator />
             {[
               { name: "單選題", id: "mc" },
               { name: "是非題", id: "tf" },
               { name: "簡答題", id: "sa" },
             ].map((item, index) => {
               return (
-                <DropdownMenuItem
+                <WrapDropdownMenuItem
                   key={index}
                   onClick={() => handleAddQuestion(item.id)}
                   className="text-3xl pr-44 py-5 cursor-pointer"
                 >
                   <DropImg src={`/icon/${item.id}.png`} alt="" />
                   {item.name}
-                </DropdownMenuItem>
+                </WrapDropdownMenuItem>
               );
             })}
           </WrapDropdownMenuContent>

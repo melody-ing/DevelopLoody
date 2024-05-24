@@ -13,9 +13,9 @@ const Wrapper = styled.div`
 
 const WrapOptions = styled.div`
   width: 80%;
-
   display: grid;
   grid-template-columns: 50% 50%;
+
   gap: 20px;
 
   h3 {
@@ -28,6 +28,11 @@ const WrapOptions = styled.div`
     background-color: #f6efe0;
     border-radius: 5px;
     box-shadow: 0px 6px 0px 0 #7e6b3f;
+
+    ${theme.breakpoints.md} {
+      height: 6rem;
+      font-size: 2.2rem;
+    }
   }
 `;
 
@@ -46,6 +51,14 @@ const WrapShortAnswer = styled.div`
     background-color: #f6efe0;
     border-radius: 5px;
     box-shadow: 0px 8px 0px 0 #7e6b3f;
+  }
+
+  ${theme.breakpoints.sm} {
+    margin-bottom: 3rem;
+    h3 {
+      font-size: 3rem;
+      height: 6rem;
+    }
   }
 `;
 

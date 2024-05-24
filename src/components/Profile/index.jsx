@@ -1,39 +1,82 @@
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { auth } from "@/utils/firebase";
+import Buttons from "@/components/Buttons";
+import theme from "@/components/css/theme";
 import {
-  Avatar as ComAvatar,
   AvatarFallback,
   AvatarImage,
+  Avatar as ComAvatar,
 } from "@/components/ui/avatar";
+import { auth } from "@/utils/firebase";
 import {
   useGetFireStore,
   useGetFireStores,
 } from "@/utils/hook/useGetFireStore";
 import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
-import theme from "@/components/css/theme";
-import Buttons from "@/components/Buttons";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { signOut } from "firebase/auth";
-import Box from "./Box";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styled, { css, keyframes } from "styled-components";
+import Box from "./svg/Box";
+import Bars from "./svg/Bars";
 
-const WarpProfile = styled(ScrollArea)`
+const Header = styled.div`
+  width: 100vw;
+  height: 5rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: ${theme.colors.primary};
+  display: none;
+  z-index: 10;
+
+  ${theme.breakpoints.sm} {
+    display: block;
+  }
+`;
+
+const slideDown = keyframes`
+  from {
+    max-height: 0;
+  }
+  to {
+    max-height: 36vh;
+  }
+`;
+
+const slideUp = keyframes`
+  from {
+    max-height: 36vh;
+  }
+  to {
+    max-height: 0;
+  }
+`;
+
+const WarpProfile = styled.div`
   background-color: ${theme.colors.primary};
   height: 100vh;
   width: 22rem;
   text-align: left;
   box-shadow: 0px 3px 3px 3px #ccc;
   position: relative;
+  padding-top: 1.4rem;
+  overflow: hidden;
+
   ${theme.breakpoints.sm} {
-    display: none;
+    width: 100vw;
+    position: fixed;
+    height: auto;
+    top: 0;
+    left: 0;
+    margin-top: 3rem;
+    box-shadow: 0px 2px 5px 3px #5757574c;
+    transition: visibility 0.5s ease;
+    animation: ${({ $isMenuOpen }) => ($isMenuOpen ? slideDown : slideUp)} 0.5s
+      ease forwards;
+    visibility: ${({ $isMenuOpen }) => ($isMenuOpen ? "visible" : "hidden")};
   }
 `;
 
-const WrapLogo = styled.div`
-  top: 0;
-  left: 0;
+const WrapHeaderLogo = styled.div`
   width: 100%;
   border-radius: 10px;
   margin: 0 auto;
@@ -44,6 +87,33 @@ const WrapLogo = styled.div`
     height: 4rem;
     margin: 0 auto;
     margin-top: 2.4rem;
+  }
+
+  ${theme.breakpoints.sm} {
+    img {
+      margin-top: 1rem;
+      height: 3.4rem;
+    }
+  }
+`;
+
+const WrapBars = styled.div`
+  position: absolute;
+  top: 2.5rem;
+  transform: translate(0, -50%);
+  left: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+
+  &:hover {
+    background-color: #ac9f834d;
+    border-radius: 5px;
+  }
+`;
+
+const WrapLogo = styled(WrapHeaderLogo)`
+  ${theme.breakpoints.sm} {
+    display: none;
   }
 `;
 
@@ -78,6 +148,10 @@ const SheetHr = styled.hr`
   height: 1px;
   margin: 2rem;
   background-color: #ffffff;
+
+  ${theme.breakpoints.sm} {
+    margin: 0.6rem;
+  }
 `;
 
 const WrapPages = styled.div`
@@ -87,6 +161,10 @@ const WrapPages = styled.div`
   align-items: center;
   gap: 0.5rem;
   margin-left: 1rem;
+
+  ${theme.breakpoints.sm} {
+    margin-left: 0;
+  }
 `;
 
 const Page = styled.div`
@@ -105,6 +183,12 @@ const Page = styled.div`
   &:hover {
     background-color: rgba(193, 182, 126, 0.403);
     border-radius: 10px;
+  }
+
+  ${theme.breakpoints.sm} {
+    margin: 0;
+    border-radius: 0;
+    padding: 1rem 2rem;
   }
 `;
 
@@ -125,6 +209,12 @@ const Logout = styled.div`
   position: absolute;
   left: 2rem;
   bottom: 2rem;
+
+  ${theme.breakpoints.sm} {
+    top: 4.4rem;
+    right: 2rem;
+    left: auto;
+  }
 `;
 
 const Profile = () => {
@@ -132,6 +222,7 @@ const Profile = () => {
 
   const [isLogoutBtn, setIsLogoutBtn] = useState(false);
   const [uid, setUid] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {
     data: shareQbanks,
     isError: shareIsError,
@@ -149,6 +240,7 @@ const Profile = () => {
     isLoading: usersIsLoading,
     isError: usersIsError,
   } = useGetFireStores("users");
+  const menuRef = useRef(null);
 
   const userUid = useOnAuthStateChange();
 
@@ -173,6 +265,27 @@ const Profile = () => {
       });
   }
 
+  function handleMenuClick() {
+    setIsMenuOpen(!isMenuOpen);
+  }
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return usersIsLoading || userIsLoading || shareIsLoading ? (
     <WarpProfile>
       {" "}
@@ -180,54 +293,65 @@ const Profile = () => {
       <SheetHr />
     </WarpProfile>
   ) : (
-    <WarpProfile>
-      <WrapLogo onClick={() => navigate("/")}>
-        <img src="/logo.png" />
-      </WrapLogo>
+    <div ref={menuRef}>
+      <Header>
+        {" "}
+        <WrapHeaderLogo>
+          <img src="/logo.png" onClick={() => navigate("/")} />
+          <WrapBars onClick={handleMenuClick}>
+            <Bars />
+          </WrapBars>
+        </WrapHeaderLogo>
+      </Header>
+      <WarpProfile $isMenuOpen={isMenuOpen}>
+        <WrapLogo onClick={() => navigate("/")}>
+          <img src="/logo.png" />
+        </WrapLogo>
+        <WrapUserInfo>
+          <WrapAvatar onClick={handleUserBtn}>
+            <AvatarImage src="" />
+            <AvatarFallback>{getUserData?.name.slice(0, 2)}</AvatarFallback>
+          </WrapAvatar>
+          <div>
+            <UserName>{getUserData?.name}</UserName>
+            <UserId>id：{getUserData?.userId}</UserId>
+          </div>
+        </WrapUserInfo>
+        <SheetHr />
+        <WrapPages>
+          <Page
+            $param={param}
+            $page="/dashboard"
+            onClick={() => navigate("/dashboard")}
+          >
+            <Box />
+            <p>所有題庫</p>
+          </Page>
+          <Page
+            $param={param}
+            $page="/aigenerate"
+            onClick={() => navigate("/aigenerate")}
+          >
+            <WrapAiIcon>AI</WrapAiIcon>
+            <p>AI生成題庫</p>
+          </Page>
+        </WrapPages>
+        <Logout onClick={handleLogout}>
+          <Buttons size="small">登出</Buttons>
+        </Logout>
+      </WarpProfile>
+    </div>
+  );
+};
 
-      <WrapUserInfo>
-        <WrapAvatar onClick={handleUserBtn}>
-          <AvatarImage src="" />
-          <AvatarFallback>{getUserData?.name.slice(0, 2)}</AvatarFallback>
-        </WrapAvatar>
-        <div>
-          <UserName>{getUserData?.name}</UserName>
-          {/* <UserEmail>{getUserData?.email}</UserEmail> */}
-          <UserId>id：{getUserData?.userId}</UserId>
-        </div>
-      </WrapUserInfo>
-      <SheetHr />
-      <WrapPages>
-        <Page
-          $param={param}
-          $page="/dashboard"
-          onClick={() => navigate("/dashboard")}
-        >
-          <Box />
-          <p>所有題庫</p>
-        </Page>
-        <Page
-          $param={param}
-          $page="/aigenerate"
-          onClick={() => navigate("/aigenerate")}
-        >
-          <WrapAiIcon>AI</WrapAiIcon>
-          <p>AI生成題庫</p>
-        </Page>
-        {/* <Page
+export default Profile;
+{
+  /* <Page
           $param={param}
           $page="/setting"
           onClick={() => navigate("/dashboard")}
         >
           <Setting />
           <p>設定</p>
-        </Page> */}
-      </WrapPages>
-      <Logout onClick={handleLogout}>
-        <Buttons size="small">登出</Buttons>
-      </Logout>
-    </WarpProfile>
-  );
-};
-
-export default Profile;
+        </Page> */
+}

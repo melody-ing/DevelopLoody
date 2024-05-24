@@ -12,11 +12,18 @@ const WrapMedia = styled.div`
 
   ${theme.breakpoints.sm} {
     position: absolute;
-    left: calc(100vw - 45rem);
+    left: 50vw;
+    transform: translate(-50%);
 
     img {
-      max-height: 40rem;
+      max-height: 24rem;
       object-fit: contain;
+    }
+  }
+
+  ${theme.breakpoints.xxs} {
+    img {
+      max-width: 15rem;
     }
   }
 `;

@@ -24,27 +24,33 @@ import Qbank from "./Qbank";
 const Wrapper = styled.div`
   height: auto;
   min-height: 100vh;
-  width: calc(100% - 22rem);
   background-color: #f5f5f3;
   overflow: ${({ $isShareOpen }) => $isShareOpen && "hidden"};
   height: ${({ $isShareOpen }) => $isShareOpen && "100vh"};
-  margin-left: 22rem;
+
+  ${theme.breakpoints.md} {
+    margin-left: 0;
+    h2 {
+      font-size: 3rem;
+    }
+  }
 `;
 
 const WrapProfile = styled.div`
   position: fixed;
   left: 0;
   bottom: 0;
+  z-index: 10;
 `;
 
 const WrapDashboard = styled.div`
-  width: 86%;
+  width: calc(100vw - 24rem);
   margin: 0 auto;
   text-align: left;
   padding-bottom: 4rem;
+  margin-left: 22rem;
 
   ${theme.breakpoints.md} {
-    width: 55%;
     h2 {
       font-size: 3rem;
     }
@@ -56,7 +62,10 @@ const WrapDashboard = styled.div`
   }
 `;
 
-const WrapQbanks = styled.div``;
+const WrapQbanks = styled.div`
+  width: 90%;
+  margin: auto;
+`;
 
 const DashboardTitle = styled.h3`
   display: inline-block;
@@ -94,7 +103,6 @@ const NoQbankWarning = styled.div`
 const NoQbankWords = styled.div`
   font-size: 2rem;
   color: ${theme.colors.tertiary};
-
   width: 18rem;
 `;
 
@@ -115,9 +123,17 @@ const WrapQuestionBanks = styled.div`
   ${theme.breakpoints.sm} {
     grid-template-columns: repeat(2, minmax(15vw, 1fr));
   }
+
+  ${theme.breakpoints.xxs} {
+    grid-template-columns: repeat(1, minmax(15vw, 1fr));
+  }
 `;
 
-const ShareTitle = styled.h3``;
+const ShareTitle = styled.h3`
+  ${theme.breakpoints.xs} {
+    font-size: 2rem;
+  }
+`;
 
 const WrapUrl = styled.div`
   display: flex;
@@ -132,6 +148,16 @@ const ShareUrl = styled.div`
   border: 1px solid #ccc;
   padding: 1rem;
   width: 40rem;
+  word-wrap: break-word;
+  height: 7rem;
+  overflow: hidden;
+
+  ${theme.breakpoints.xs} {
+    width: 80%;
+    height: 7rem;
+    overflow: hidden;
+    font-size: 1.4rem;
+  }
 `;
 
 const AddQBankButton = styled.div`

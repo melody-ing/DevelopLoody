@@ -146,12 +146,17 @@ const PartGame = () => {
     setTimeoutSec(timeoutTime - nowTime - 1);
   }, [question, questions]);
 
+  useEffect(() => {
+    if (!isRTLoading) {
+      realTimeData || navigate("/entry");
+    }
+  }, [realTimeData, isRTLoading]);
+
   let title = "";
   let content = null;
   let addScore = 0;
 
   if (qbank && user && qNumber !== null && users && state) {
-    if (!user) navigate("/entry");
     const answer = qbank.questions[qNumber].answer;
     switch (state) {
       case "lobby":
@@ -231,29 +236,32 @@ const PartGame = () => {
   }
 
   return (
-    <WrapGame>
-      <GameAniBg />
-      {isLoading || isRTLoading ? (
-        <Loading>
-          <ReactLoading
-            type="bars"
-            color={theme.colors.light}
-            height={100}
-            width={100}
-          />
-        </Loading>
-      ) : (
-        <div>
-          {(user.selected === undefined || user.selected === "") && (
-            <WrapQuestion>
-              <Question>{title}</Question>
-            </WrapQuestion>
-          )}
+    realTimeData &&
+    user && (
+      <WrapGame>
+        <GameAniBg />
+        {isLoading || isRTLoading ? (
+          <Loading>
+            <ReactLoading
+              type="bars"
+              color={theme.colors.light}
+              height={100}
+              width={100}
+            />
+          </Loading>
+        ) : (
+          <div>
+            {(user.selected === undefined || user.selected === "") && (
+              <WrapQuestion>
+                <Question>{title}</Question>
+              </WrapQuestion>
+            )}
 
-          {content}
-        </div>
-      )}
-    </WrapGame>
+            {content}
+          </div>
+        )}
+      </WrapGame>
+    )
   );
 };
 

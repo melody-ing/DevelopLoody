@@ -39,6 +39,17 @@ const Login = styled.div`
     /* text-decoration: underline; */
     background-color: #9d88951a;
   }
+
+  ${theme.breakpoints.xs} {
+    position: absolute;
+    right: 4rem;
+    top: 20rem;
+    width: 16rem;
+  }
+
+  ${theme.breakpoints.xxs} {
+    position: static;
+  }
 `;
 
 const WrapDialogContent = styled(DialogContent)`
@@ -50,7 +61,7 @@ const WrapDialogContent = styled(DialogContent)`
   border: none;
 
   ${theme.breakpoints.sm} {
-    width: 32rem;
+    width: 90%;
   }
 `;
 
@@ -134,7 +145,6 @@ const SignDialog = () => {
     signInWithEmailAndPassword(auth, inputEmail, inputPassword)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(userCredential);
         const userData = getFireStore("users", user.uid);
         setIsLoginError(false);
         return userData;
@@ -196,61 +206,71 @@ const SignDialog = () => {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="login">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-[3.2rem] my-10  small:text-[2.4rem] small:my-2">
-                  已經有帳號了嗎?
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-10 small:space-y-5">
-                <AccountError>
-                  {isLoginError && "帳號或密碼輸入錯誤"}
-                </AccountError>
-                <div className="space-y-2 ">
-                  <Label
-                    className=" text-[1.6rem] small:text-[1.4rem]"
-                    htmlFor="email"
-                  >
-                    電子信箱
-                  </Label>
-                  <Input
-                    type="email"
-                    className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
-                    id="email"
-                    value={inputEmail}
-                    onChange={(e) => setInputEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2 flex flex-col">
-                  <Label
-                    className=" text-[1.6rem] small:text-[1.4rem]"
-                    htmlFor="password"
-                  >
-                    密碼
-                  </Label>
-                  <Input
-                    type="password"
-                    className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
-                    id="password"
-                    value={inputPassword}
-                    onChange={(e) => setInputPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  onClick={handleLogin}
-                  className="text-[2.4rem] h-[5rem] w-[100%] mt-20 small:mt-10 small:h-[4rem] small:text-[2rem]"
-                >
-                  登入
-                </Button>
-              </CardFooter>
-            </Card>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[3.2rem] my-10  small:text-[2.4rem] small:my-2">
+                    已經有帳號了嗎?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-10 small:space-y-5">
+                  <AccountError>
+                    {isLoginError && "帳號或密碼輸入錯誤"}
+                  </AccountError>
+                  <div className="space-y-2 ">
+                    <Label
+                      className=" text-[1.6rem] small:text-[1.4rem]"
+                      htmlFor="email"
+                    >
+                      電子信箱
+                    </Label>
+                    <Input
+                      type="email"
+                      className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
+                      id="email"
+                      value={inputEmail}
+                      onChange={(e) => setInputEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 flex flex-col">
+                    <Label
+                      className=" text-[1.6rem] small:text-[1.4rem]"
+                      htmlFor="password"
+                    >
+                      密碼
+                    </Label>
+                    <Input
+                      type="password"
+                      className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem]"
+                      id="password"
+                      value={inputPassword}
+                      onChange={(e) => setInputPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button className="text-[2.4rem] h-[5rem] w-[100%] mt-20 small:mt-10 small:h-[4rem] small:text-[2rem]">
+                    登入
+                  </Button>
+                </CardFooter>
+              </Card>
+            </form>
           </TabsContent>
           <TabsContent value="register">
-            <form action="" onSubmit={(e) => e.preventDefault()}>
+            <form
+              action=""
+              onSubmit={(e) => {
+                handleRegister();
+                e.preventDefault();
+              }}
+            >
               <Card>
                 <CardHeader>
                   <CardTitle className="text-[3.2rem] my-10 small:text-[2.4rem] small:my-0 ">
@@ -293,17 +313,6 @@ const SignDialog = () => {
                       onChange={(e) => setInputPassword(e.target.value)}
                       required
                     />
-                    {/* <WrapPassword
-                      className="text-[1.6rem] h-[5rem] small:text-[1.4rem] small:h-[4rem] "
-                      id="password"
-                      value={inputPassword}
-                      onChange={(e) => setInputPassword(e.target.value)}
-                      pattern="^[\da-zA-Z]{6,}$"
-                      title="密碼必須大於6位且只能包含數字和英文字母"
-                      required
-                      feedback={false}
-                      tabIndex={1}
-                    /> */}
                   </div>
                   <div className="space-y-2">
                     <Label
@@ -324,10 +333,7 @@ const SignDialog = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    className="text-[2.4rem] h-[5rem] w-[100%] mt-20  small:mt-10 small:h-[4rem] small:text-[2rem]"
-                    onClick={handleRegister}
-                  >
+                  <Button className="text-[2.4rem] h-[5rem] w-[100%] mt-20  small:mt-10 small:h-[4rem] small:text-[2rem]">
                     註冊
                   </Button>
                 </CardFooter>

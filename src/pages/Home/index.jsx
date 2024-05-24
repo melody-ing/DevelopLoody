@@ -1,26 +1,31 @@
-import styled from "styled-components";
-import theme from "../../components/css/theme";
+import HomeBg from "@/components/css/HomeBg";
+import { auth } from "@/utils/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
+import styled from "styled-components";
 import "swiper/css";
 import "swiper/css/effect-cards";
 import { EffectCards } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import "../../components/css/swiper.css";
-import HomeBg from "@/components/css/HomeBg";
+import theme from "../../components/css/theme";
 import SignDialog from "./SignDialog";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/utils/firebase";
 
 const WrapHome = styled.div`
-  /* position: relative; */
-  /* width: 80%; */
-  /* margin: 0 auto; */
-  width: 100vw;
+  width: 100%;
+  height: 100vh;
+  overflow-y: hidden;
+
+  ${theme.breakpoints.xs} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const WrapLeft = styled.div`
   position: absolute;
-  left: 22rem;
+  left: 16rem;
   top: 45vh;
   transform: translate(0, -50%);
   display: flex;
@@ -28,6 +33,20 @@ const WrapLeft = styled.div`
   justify-content: flex-start;
   align-items: flex-start;
   gap: 1.5rem;
+
+  @media screen and (max-width: 1070px) {
+    left: 8rem;
+  }
+
+  ${theme.breakpoints.xs} {
+    position: static;
+    margin-top: 10rem;
+    transform: translate(0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+  }
 `;
 
 const Logo = styled.img`
@@ -44,6 +63,11 @@ const Slogan = styled.div`
   font-size: 2rem;
   width: 30rem;
   line-height: 3rem;
+
+  ${theme.breakpoints.xs} {
+    width: auto;
+    text-align: center;
+  }
 `;
 
 const WrapButton = styled.div`
@@ -62,48 +86,98 @@ const WrapButton = styled.div`
   &:hover {
     background-color: ${theme.colors.tertiary};
   }
+
+  ${theme.breakpoints.xs} {
+    position: absolute;
+    left: 4rem;
+    top: 20rem;
+    margin-top: 0;
+    width: 16rem;
+  }
+
+  ${theme.breakpoints.xxs} {
+    position: static;
+    margin-top: 6rem;
+  }
 `;
 
 const WrapRight = styled.div`
   position: absolute;
-  right: 20rem;
+  right: 16rem;
   top: 46vh;
   transform: translate(0, -50%);
   display: flex;
   justify-content: center;
-  /* max-width: 50rem;
-  width: 50vw; */
+  z-index: 1;
+
+  @media screen and (max-width: 1070px) {
+    right: 8rem;
+  }
+
+  ${theme.breakpoints.xs} {
+    position: static;
+    margin-top: 30rem;
+  }
+
+  ${theme.breakpoints.xxs} {
+    margin-top: 18rem;
+  }
 `;
 
 const WrapDrawShape = styled.div`
   position: absolute;
-  top: 8rem;
+  top: 11rem;
   right: -12rem;
   transform: rotate(-12deg);
+  z-index: 1;
+
+  @media screen and (max-width: 1080px) {
+    display: none;
+  }
 `;
 
 const DrawShape = styled.img`
   width: 40rem;
   max-width: 90rem;
+  z-index: 1;
 `;
 
 const WrapFlowerShape = styled.div`
   position: absolute;
-  top: -14rem;
+  top: -12rem;
   left: -20rem;
   transform: rotate(-12deg);
+  z-index: 1;
+  ${theme.breakpoints.xs} {
+    display: none;
+  }
 `;
 
 const FlowerShape = styled.img`
   width: 60rem;
   max-width: 90rem;
+  z-index: 1;
 `;
 
-const WrapSwiper = styled.div`
-  width: 50rem;
-  height: 32rem;
-  overflow: hidden;
+const WrapSwiper = styled.div``;
+
+const WrapWrapSwiper = styled(Swiper)`
+  width: 40vw;
+  height: 28vw;
+
+  ${theme.breakpoints.xs} {
+    width: 60vw;
+    height: 42vw;
+  }
+
+  ${theme.breakpoints.xxs} {
+    width: 80vw;
+    height: 55vw;
+    margin: auto;
+  }
 `;
+
+const WrapSwiperSlide = styled(SwiperSlide)``;
 
 const Login = styled.div`
   font-size: 1.6rem;
@@ -117,6 +191,11 @@ const Login = styled.div`
 
   &:hover {
     text-decoration: underline;
+  }
+
+  ${theme.breakpoints.xs} {
+    position: absolute;
+    top: 16rem;
   }
 `;
 
@@ -143,7 +222,11 @@ const Home = () => {
 
       <WrapLeft>
         <Logo src="logo.png" alt="" />
-        <Slogan>創新學習新體驗，讓所有人一起加入學習派對！</Slogan>
+        <Slogan>
+          創新學習新體驗
+          <br />
+          讓所有人一起加入學習派對！
+        </Slogan>
         <WrapButton onClick={handleToEntry} data-testid="button">
           加入遊戲
         </WrapButton>
@@ -159,15 +242,15 @@ const Home = () => {
         </WrapFlowerShape>
         <WrapSwiper>
           {" "}
-          <Swiper
+          <WrapWrapSwiper
             effect={"cards"}
             grabCursor={true}
             modules={[EffectCards]}
             className="mySwiper"
           >
-            <SwiperSlide></SwiperSlide>
-            <SwiperSlide></SwiperSlide>
-          </Swiper>
+            <WrapSwiperSlide></WrapSwiperSlide>
+            <WrapSwiperSlide></WrapSwiperSlide>
+          </WrapWrapSwiper>
         </WrapSwiper>
       </WrapRight>
     </WrapHome>

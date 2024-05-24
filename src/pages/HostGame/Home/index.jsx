@@ -12,7 +12,7 @@ const WrapHome = styled.div`
     align-items: end;
     position: absolute;
     right: 0;
-    width: 30%;
+    width: 20%;
   }
 `;
 
@@ -30,6 +30,7 @@ const TimeLimit = styled.div`
   ${theme.breakpoints.sm} {
     position: static;
     background-color: #ffffff00;
+    font-size: 4rem;
   }
 `;
 
@@ -52,6 +53,10 @@ const Attendant = styled.div`
   ${theme.breakpoints.sm} {
     position: static;
     background-color: #ffffff00;
+    font-size: 1.4rem;
+    p {
+      font-size: 3rem;
+    }
   }
 `;
 
@@ -92,7 +97,7 @@ const Home = ({
     <WrapHome>
       <TimeLimit>{count}</TimeLimit>
       <Attendant>
-        作答人數： <p>{reply}</p>
+        作答人數<p>{reply}</p>
       </Attendant>{" "}
       <audio autoPlay loop src="/bgm/game.mp3" ref={audioRef} />
     </WrapHome>

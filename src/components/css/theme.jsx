@@ -3,8 +3,8 @@ const theme = {
     lg: "@media screen and (min-width:1921px)",
     md: "@media screen and (max-width:1280px)",
     sm: "@media screen and (max-width:940px)",
-    xs: "@media screen and (max-width:480px)",
-    xxs: "@media screen and (max-width:320px)",
+    xs: "@media screen and (max-width:830px)",
+    xxs: "@media screen and (max-width:600px)",
   },
   colors: {
     primary: "#ebdb86",
