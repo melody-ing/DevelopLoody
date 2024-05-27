@@ -187,6 +187,7 @@ const QuestionsAreaWrapper = ({
   editNum,
   stateQuestions,
   handleIsChange,
+  setAnswerRadio,
 }) => {
   function onDragEnd(event) {
     const { source, destination } = event;
@@ -210,6 +211,7 @@ const QuestionsAreaWrapper = ({
     setInputOptions(getQbankData.questions[index].options);
     setQuestionType(getQbankData.questions[index].type);
     setTimeLimit(getQbankData.questions[index].timeLimit);
+    setAnswerRadio(getQbankData.questions[index].answer);
     setStateQuestions(getQbankData.questions);
   }
 
@@ -260,7 +262,9 @@ const QuestionsAreaWrapper = ({
       return;
     }
     e.stopPropagation();
-    if (index === editNum) {
+    if (index === 0) {
+      setEditNum(index);
+    } else if (index === editNum) {
       setEditNum(index - 1);
     } else if (editNum >= getQbankData.questions.length - 1) {
       setEditNum(editNum - 1);

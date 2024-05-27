@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";

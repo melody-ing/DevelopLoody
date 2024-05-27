@@ -110,7 +110,13 @@ const Part = () => {
     }
   }, [realTime, isRTLoading]);
 
+  function setReturningStatus(isReturning) {
+    sessionStorage.setItem("isReturning", isReturning);
+  }
+
   function handleJoin() {
+    setReturningStatus(true);
+
     if (userName !== "") {
       const userId = pushRealTime(`${getUrlDocumentId}/users`, {
         addScore: 0,

@@ -160,6 +160,7 @@ const Create = () => {
               editNum={editNum}
               stateQuestions={stateQuestions}
               handleIsChange={handleIsChange}
+              setAnswerRadio={setAnswerRadio}
             />
             <EditAreaWrapper
               setTitle={setTitle}

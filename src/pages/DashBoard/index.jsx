@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import theme from "@/components/css/theme";
 
@@ -230,6 +230,8 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareQBankId, setShareQBankId] = useState(null);
+  const chooseQBankId = useRef("");
+
   useOnAuthStateChange();
 
   const {
@@ -356,6 +358,7 @@ const Dashboard = () => {
                       setIsShareOpen={setIsShareOpen}
                       item={item}
                       getUserData={getUserData}
+                      chooseQBankId={chooseQBankId}
                     />
                   ))}
               </WrapQuestionBanks>

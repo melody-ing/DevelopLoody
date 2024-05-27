@@ -10,7 +10,7 @@ export const getFireStore = async (path, documentId) => {
     return docSnap.data();
   } else {
     // docSnap.data() will be undefined in this case
-    console.log("No such document!");
+    // console.log("No such document!");
   }
 };
 

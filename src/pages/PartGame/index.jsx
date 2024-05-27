@@ -9,7 +9,7 @@ import Score from "./Score";
 import CountDown from "./CountDown";
 import { useGetFireStore } from "../../utils/hook/useGetFireStore";
 import { useGetRealTimeNavigate } from "../../utils/hook/useGetRealTime";
-import { updateRealTime } from "../../utils/reviseRealTime";
+import { removeRealTime, updateRealTime } from "../../utils/reviseRealTime";
 import { useNavigate, useParams } from "react-router-dom";
 import Media from "./Media";
 import ReactLoading from "react-loading";
@@ -100,12 +100,19 @@ const PartGame = () => {
     updateRealTime(`${getUrlDocumentId}/users/${userId}`, { addScore: 0 });
   }
 
-  function pushHistoryState(isReturning = false) {
-    history.pushState({ isReturning }, "", document.location.pathname);
+  function setReturningStatus(isReturning) {
+    sessionStorage.setItem("isReturning", isReturning);
   }
 
-  window.onpopstate = (e) => {
-    if (e.state && e.state.isReturning) {
+  function getReturningStatus() {
+    return sessionStorage.getItem("isReturning") === "true";
+  }
+
+  window.onpopstate = () => {
+    let isReturning = getReturningStatus();
+    setReturningStatus(!isReturning);
+
+    if (!isReturning) {
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         isOnline: true,
       });
@@ -117,8 +124,15 @@ const PartGame = () => {
   };
 
   useEffect(() => {
+    if (!isRTLoading)
+      if (realTime !== null && !("id" in realTime)) {
+        removeRealTime(getUrlDocumentId);
+      }
+  }, [realTime]);
+
+  useEffect(() => {
     function handleLoad() {
-      pushHistoryState();
+      setReturningStatus(true);
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         isOnline: true,
       });
@@ -128,6 +142,7 @@ const PartGame = () => {
       updateRealTime(`${getUrlDocumentId}/users/${userId}`, {
         isOnline: false,
       });
+      sessionStorage.removeItem("isReturning");
     }
 
     window.addEventListener("load", handleLoad);
@@ -137,6 +152,10 @@ const PartGame = () => {
       window.removeEventListener("load", handleLoad);
       window.removeEventListener("unload", handleUnload);
     };
+  }, []);
+
+  useEffect(() => {
+    setReturningStatus(true);
   }, []);
 
   useEffect(() => {

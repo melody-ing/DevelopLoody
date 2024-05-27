@@ -163,9 +163,9 @@ const Qbank = ({
   item,
   getUserData,
   setIsShareOpen,
+  chooseQBankId,
 }) => {
   const [isQbankUsed, setIsQbankUsed] = useState(false);
-  const chooseQBankId = useRef("");
 
   const {
     data: realTimeData,
@@ -176,7 +176,6 @@ const Qbank = ({
   useEffect(() => {
     setIsQbankUsed(realTimeData !== null);
   }, [realTimeData]);
-
   function handleDelete(id, isMine) {
     if (isMine) {
       const confirmDelete = window.confirm(
@@ -210,7 +209,7 @@ const Qbank = ({
           .then((snapshot) => {
             getDownloadURL(snapshot.ref)
               .then((url) => {
-                updateFireStore("qbank", chooseQBankId.current, {
+                updateFireStore(`qbank`, chooseQBankId.current, {
                   mainImg: url,
                 });
               })

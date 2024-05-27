@@ -3,12 +3,12 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import Confetti from "react-confetti";
+import theme from "@/components/css/theme";
 
 const WrapConfetti = styled.div`
   position: fixed;
   left: 0;
   z-index: 0;
-
   top: 0;
 `;
 
@@ -21,14 +21,22 @@ const WrapRank = styled.div`
   width: 100%;
   z-index: -2;
 `;
-const Podium = styled.img`
-  z-index: -2;
-`;
 
 const WrapPodium = styled.div`
   width: 70vw;
   position: relative;
   margin: 0 auto;
+  z-index: -2;
+
+  ${theme.breakpoints.sm} {
+    position: absolute;
+    bottom: 6rem;
+    left: 50vw;
+    transform: translate(-50%);
+  }
+`;
+
+const Podium = styled.img`
   z-index: -2;
 `;
 
@@ -38,7 +46,6 @@ const First = styled.div`
   right: 50%;
   z-index: 100;
   transform: translate(50%);
-
   color: #403d39;
 `;
 
@@ -61,7 +68,7 @@ const Third = styled.div`
 `;
 
 const UserName = styled.div`
-  font-size: ${({ $length }) => $length}vh;
+  font-size: ${({ $length }) => $length / 1.5}vw;
   width: auto;
 `;
 

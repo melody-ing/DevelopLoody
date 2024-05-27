@@ -191,21 +191,18 @@ const Host = () => {
   useOnAuthStateChange();
 
   useEffect(() => {
-    console.log("eseeffecr");
     if (!isRTLoading) {
       realTimeData || navigate("/dashboard");
     }
   }, [realTimeData, isRTLoading]);
 
   window.onpopstate = () => {
-    if (location.pathname.startsWith("/host")) {
-      const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
-      if (confirmLeave) {
-        removeRealTime(getUrlDocumentId);
-        navigate("/dashboard");
-      } else {
-        navigate(`/host/${getUrlDocumentId}/${getUrlPin}`);
-      }
+    const confirmLeave = window.confirm("確定要離開當前頁面嗎?");
+    if (confirmLeave) {
+      removeRealTime(getUrlDocumentId);
+      navigate("/dashboard");
+    } else {
+      navigate(`/host/${getUrlDocumentId}/${getUrlPin}`);
     }
   };
 
