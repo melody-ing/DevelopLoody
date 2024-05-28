@@ -23,7 +23,7 @@ const WrapRank = styled.div`
 `;
 
 const WrapPodium = styled.div`
-  width: 70vw;
+  width: 70%;
   position: relative;
   margin: 0 auto;
   z-index: -2;
@@ -82,6 +82,7 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
     if (arrayUsers.length >= 3) {
       tl.from(".third", {
         y: -150,
+        // y: 0,
         opacity: 0,
         duration: 0.9,
         ease: "bounce.out",
@@ -91,6 +92,7 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
         repeatTl
           .to(".third", {
             y: -40,
+            // y: 0,
             duration: 0.5,
             ease: "power2.out",
             delay: 0.2,
@@ -102,9 +104,11 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
           });
       });
     }
+
     if (arrayUsers.length >= 2) {
       tl.from(".second", {
         y: -150,
+
         opacity: 0,
         duration: 0.9,
         ease: "bounce.out",
@@ -168,9 +172,9 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
   return (
     <WrapRank>
       {" "}
-      <WrapConfetti className="confetti">
+      {/* <WrapConfetti className="confetti">
         <Confetti style={{ zIndex: -1, height: 1000 }} />
-      </WrapConfetti>
+      </WrapConfetti> */}
       <WrapPodium>
         {arrayUsers
           .sort((a, b) => b.score - a.score)
