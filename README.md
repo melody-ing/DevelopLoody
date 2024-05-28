@@ -51,6 +51,12 @@ Loody is a website that allows multiple users to participate in online quiz acti
 
 ## Demo
 
-- Create and edit question banks, including multiple-choice, true/false, and short answer questions, with the ability to reorder questions through drag-and-drop.
+- Create and edit question banks: Including multiple-choice, true/false, and short answer questions, with the ability to reorder questions through drag-and-drop
+  ![Add Question Bank](/public/readme/qbank.gif)
 
-  <img src="/public/readme/qbank.gif" style="width:500px"/>
+- AI-generated question banks: Specify the topic and number of questions to automatically generate a question bank.
+  ![OpenAI generate](/public/readme/AI.gif)
+
+- Host a Game: Click "Host" to start the game. Participants can join by entering the PIN code on the home page or by scanning the QR code. Once everyone is ready, the game can begin.
+
+* ![OpenAI generate](/public/readme/game.gif)
