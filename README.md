@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://i.imgur.com/tZYNqgb.png" alt="Logo" width="300">
+  <img src="https://i.imgur.com/tZYNqgb.png" alt="Logo" width="200">
 
   <p>
     <!-- <a href="https://github.com/melody-ing/Loody.git">About</a> -->
@@ -49,4 +49,8 @@ Loody is a website that allows multiple users to participate in online quiz acti
 - Shadcn/ui
 - GSAP
 
-<!-- ## Demo -->
+## Demo
+
+- Create and edit question banks, including multiple-choice, true/false, and short answer questions, with the ability to reorder questions through drag-and-drop.
+
+  <img src="/public/readme/qbank.gif" style="width:500px"/>

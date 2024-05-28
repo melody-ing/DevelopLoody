@@ -13,36 +13,38 @@ const WrapConfetti = styled.div`
 `;
 
 const WrapRank = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: fixed;
-  bottom: -6rem;
-  width: 100%;
+  bottom: 0;
+  width: 100vw;
   z-index: -2;
+  height: 100vh;
 `;
 
 const WrapPodium = styled.div`
   width: 70%;
-  position: relative;
+  position: absolute;
+  bottom: 0rem;
+  left: 15%;
   margin: 0 auto;
   z-index: -2;
 
-  ${theme.breakpoints.sm} {
+  /* ${theme.breakpoints.sm} {
     position: absolute;
     bottom: 6rem;
     left: 50vw;
     transform: translate(-50%);
-  }
+
+  } */
 `;
 
 const Podium = styled.img`
   z-index: -2;
+  height: 34vw;
+  overflow: hidden;
 `;
 
 const First = styled.div`
   position: absolute;
-  top: -4%;
+  top: -3vw;
   right: 50%;
   z-index: 100;
   transform: translate(50%);
@@ -51,7 +53,7 @@ const First = styled.div`
 
 const Second = styled.div`
   position: absolute;
-  top: 32%;
+  top: 10vw;
   left: 32%;
   z-index: 100;
   color: #403d39;
@@ -60,7 +62,7 @@ const Second = styled.div`
 
 const Third = styled.div`
   position: absolute;
-  top: 60%;
+  top: 19vw;
   right: 30%;
   z-index: 100;
   color: #403d39;
@@ -82,7 +84,6 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
     if (arrayUsers.length >= 3) {
       tl.from(".third", {
         y: -150,
-        // y: 0,
         opacity: 0,
         duration: 0.9,
         ease: "bounce.out",
@@ -92,7 +93,6 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
         repeatTl
           .to(".third", {
             y: -40,
-            // y: 0,
             duration: 0.5,
             ease: "power2.out",
             delay: 0.2,
@@ -166,15 +166,15 @@ const End = ({ audioRef, arrayUsers, isPlayBgm }) => {
     } else if (length >= 5) {
       return 8;
     }
-    return 10;
+    return 9;
   };
 
   return (
     <WrapRank>
       {" "}
-      {/* <WrapConfetti className="confetti">
+      <WrapConfetti className="confetti">
         <Confetti style={{ zIndex: -1, height: 1000 }} />
-      </WrapConfetti> */}
+      </WrapConfetti>
       <WrapPodium>
         {arrayUsers
           .sort((a, b) => b.score - a.score)
