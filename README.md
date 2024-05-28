@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="https://i.imgur.com/tZYNqgb.png" alt="Logo" width="200">
+  <img src="https://i.imgur.com/tZYNqgb.png" alt="Logo" width="300">
 
   <p>
-    <a href="https://github.com/melody-ing/Loody.git">About</a>
+    <!-- <a href="https://github.com/melody-ing/Loody.git">About</a> -->
     |
-    <a href="https://loody.site/">Demo</a>
+    <a href="https://loody.site/">website</a>
     |
-    <a href="m9930716@gmail.com">Contact</a>
+    <!-- <a href="m9930716@gmail.com">Contact</a> -->
   </p>
 </div>
 
