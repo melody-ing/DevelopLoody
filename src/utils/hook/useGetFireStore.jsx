@@ -9,7 +9,6 @@ export const useGetFireStore = (path, documentId) => {
 
   useEffect(() => {
     if (!documentId) {
-      // console.log("getfirestore", "documentId is undefined");
       setIsLoading(false);
       return;
     }
@@ -23,19 +22,16 @@ export const useGetFireStore = (path, documentId) => {
             setData(docSnapshot.data());
             setIsError(null);
           } else {
-            // console.log("Document does not exist");
             setData(null);
             setIsError(null);
           }
         } catch (err) {
-          // console.error("Error fetching document: ", err);
           setIsError(err.message);
         } finally {
           setIsLoading(false);
         }
       },
       (err) => {
-        // console.error("Error listening to document: ", err);
         setIsError(err.message);
         setIsLoading(false);
         setData(null);

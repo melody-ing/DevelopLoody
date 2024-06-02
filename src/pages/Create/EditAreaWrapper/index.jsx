@@ -384,14 +384,8 @@ const EditAreaWrapper = ({
       const fileType = file.type;
 
       const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
-      // const validVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
-      // const validAudioTypes = ["audio/mpeg", "audio/wav", "audio/ogg"];
 
-      if (
-        validImageTypes.includes(fileType)
-        // validVideoTypes.includes(fileType) ||
-        // validAudioTypes.includes(fileType)
-      ) {
+      if (validImageTypes.includes(fileType)) {
         const storage = getStorage();
         const imagesRef = ref(storage, `${Date.now()}`);
         uploadBytes(imagesRef, file)

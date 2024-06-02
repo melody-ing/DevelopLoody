@@ -14,7 +14,7 @@ import { useOnAuthStateChange } from "@/utils/hook/useOnAuthStateChange";
 import { signOut } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled, { css, keyframes } from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Box from "./svg/Box";
 import Bars from "./svg/Bars";
 
@@ -258,10 +258,9 @@ const Profile = () => {
     signOut(auth)
       .then(() => {
         navigate("/");
-        // console.log("Sign-out successful");
       })
-      .catch((error) => {
-        // console.log("Sign-out error");
+      .catch(() => {
+        navigate("/");
       });
   }
 

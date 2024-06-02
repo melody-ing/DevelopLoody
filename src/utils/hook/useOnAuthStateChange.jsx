@@ -11,9 +11,7 @@ export function useOnAuthStateChange() {
       if (user) {
         const uid = user.uid;
         setGetUid(uid);
-        // console.log("User is signed in");
       } else {
-        // console.log("User is not signed in");
         navigate("/");
       }
     });

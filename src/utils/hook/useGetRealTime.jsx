@@ -15,7 +15,6 @@ export const useGetRealTime = (path) => {
           const data = snapshot.val();
           setData(data);
         } catch (error) {
-          // console.log("No data available");
           setIsError(error.message);
           setData(null);
         } finally {
@@ -47,7 +46,6 @@ export const useGetRealTimeNavigate = (path, navigation) => {
           if (data === null) navigation;
           setData(data);
         } catch (error) {
-          // console.log("No data available");
           setIsError(error.message);
           setData(null);
         } finally {

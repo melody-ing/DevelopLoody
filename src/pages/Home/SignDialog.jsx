@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import theme from "../../components/css/theme";
 import { useNavigate } from "react-router-dom";
@@ -77,19 +77,6 @@ const SignDialog = () => {
   const [inputName, setInputName] = useState("");
   const [isLoginError, setIsLoginError] = useState(false);
   const [isRegisterError, setIsRegisterError] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsLogin(true);
-        // console.log("User is signed in");
-      } else {
-        // console.log("User is not signed in");
-        setIsLogin(false);
-      }
-    });
-  }, []);
 
   function handleEmptyInput() {
     setInputEmail("");
@@ -133,8 +120,6 @@ const SignDialog = () => {
       })
       .catch((error) => {
         const errorCode = error.code;
-        // const errorMessage = error.message;
-        // console.log(errorCode, errorMessage);
         if (errorCode === "auth/email-already-in-use") {
           setIsRegisterError(true);
         }
@@ -155,7 +140,6 @@ const SignDialog = () => {
         toast.warn(`${userData.name}你好`);
       })
       .catch(() => {
-        // console.log(error.code, error.message);
         setIsLoginError(true);
       });
   }
@@ -164,10 +148,6 @@ const SignDialog = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         navigate(`/dashboard`);
-
-        // console.log("User is signed in");
-      } else {
-        // console.log("User is not signed in");
       }
     });
   }
