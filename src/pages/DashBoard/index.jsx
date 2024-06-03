@@ -257,7 +257,7 @@ const Dashboard = () => {
               return newData;
             });
           } else {
-            // console.log("Document does not exist");
+            alert("發生錯誤: " + error.message);
           }
         });
 

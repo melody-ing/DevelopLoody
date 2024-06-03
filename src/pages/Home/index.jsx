@@ -212,7 +212,7 @@ const Home = () => {
         navigate(`/dashboard`);
       })
       .catch(() => {
-        // console.log(error.code, error.message);
+        alert("發生錯誤: " + error.message);
       });
   }
 

@@ -396,12 +396,12 @@ const EditAreaWrapper = ({
                 getQbankData.questions[editNum].media = url;
                 setFireStore("qbank", getUrlDocumentId, getQbankData);
               })
-              .catch(() => {
-                // console.log(error.message);
+              .catch((error) => {
+                alert("圖片上傳失敗: " + error.message);
               });
           })
-          .catch(() => {
-            // console.log(error.message);
+          .catch((error) => {
+            alert("圖片上傳失敗: " + error.message);
           });
 
         return;

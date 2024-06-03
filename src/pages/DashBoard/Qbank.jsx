@@ -214,11 +214,11 @@ const Qbank = ({
                 });
               })
               .catch((error) => {
-                // console.log(error.message);
+                alert("圖片上傳失敗: " + error.message);
               });
           })
           .catch((error) => {
-            // console.log(error.message);
+            alert("圖片上傳失敗: " + error.message);
           });
 
         return;

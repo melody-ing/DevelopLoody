@@ -250,7 +250,6 @@ const AiGenerate = () => {
     } catch (error) {
       setIsAiLoading(false);
       setIsError(error.message);
-      // console.error("There was a problem with your fetch operation:", error);
     }
   };
 
