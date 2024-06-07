@@ -15,7 +15,6 @@ const WrapHome = styled.div`
   width: 100%;
   height: 100vh;
   overflow-y: hidden;
-
   ${theme.breakpoints.xs} {
     display: flex;
     flex-direction: column;
@@ -64,6 +63,10 @@ const Slogan = styled.div`
   width: 30rem;
   line-height: 3rem;
 
+  ${theme.breakpoints.sm} {
+    font-size: 1.8rem;
+  }
+
   ${theme.breakpoints.xs} {
     width: auto;
     text-align: center;
@@ -103,12 +106,14 @@ const WrapButton = styled.div`
 
 const WrapRight = styled.div`
   position: absolute;
-  right: 16rem;
-  top: 46vh;
-  transform: translate(0, -50%);
+  right: 0;
+  top: 0;
   display: flex;
   justify-content: center;
   z-index: 1;
+  width: 60vw;
+  height: 100vh;
+  overflow: hidden;
 
   @media screen and (max-width: 1070px) {
     right: 8rem;
@@ -116,18 +121,17 @@ const WrapRight = styled.div`
 
   ${theme.breakpoints.xs} {
     position: static;
-    margin-top: 30rem;
+    width: 100vw;
   }
 
   ${theme.breakpoints.xxs} {
-    margin-top: 18rem;
   }
 `;
 
 const WrapDrawShape = styled.div`
   position: absolute;
-  top: 11rem;
-  right: -12rem;
+  top: 48vh;
+  right: 2vw;
   transform: rotate(-12deg);
   z-index: 1;
 
@@ -144,17 +148,17 @@ const DrawShape = styled.img`
 
 const WrapFlowerShape = styled.div`
   position: absolute;
-  top: -12rem;
-  left: -20rem;
+  top: 2vh;
+  left: -12vw;
   transform: rotate(-12deg);
   z-index: 1;
-  ${theme.breakpoints.xs} {
+  @media screen and (max-width: 1080px) {
     display: none;
   }
 `;
 
 const FlowerShape = styled.img`
-  width: 60rem;
+  width: 50vw;
   max-width: 90rem;
   z-index: 1;
 `;
@@ -164,16 +168,21 @@ const WrapSwiper = styled.div``;
 const WrapWrapSwiper = styled(Swiper)`
   width: 40vw;
   height: 28vw;
+  margin-top: 50vh;
+  transform: translate(0, -60%);
 
   ${theme.breakpoints.xs} {
     width: 60vw;
     height: 42vw;
+    margin-top: 15rem;
+    transform: translate(0);
   }
 
   ${theme.breakpoints.xxs} {
     width: 80vw;
     height: 55vw;
     margin: auto;
+    margin-top: 4rem;
   }
 `;
 
